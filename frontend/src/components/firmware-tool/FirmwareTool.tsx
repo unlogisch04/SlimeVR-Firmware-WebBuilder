@@ -28,6 +28,9 @@ export function FirmwareTool() {
                     <p>Please use a different browser. (Chrome, Microsoft Edge or Opera)</p>
                 </Alert>
             }
+            <Alert variant="filled" severity="warning" sx={{ my: 2 }}>
+                This is an experimental version of the SlimeVR Firmware Tool run by Butterscotch, you can find the official one <Link href='https://slimevr-firmware-tool.futurabeast.com/' underline="none">here</Link>.
+            </Alert>
             <Alert variant="outlined" severity="info" sx={{ my: 2 }}>
                 SlimeVR/vX.X.X - SlimeVR stable release(s)
                 <p><Link href="https://github.com/SlimeVR/SlimeVR-Tracker-ESP/tree/main">SlimeVR/main</Link> - SlimeVR development branch</p>

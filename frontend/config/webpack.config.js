@@ -25,7 +25,6 @@ const ForkTsCheckerWebpackPlugin =
     ? require('react-dev-utils/ForkTsCheckerWarningWebpackPlugin')
     : require('react-dev-utils/ForkTsCheckerWebpackPlugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
-const SentryCliPlugin = require('@sentry/webpack-plugin');
 
 
 const createEnvironmentHash = require('./webpack/persistentCache/createEnvironmentHash');
@@ -589,12 +588,6 @@ module.exports = function (webpackEnv) {
             : undefined
         )
       ),
-      isEnvProduction && new SentryCliPlugin({
-        include: '.',
-        ignoreFile: '.sentrycliignore',
-        ignore: ['node_modules', 'webpack.config.js'],
-        configFile: 'sentry.properties',
-      }),
       // Inlines the webpack runtime script. This script is too small to warrant
       // a network request.
       // https://github.com/facebook/create-react-app/issues/5358

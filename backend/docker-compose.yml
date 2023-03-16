@@ -7,8 +7,6 @@ services:
       POSTGRES_USER: slimevr
       POSTGRES_PASSWORD: 123456
       POSTGRES_DB: slimevr
-    ports:
-      - 5432:5432
     volumes:
       - database-volume:/var/lib/postgresql/data
     networks:
@@ -21,7 +19,7 @@ services:
       options:
         max-size: "50m"
     ports:
-      - 3000:3000
+      - 127.0.0.1:3000:3000
     depends_on:
       - slimevr-database
       - slimevr-api-s3
@@ -48,8 +46,7 @@ services:
   slimevr-api-s3:
     image: minio/minio:latest
     ports:
-      - 9000:9000
-      - 9099:9099
+      - 127.0.0.1:9099:9099
     volumes:
       - storage-minio:/data
     secrets:
@@ -69,7 +66,7 @@ services:
       - access_key
       - secret_key
     entrypoint: >
-      /bin/sh -c "
+      /bin/sh -xc "
       /usr/bin/mc alias set slimevr http://slimevr-api-s3:9099 `cat /run/secrets/access_key` `cat /run/secrets/secret_key`;
       /usr/bin/mc admin update slimevr;
       /usr/bin/mc mb --ignore-existing slimevr/slimevr-firmware-builds;

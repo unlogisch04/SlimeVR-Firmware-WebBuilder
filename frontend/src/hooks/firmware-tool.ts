@@ -3,7 +3,6 @@ import { useForm } from "react-hook-form";
 import { ErrorMessage } from "../components/firmware-tool/ErrorPane";
 import { FirmwareFile, useFirmwareControllerBuildAll } from "../generated-types";
 import { useSerial } from "./serial";
-import * as Sentry from "@sentry/react";
 import { decode, encode } from "universal-base64url";
 
 const defaultFormValues = {
@@ -240,9 +239,6 @@ export function useFirmwareTool() {
       }
   
       const res = await mutate(data)
-  
-      Sentry.setContext("buildConfig", { config: JSON.stringify(data) });
-      Sentry.setContext("buildResponse", res);
   
   
       try {
