@@ -262,6 +262,22 @@ export class FirmwareService implements OnApplicationBootstrap {
             ? firmware.buildConfig.board.pins.led
             : 255
         }
+        ${
+          // Handle new defines.h format (v2?)
+          ['SlimeVR/main', 'ButterscotchV/mag-enabled-main'].includes(
+            release.name,
+          )
+            ? `
+
+        #define MAX_IMU_COUNT 2
+        #ifndef IMU_DESC_LIST
+        #define IMU_DESC_LIST \
+                IMU_DESC_ENTRY(IMU, PRIMARY_IMU_ADDRESS_ONE, IMU_ROTATION, PIN_IMU_SCL, PIN_IMU_SDA, PIN_IMU_INT) \
+                IMU_DESC_ENTRY(SECOND_IMU, SECONDARY_IMU_ADDRESS_TWO, SECOND_IMU_ROTATION, PIN_IMU_SCL, PIN_IMU_SDA, PIN_IMU_INT_2)
+        #endif
+        `
+            : ``
+        }
       `;
 
       await Promise.all([
