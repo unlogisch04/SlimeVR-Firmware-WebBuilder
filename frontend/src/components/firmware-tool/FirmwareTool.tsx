@@ -46,9 +46,6 @@ export function FirmwareTool() {
                 <p><Link href="https://github.com/nekomona/SlimeVR-Tracker-ESP/tree/unify-fusion">nekomona/unify-fusion</Link> - Unifying sensor fusion code</p>
                 <p><Link href="https://github.com/l0ud/SlimeVR-Tracker-ESP-BMI270/tree/main">l0ud/main</Link> - Adds support for the BMI270 and includes ESP32-C3 fixes</p>
             </Alert>
-            <Alert variant="filled" severity="warning" sx={{ my: 2 }}>
-                IMPORTANT NOTICE: The IMU Rotation option has changed, please be aware that the values used before may need to be modified to function properly (90 deg and 270 deg have been swapped, so it should now follow SlimeVR's documentation).
-            </Alert>
             <Paper variant="outlined" sx={{ my: { xs: 3, md: 3 }, p: { xs: 1, md: 3 } }}>
                 <Typography component="h1" variant="h4" align="center">
                     Configure your firmware
