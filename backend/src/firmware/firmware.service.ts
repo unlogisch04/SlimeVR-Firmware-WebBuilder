@@ -264,9 +264,12 @@ export class FirmwareService implements OnApplicationBootstrap {
         }
         ${
           // Handle new defines.h format (v2?)
-          ['SlimeVR/main', 'ButterscotchV/mag-enabled-main'].includes(
-            release.name,
-          )
+          [
+            'SlimeVR/main',
+            'ButterscotchV/mag-enabled-main',
+            'ButterscotchV/alt-port-main',
+            '0forks/v3dev',
+          ].includes(release.name)
             ? `
 
         #define MAX_IMU_COUNT 2
