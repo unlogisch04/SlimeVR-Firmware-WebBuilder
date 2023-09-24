@@ -12,6 +12,8 @@ export enum IMUType {
   IMU_BMI160 = 'IMU_BMI160',
   IMU_ICM20948 = 'IMU_ICM20948',
   IMU_BMI270 = 'IMU_BMI270',
+  IMU_MPU6500_NODMP = 'IMU_MPU6500_NODMP',
+  IMU_MPU6050_NODMP = 'IMU_MPU6050_NODMP',
 }
 
 export const IMUS: IMUDTO[] = [
@@ -53,6 +55,14 @@ export const IMUS: IMUDTO[] = [
   },
   {
     type: IMUType.IMU_BMI270,
+    hasIntPin: false,
+  },
+  {
+    type: IMUType.IMU_MPU6500_NODMP,
+    hasIntPin: false,
+  },
+  {
+    type: IMUType.IMU_MPU6050_NODMP,
     hasIntPin: false,
   },
 ];

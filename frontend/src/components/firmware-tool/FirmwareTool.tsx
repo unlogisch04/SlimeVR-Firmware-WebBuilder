@@ -43,11 +43,11 @@ export function FirmwareTool() {
                 <p><Link target="_blank" rel="noopener" href="https://github.com/unlogisch04/SlimeVR-Tracker-ESP/tree/feat_commitid">unlogisch04/feat_commitid</Link> - Testing adding git commit ID info</p>
                 <p><Link target="_blank" rel="noopener" href="https://github.com/ButterscotchV/SlimeVR-Tracker-ESP/tree/mag-enabled-stable">ButterscotchV/mag-enabled-stable</Link> - The latest stable firmware release with 9 DoF ICM-20948 and BNO0xx (magnetometer enabled)</p>
                 <p><Link target="_blank" rel="noopener" href="https://github.com/ButterscotchV/SlimeVR-Tracker-ESP/tree/mag-enabled-main">ButterscotchV/mag-enabled-main</Link> - Based off SlimeVR/main with 9 DoF ICM-20948 and BNO0xx (magnetometer enabled)</p>
-                <p><Link target="_blank" rel="noopener" href="https://github.com/ButterscotchV/SlimeVR-Tracker-ESP/tree/mag-enabled-sorta-main">ButterscotchV/mag-enabled-sorta-main</Link> - Sorta based off SlimeVR/main (sensor changes reverted) with 9 DoF ICM-20948 and BNO0xx (magnetometer enabled)</p>
                 <p><Link target="_blank" rel="noopener" href="https://github.com/ButterscotchV/SlimeVR-Tracker-ESP/tree/alt-port-stable">ButterscotchV/alt-port-stable</Link> - The latest stable firmware release with "trackerPort" set to 6970 instead of 6969</p>
                 <p><Link target="_blank" rel="noopener" href="https://github.com/ButterscotchV/SlimeVR-Tracker-ESP/tree/alt-port-main">ButterscotchV/alt-port-main</Link> - Based off SlimeVR/main with "trackerPort" set to 6970 instead of 6969</p>
                 <p><Link target="_blank" rel="noopener" href="https://github.com/nekomona/SlimeVR-Tracker-ESP/tree/unify-fusion">nekomona/unify-fusion</Link> - Unifying sensor fusion code</p>
                 <p><Link target="_blank" rel="noopener" href="https://github.com/l0ud/SlimeVR-Tracker-ESP-BMI270/tree/main">l0ud/main</Link> - Adds support for the BMI270 and includes ESP32-C3 fixes</p>
+                <p><Link target="_blank" rel="noopener" href="https://github.com/furrycoding/SlimeVR-Tracker-ESP/tree/mpu6050_nodmp">furrycoding/mpu6050_nodmp</Link> - Adds a new sensor that uses MPU-6050 without the DMP (sensor fusion in software)</p>
             </Alert>
             <Paper variant="outlined" sx={{ my: { xs: 3, md: 3 }, p: { xs: 1, md: 3 } }}>
                 <Typography component="h1" variant="h4" align="center">

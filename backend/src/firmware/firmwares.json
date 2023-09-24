@@ -18,12 +18,15 @@
     "SlimeVR-Tracker-ESP": ["feat_commitid"]
   },
   "ButterscotchV": {
-    "SlimeVR-Tracker-ESP": ["mag-enabled-stable", "mag-enabled-main", "mag-enabled-sorta-main", "alt-port-stable", "alt-port-main"]
+    "SlimeVR-Tracker-ESP": ["mag-enabled-stable", "mag-enabled-main", "alt-port-stable", "alt-port-main"]
   },
   "nekomona": {
     "SlimeVR-Tracker-ESP": ["unify-fusion"]
   },
   "l0ud": {
     "SlimeVR-Tracker-ESP-BMI270": ["main"]
+  },
+  "furrycoding": {
+    "SlimeVR-Tracker-ESP": ["mpu6050_nodmp"]
   }
 }

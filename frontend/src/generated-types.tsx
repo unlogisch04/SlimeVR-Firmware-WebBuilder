@@ -16,7 +16,7 @@ export interface FirmwareBoardDTO {
 }
 
 export interface IMUConfigDTO {
-  type: "IMU_MPU9250" | "IMU_MPU6500" | "IMU_BNO080" | "IMU_BNO085" | "IMU_BNO055" | "IMU_BNO086" | "IMU_MPU6050" | "IMU_BMI160" | "IMU_ICM20948" | "IMU_BMI270";
+  type: "IMU_MPU9250" | "IMU_MPU6500" | "IMU_BNO080" | "IMU_BNO085" | "IMU_BNO055" | "IMU_BNO086" | "IMU_MPU6050" | "IMU_BMI160" | "IMU_ICM20948" | "IMU_BMI270" | "IMU_MPU6500_NODMP" | "IMU_MPU6050_NODMP";
   rotation: number;
   imuINT?: string;
 }
@@ -70,7 +70,7 @@ export interface ReleaseDTO {
 }
 
 export interface Imudto {
-  type: "IMU_MPU9250" | "IMU_MPU6500" | "IMU_BNO080" | "IMU_BNO085" | "IMU_BNO055" | "IMU_BNO086" | "IMU_MPU6050" | "IMU_BMI160" | "IMU_ICM20948" | "IMU_BMI270";
+  type: "IMU_MPU9250" | "IMU_MPU6500" | "IMU_BNO080" | "IMU_BNO085" | "IMU_BNO055" | "IMU_BNO086" | "IMU_MPU6050" | "IMU_BMI160" | "IMU_ICM20948" | "IMU_BMI270" | "IMU_MPU6500_NODMP" | "IMU_MPU6050_NODMP";
   hasIntPin: boolean;
 }
 
