@@ -269,6 +269,10 @@ export class FirmwareService implements OnApplicationBootstrap {
             'ButterscotchV/mag-enabled-main',
             'ButterscotchV/alt-port-main',
             '0forks/v3dev',
+            'unlogisch04/feat_commitid',
+            'nekomona/unify-fusion',
+            'l0ud/main',
+            'furrycoding/mpu6050_nodmp',
           ].includes(release.name)
             ? `
 
