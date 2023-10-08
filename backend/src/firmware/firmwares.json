@@ -11,9 +11,6 @@
   "Lupinixx": {
     "SlimeVR-Tracker-ESP": ["mpu6050-fifo"]
   },
-  "0forks": {
-    "SlimeVR-Tracker-ESP-BMI160": ["v3dev", "v3dev-bmm"]
-  },
   "unlogisch04": {
     "SlimeVR-Tracker-ESP": ["feat_commitid"]
   },

@@ -28,6 +28,8 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 import { InjectAws } from 'aws-sdk-v3-nest';
+import { IMUConfigDTO, IMUS } from './dto/imu.dto';
+import { BatteryType } from './dto/battery.dto';
 
 @Injectable()
 export class FirmwareService implements OnApplicationBootstrap {
@@ -168,8 +170,80 @@ export class FirmwareService implements OnApplicationBootstrap {
     return `${this.appConfig.getS3Endpoint()}/${this.appConfig.getBuildsBucket()}/${id}/firmware.bin`;
   }
 
+  /**
+   * Returns the content of the define.h based on the board config and imus config
+   */
+  public getDefines(boardConfig: BuildFirmwareDTO) {
+    const rotationToFirmware = function (rotation: number): number {
+      // Reduce the angle to its lowest equivalent form,
+      // negate it to match the firmware rotation direction,
+      // then convert it to radians
+      return (-(rotation % 360) / 180) * Math.PI;
+    };
+
+    /**
+     * Define of one IMU entry, uses the appropriate addess for the first and second IMUs
+     */
+    const imuDesc = (imuConfig: IMUConfigDTO, index: number) => {
+      const imu = IMUS.find(({ type }) => type === imuConfig.type);
+      if (!imu) return null;
+
+      return `IMU_DESC_ENTRY(${imuConfig.type}, ${
+        index <= 0 ? 'PRIMARY_IMU_ADDRESS_ONE' : 'SECONDARY_IMU_ADDRESS_TWO'
+      }, ${rotationToFirmware(imuConfig.rotation)}, PIN_IMU_SCL, PIN_IMU_SDA, ${
+        imuConfig.imuINT || 255
+      })`;
+    };
+
+    // This is to deal with old firmware versions where two imus were always declared,
+    // I just use the values of the first one if I only have one
+    const secondImu =
+      boardConfig.imus.length === 1 ? boardConfig.imus[0] : boardConfig.imus[1];
+
+    return `
+          #define IMU ${boardConfig.imus[0].type}
+          #define SECOND_IMU ${secondImu.type}
+          #define BOARD ${boardConfig.board.type}
+          #define IMU_ROTATION ${rotationToFirmware(
+            boardConfig.imus[0].rotation,
+          )}
+          #define SECOND_IMU_ROTATION ${rotationToFirmware(secondImu.rotation)}
+
+          #define MAX_IMU_COUNT ${boardConfig.imus.length}
+
+          #ifndef IMU_DESC_LIST
+          #define IMU_DESC_LIST \\
+                ${boardConfig.imus
+                  .map(imuDesc)
+                  .filter((imu) => !!imu)
+                  .join(' \\\n\t\t ')}
+          #endif
+
+          #define BATTERY_MONITOR ${boardConfig.battery.type}
+          ${
+            boardConfig.battery.type === BatteryType.BAT_EXTERNAL &&
+            `
+          #define PIN_BATTERY_LEVEL ${boardConfig.battery.pin}
+          #define BATTERY_SHIELD_RESISTANCE ${boardConfig.battery.resistance}
+          #define BATTERY_SHIELD_R1 10
+          #define BATTERY_SHIELD_R2 40.2
+          `
+          }
+    
+          #define PIN_IMU_SDA ${boardConfig.board.pins.imuSDA}
+          #define PIN_IMU_SCL ${boardConfig.board.pins.imuSCL}
+          #define PIN_IMU_INT ${boardConfig.imus[0].imuINT || 255}
+          #define PIN_IMU_INT_2 ${secondImu.imuINT || 255}
+          #define LED_BUILTIN ${boardConfig.board.pins.led}
+          #define LED_INVERTED true
+          #define LED_PIN ${
+            boardConfig.board.enableLed ? boardConfig.board.pins.led : 255
+          }
+        `;
+  }
+
   private async startBuildingTask(firmware: Firmware, release: ReleaseDTO) {
-    let tmpDir;
+    let tmpDir: string;
 
     try {
       this.buildStatusSubject.next({
@@ -228,68 +302,11 @@ export class FirmwareService implements OnApplicationBootstrap {
       const [root] = await readdir(releaseFolderPath);
       const rootFoler = path.join(releaseFolderPath, root);
 
-      const rotationToFirmware = function (rotation: number): number {
-        // Reduce the angle to its lowest equivalent form,
-        // negate it to match the firmware rotation direction,
-        // then convert it to radians
-        return (-(rotation % 360) / 180) * Math.PI;
-      };
-
-      const definesContent = `
-        #define IMU ${firmware.buildConfig.imus[0].type}
-        #define SECOND_IMU ${firmware.buildConfig.imus[1].type}
-        #define BOARD ${firmware.buildConfig.board.type}
-        #define IMU_ROTATION ${rotationToFirmware(
-          firmware.buildConfig.imus[0].rotation,
-        )}
-        #define SECOND_IMU_ROTATION ${rotationToFirmware(
-          firmware.buildConfig.imus[1].rotation,
-        )}
-
-        #define BATTERY_MONITOR ${firmware.buildConfig.battery.type}
-        #define BATTERY_SHIELD_RESISTANCE ${
-          firmware.buildConfig.battery.resistance
-        }
-
-        #define PIN_IMU_SDA ${firmware.buildConfig.board.pins.imuSDA}
-        #define PIN_IMU_SCL ${firmware.buildConfig.board.pins.imuSCL}
-        #define PIN_IMU_INT ${firmware.buildConfig.imus[0].imuINT}
-        #define PIN_IMU_INT_2 ${firmware.buildConfig.imus[1].imuINT}
-        #define PIN_BATTERY_LEVEL ${firmware.buildConfig.battery.pin}
-        #define LED_BUILTIN ${firmware.buildConfig.board.pins.led}
-        #define LED_PIN ${
-          firmware.buildConfig.board.enableLed
-            ? firmware.buildConfig.board.pins.led
-            : 255
-        }
-        ${
-          // Handle new defines.h format (v2?)
-          [
-            'SlimeVR/main',
-            'ButterscotchV/mag-enabled-main',
-            'ButterscotchV/alt-port-main',
-            '0forks/v3dev',
-            'unlogisch04/feat_commitid',
-            'nekomona/unify-fusion',
-            'l0ud/main',
-            'furrycoding/mpu6050_nodmp',
-          ].includes(release.name)
-            ? `
-
-        #define MAX_IMU_COUNT 2
-        #ifndef IMU_DESC_LIST
-        #define IMU_DESC_LIST \
-                IMU_DESC_ENTRY(IMU, PRIMARY_IMU_ADDRESS_ONE, IMU_ROTATION, PIN_IMU_SCL, PIN_IMU_SDA, PIN_IMU_INT) \
-                IMU_DESC_ENTRY(SECOND_IMU, SECONDARY_IMU_ADDRESS_TWO, SECOND_IMU_ROTATION, PIN_IMU_SCL, PIN_IMU_SDA, PIN_IMU_INT_2)
-        #endif
-        `
-            : ``
-        }
-      `;
-
-      await Promise.all([
-        writeFile(path.join(rootFoler, 'src', 'defines.h'), definesContent),
-      ]);
+      // Overwrite the defines.h file with the one generated from the configuration
+      await writeFile(
+        path.join(rootFoler, 'src', 'defines.h'),
+        this.getDefines(firmware.buildConfig),
+      );
 
       this.buildStatusSubject.next({
         buildStatus: BuildStatus.BUILDING,
@@ -393,7 +410,7 @@ export class FirmwareService implements OnApplicationBootstrap {
 
   public async buildFirmware(dto: BuildFirmwareDTO): Promise<BuildResponse> {
     try {
-      const [, owner, version] = dto.version.match(/(.*?)\/(.*)/) || [
+      const [, owner, version] = RegExp(/(.*?)\/(.*)/).exec(dto.version) || [
         undefined,
         'SlimeVR',
         dto.version,
