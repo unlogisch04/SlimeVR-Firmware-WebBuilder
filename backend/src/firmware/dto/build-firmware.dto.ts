@@ -36,13 +36,6 @@ export class BuildFirmwareDTO {
       [BoardType.BOARD_WROOM32]: ['23', '25'],
     };
 
-    if (dto.imus.length === 1) {
-      dto.imus.push({
-        ...dto.imus[0],
-        imuINT: undefined,
-      });
-    }
-
     dto.imus = dto.imus.map((imu, index) => ({
       ...imu,
       imuINT: imu.imuINT || boardInts[dto.board.type][index] || '255',

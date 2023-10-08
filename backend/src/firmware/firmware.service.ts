@@ -303,10 +303,9 @@ export class FirmwareService implements OnApplicationBootstrap {
       const rootFoler = path.join(releaseFolderPath, root);
 
       // Overwrite the defines.h file with the one generated from the configuration
-      await writeFile(
-        path.join(rootFoler, 'src', 'defines.h'),
-        this.getDefines(firmware.buildConfig),
-      );
+      const newDef = this.getDefines(firmware.buildConfig);
+      console.log('[BUILD DEFINES]', newDef);
+      await writeFile(path.join(rootFoler, 'src', 'defines.h'), newDef);
 
       this.buildStatusSubject.next({
         buildStatus: BuildStatus.BUILDING,
