@@ -7,12 +7,12 @@ import { BuildStatus, Firmware } from './entity/firmware.entity';
 import { VersionNotFoundExeption } from './errors/version-not-found.error';
 import os from 'os';
 import fs from 'fs';
-import { mkdtemp, readdir, readFile, rm, writeFile } from 'fs/promises';
+import { mkdtemp, readdir, readFile, rename, rm, writeFile } from 'fs/promises';
 import path, { join } from 'path';
 import AdmZip from 'adm-zip';
 import fetch from 'node-fetch';
 import { BoardType } from './dto/firmware-board.dto';
-import { exec } from 'child_process';
+import { exec, execSync } from 'child_process';
 import { Not } from 'typeorm';
 import { APP_CONFIG, ConfigService } from 'src/config/config.service';
 import { debounceTime, filter, map, Subject } from 'rxjs';
@@ -121,16 +121,40 @@ export class FirmwareService implements OnApplicationBootstrap {
     return AVAILABLE_BOARDS[boardType].board;
   }
 
-  private getPartitions(
+  /**
+   * Get the board partitions infos
+   */
+  private async getPartitions(
     boardType: BoardType,
     rootFoler: string,
-  ): { path: string; offset: number }[] {
-    return AVAILABLE_BOARDS[boardType].partitions.map(
-      ({ path, ...fields }) => ({
-        ...fields,
-        path: path.charAt(0) === '/' ? path : join(rootFoler, path),
-      }),
-    );
+  ): Promise<{ path: string; offset: number }[]> {
+    const ideInfos = (await new Promise((resolve) => {
+      const metadata = execSync(
+        `platformio project metadata --json-output -e ${boardType}`,
+        {
+          cwd: rootFoler,
+          shell: '/bin/bash',
+        },
+      );
+      resolve(JSON.parse(metadata.toString()));
+    })) as {
+      [key: string]: {
+        extra: {
+          flash_images: { offset: string; path: string }[];
+          application_offset: string;
+        };
+      };
+    };
+
+    return [
+      ...ideInfos[boardType].extra.flash_images.map(
+        ({ offset, ...fields }) => ({ offset: parseInt(offset), ...fields }),
+      ),
+      {
+        path: join(rootFoler, `.pio/build/${boardType}/firmware.bin`),
+        offset: parseInt(ideInfos[boardType].extra.application_offset ?? '0'),
+      },
+    ];
   }
 
   public async emptyS3Directory(bucket, dir) {
@@ -307,6 +331,12 @@ export class FirmwareService implements OnApplicationBootstrap {
       console.log('[BUILD DEFINES]', newDef);
       await writeFile(path.join(rootFoler, 'src', 'defines.h'), newDef);
 
+      await rm(join(rootFoler, 'platformio.ini'));
+      await rename(
+        join(rootFoler, 'platformio-tools.ini'),
+        join(rootFoler, 'platformio.ini'),
+      );
+
       this.buildStatusSubject.next({
         buildStatus: BuildStatus.BUILDING,
         id: firmware.id,
@@ -315,7 +345,7 @@ export class FirmwareService implements OnApplicationBootstrap {
 
       await new Promise((resolve, reject) => {
         const platformioRun = exec(
-          `platformio run -e ${firmware.buildConfig.board.type} -c platformio-tools.ini`,
+          `platformio run -e ${firmware.buildConfig.board.type}`,
           {
             cwd: rootFoler,
             env: {
@@ -353,7 +383,7 @@ export class FirmwareService implements OnApplicationBootstrap {
         message: 'Uploading Firmware to Bucket',
       });
 
-      const files = this.getPartitions(
+      const files = await this.getPartitions(
         firmware.buildConfig.board.type,
         rootFoler,
       );
