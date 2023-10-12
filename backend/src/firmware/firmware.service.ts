@@ -244,11 +244,11 @@ export class FirmwareService implements OnApplicationBootstrap {
           #endif
 
           #define BATTERY_MONITOR ${boardConfig.battery.type}
+          #define PIN_BATTERY_LEVEL ${boardConfig.battery.pin}
+          #define BATTERY_SHIELD_RESISTANCE ${boardConfig.battery.resistance}
           ${
             boardConfig.battery.type === BatteryType.BAT_EXTERNAL
               ? `
-          #define PIN_BATTERY_LEVEL ${boardConfig.battery.pin}
-          #define BATTERY_SHIELD_RESISTANCE ${boardConfig.battery.resistance}
           #define BATTERY_SHIELD_R1 10
           #define BATTERY_SHIELD_R2 40.2
           `
