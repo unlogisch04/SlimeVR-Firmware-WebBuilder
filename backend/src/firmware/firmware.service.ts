@@ -224,6 +224,17 @@ export class FirmwareService implements OnApplicationBootstrap {
     const secondImu =
       boardConfig.imus.length === 1 ? boardConfig.imus[0] : boardConfig.imus[1];
 
+    const batteryDef = [
+      BoardType.BOARD_SLIMEVR,
+      BoardType.BOARD_SLIMEVR_DEV,
+    ].includes(boardConfig.board.type)
+      ? `
+          #define BATTERY_SHIELD_R1 10
+          #define BATTERY_SHIELD_R2 40.2`
+      : `
+          #define BATTERY_SHIELD_R1 100
+          #define BATTERY_SHIELD_R2 220`;
+
     return `
           #define IMU ${boardConfig.imus[0].type}
           #define SECOND_IMU ${secondImu.type}
@@ -248,10 +259,7 @@ export class FirmwareService implements OnApplicationBootstrap {
           #define BATTERY_SHIELD_RESISTANCE ${boardConfig.battery.resistance}
           ${
             boardConfig.battery.type === BatteryType.BAT_EXTERNAL
-              ? `
-          #define BATTERY_SHIELD_R1 10
-          #define BATTERY_SHIELD_R2 40.2
-          `
+              ? batteryDef
               : ''
           }
     
