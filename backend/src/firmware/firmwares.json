@@ -15,7 +15,7 @@
     "SlimeVR-Tracker-ESP": ["feat_commitid"]
   },
   "ButterscotchV": {
-    "SlimeVR-Tracker-ESP": ["mag-enabled-stable", "mag-enabled-main", "alt-port-stable", "alt-port-main"]
+    "SlimeVR-Tracker-ESP": ["v0.3.3-bno-patched", "mag-enabled-stable", "mag-enabled-main", "alt-port-stable", "alt-port-main"]
   },
   "nekomona": {
     "SlimeVR-Tracker-ESP": ["unify-fusion"]
