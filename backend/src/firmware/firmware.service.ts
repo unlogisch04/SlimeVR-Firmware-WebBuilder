@@ -448,6 +448,11 @@ export class FirmwareService implements OnApplicationBootstrap {
 
   public async buildFirmware(dto: BuildFirmwareDTO): Promise<BuildResponse> {
     try {
+      // Redirect v0.3.3 to the patched version
+      if (dto.version == 'SlimeVR/v0.3.3') {
+        dto.version = 'ButterscotchV/v0.3.3-bno-patched';
+      }
+
       const [, owner, version] = RegExp(/(.*?)\/(.*)/).exec(dto.version) || [
         undefined,
         'SlimeVR',
