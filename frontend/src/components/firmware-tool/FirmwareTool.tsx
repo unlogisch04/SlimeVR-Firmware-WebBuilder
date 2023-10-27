@@ -53,6 +53,7 @@ export function FirmwareTool() {
                 <p>{ghLink("nekomona", "unify-fusion")} - Unifying sensor fusion code</p>
                 <p>{ghLink("l0ud", "main", "SlimeVR-Tracker-ESP-BMI270")} - Adds support for the BMI270 and includes ESP32-C3 fixes</p>
                 <p>{ghLink("furrycoding", "mpu6050_nodmp")} - Adds a new sensor that uses MPU-6050 without the DMP (sensor fusion in software)</p>
+                <p>{ghLink("wigwagwent", "BMI_senscal", "LSM6DSV16X")} - Adds BMI160 sensitivity calibration to the regular calibration routine</p>
             </Alert>
             <Alert variant="filled" severity="warning" sx={{ my: 2 }}>
                 IMPORTANT: {ghLink("SlimeVR", "v0.3.3")} is now being redirected to {ghLink("ButterscotchV", "v0.3.3-bno-patched")}. Using BNOs with v0.3.3 is still not recommended, but it should work with the patch. The original release can still be found on the SlimeVR repository.

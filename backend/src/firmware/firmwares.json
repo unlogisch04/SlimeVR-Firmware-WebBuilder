@@ -22,5 +22,8 @@
   },
   "furrycoding": {
     "SlimeVR-Tracker-ESP": ["mpu6050_nodmp"]
+  },
+  "wigwagwent": {
+    "LSM6DSV16X": ["BMI_senscal"]
   }
 }
