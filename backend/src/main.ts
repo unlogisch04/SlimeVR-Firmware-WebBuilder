@@ -12,8 +12,8 @@ async function bootstrap() {
 
   const corsWhitelist = [
     configService.getHostUrl(),
-    'http://localhost:3000',
-    'http://localhost:3001',
+    'http://localhost:5173',
+    'http://localhost:5174',
   ];
 
   const app = await NestFactory.create(AppModule, {

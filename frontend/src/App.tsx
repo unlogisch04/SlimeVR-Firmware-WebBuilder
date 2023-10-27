@@ -1,9 +1,17 @@
-import { ThemeProvider } from '@emotion/react';
-import { AppBar, Button, createTheme, CssBaseline, Link, Toolbar, Typography } from '@mui/material';
-import { useMemo, useState } from 'react';
-import { RestfulProvider } from 'restful-react';
-import { Copyright } from './components/Copyright';
-import { FirmwareTool } from './components/firmware-tool/FirmwareTool';
+import { ThemeProvider } from "@emotion/react";
+import {
+  AppBar,
+  Button,
+  createTheme,
+  CssBaseline,
+  Link,
+  Toolbar,
+  Typography,
+} from "@mui/material";
+import { useMemo, useState } from "react";
+import { Copyright } from "./components/Copyright";
+import { FirmwareTool } from "./components/firmware-tool/FirmwareTool";
+import { RestfulProvider } from "restful-react";
 
 function Page() {
   const localTheme = localStorage.getItem("user-theme");
@@ -45,13 +53,15 @@ function Page() {
         color="default"
         elevation={0}
         sx={{
-          position: 'relative',
+          position: "relative",
           borderBottom: (t) => `1px solid ${t.palette.divider}`,
         }}
       >
         <Toolbar>
           <Typography variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
-            <Link href='/' underline="none" color="inherit">SlimeVR Firmware Tool (Butterscotch Version)</Link>
+            <Link href="/" underline="none" color="inherit">
+              SlimeVR Firmware Tool (Butterscotch Version)
+            </Link>
           </Typography>
           <Button variant="outlined" onClick={toggleTheme}>
             {prefersDarkMode ? "Dark" : "Light"}
@@ -61,13 +71,12 @@ function Page() {
       <FirmwareTool></FirmwareTool>
       <Copyright></Copyright>
     </ThemeProvider>
-  )
+  );
 }
-
 
 function App() {
   return (
-    <RestfulProvider base={process.env.REACT_APP_API_BASE || ''}>
+    <RestfulProvider base={import.meta.env.VITE_API_BASE || ""}>
       <Page></Page>
     </RestfulProvider>
   );
