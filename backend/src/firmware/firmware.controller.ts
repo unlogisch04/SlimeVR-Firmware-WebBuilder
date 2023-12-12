@@ -38,7 +38,7 @@ export class FirmwareController {
   ) {}
 
   @Get('/')
-  @Header('Cache-Control', 'public, max-age=300')
+  @Header('Cache-Control', 'private, max-age=300')
   @Header('CDN-Cache-Control', 'public, max-age=7200')
   @ApiResponse({ type: [Firmware] })
   getFirmwares() {
@@ -63,7 +63,7 @@ export class FirmwareController {
   }
 
   @Get('/boards')
-  @Header('Cache-Control', 'public, max-age=300')
+  @Header('Cache-Control', 'private, max-age=300')
   @Header('CDN-Cache-Control', 'public, max-age=7200')
   @ApiOkResponse({ type: [BoardTypeBoard] })
   getBoardsTypes(): BoardTypeBoard[] {
@@ -74,7 +74,7 @@ export class FirmwareController {
   }
 
   @Get('/versions')
-  @Header('Cache-Control', 'public, max-age=300')
+  @Header('Cache-Control', 'private, max-age=300')
   @Header('CDN-Cache-Control', 'public, max-age=7200')
   @ApiOkResponse({ type: [ReleaseDTO] })
   async getVersions(): Promise<ReleaseDTO[]> {
@@ -82,7 +82,7 @@ export class FirmwareController {
   }
 
   @Get('/imus')
-  @Header('Cache-Control', 'public, max-age=300')
+  @Header('Cache-Control', 'private, max-age=300')
   @Header('CDN-Cache-Control', 'public, max-age=7200')
   @ApiOkResponse({ type: [IMUDTO] })
   getIMUSTypes(): IMUDTO[] {
@@ -90,7 +90,7 @@ export class FirmwareController {
   }
 
   @Get('/batteries')
-  @Header('Cache-Control', 'public, max-age=300')
+  @Header('Cache-Control', 'private, max-age=300')
   @Header('CDN-Cache-Control', 'public, max-age=7200')
   @ApiOkResponse({ type: [String] })
   getBatteriesTypes(): string[] {
@@ -98,7 +98,7 @@ export class FirmwareController {
   }
 
   @Get('/default-config/:board')
-  @Header('Cache-Control', 'public, max-age=300')
+  @Header('Cache-Control', 'private, max-age=300')
   @Header('CDN-Cache-Control', 'public, max-age=7200')
   @ApiOkResponse({ type: BuildFirmwareDTO })
   getDefaultConfig(@Param('board') board: BoardType): BuildFirmwareDTO {
