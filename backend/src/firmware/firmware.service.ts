@@ -208,17 +208,16 @@ export class FirmwareService implements OnApplicationBootstrap {
     /**
      * Define of one IMU entry, uses the appropriate addess for the first and second IMUs
      */
+    let primaryImuAddress = 'PRIMARY_IMU_ADDRESS_ONE';
+    let secondaryImuAddress = 'SECONDARY_IMU_ADDRESS_TWO';
+    if (boardConfig.swapAddresses) {
+      primaryImuAddress = 'PRIMARY_IMU_ADDRESS_TWO';
+      secondaryImuAddress = 'SECONDARY_IMU_ADDRESS_ONE';
+    }
+
     const imuDesc = (imuConfig: IMUConfigDTO, index: number) => {
       const imu = IMUS.find(({ type }) => type === imuConfig.type);
       if (!imu) return null;
-
-      let primaryImuAddress = 'PRIMARY_IMU_ADDRESS_ONE';
-      let secondaryImuAddress = 'SECONDARY_IMU_ADDRESS_TWO';
-
-      if (boardConfig.swapAddresses) {
-        primaryImuAddress = 'PRIMARY_IMU_ADDRESS_TWO';
-        secondaryImuAddress = 'SECONDARY_IMU_ADDRESS_ONE';
-      }
 
       return `IMU_DESC_ENTRY(${imuConfig.type}, ${
         index <= 0 ? primaryImuAddress : secondaryImuAddress
