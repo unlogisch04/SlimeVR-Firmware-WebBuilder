@@ -13,6 +13,7 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useFirmwareControllerGetBatteriesTypes } from "../../generated-types";
 import { Controller } from "react-hook-form";
+import { HelperComponent } from "../HelperComponent";
 
 export function BatteryConfig({
   control,
@@ -65,6 +66,10 @@ export function BatteryConfig({
                           </MenuItem>
                         ))}
                     </Select>
+                    <HelperComponent
+                      text="Battery Type configuration (Usually BAT_EXTERNAL)"
+                      link="https://docs.slimevr.dev/firmware/configuring-project.html#set-battery-monitoring-options"
+                    />
                   </>
                 )}
               />

@@ -234,6 +234,22 @@ export function ConfigurationForm({
                     />
                   </FormControl>
                 </Grid>
+                <Grid item xs={12} sm={6}>
+                  <FormControl fullWidth>
+                    <Controller
+                      name={"swapAddresses"}
+                      control={control}
+                      render={({ field: { onChange, value } }) => (
+                        <FormControlLabel
+                          control={
+                            <Checkbox onChange={onChange} checked={value} />
+                          }
+                          label="Swap IMU Addresses"
+                        />
+                      )}
+                    />
+                  </FormControl>
+                </Grid>
               </Grid>
             </AccordionDetails>
           </Accordion>

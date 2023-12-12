@@ -101,7 +101,7 @@ export class FirmwareController {
     dto.board.type = board;
 
     const imu = new IMUConfigDTO();
-    imu.type = IMUType.IMU_MPU6050;
+    imu.type = IMUType.IMU_BMI160;
 
     dto.imus = [imu];
 

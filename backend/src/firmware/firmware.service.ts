@@ -212,8 +212,16 @@ export class FirmwareService implements OnApplicationBootstrap {
       const imu = IMUS.find(({ type }) => type === imuConfig.type);
       if (!imu) return null;
 
+      let primaryImuAddress = 'PRIMARY_IMU_ADDRESS_ONE';
+      let secondaryImuAddress = 'SECONDARY_IMU_ADDRESS_TWO';
+
+      if (boardConfig.swapAddresses) {
+        primaryImuAddress = 'PRIMARY_IMU_ADDRESS_TWO';
+        secondaryImuAddress = 'SECONDARY_IMU_ADDRESS_ONE';
+      }
+
       return `IMU_DESC_ENTRY(${imuConfig.type}, ${
-        index <= 0 ? 'PRIMARY_IMU_ADDRESS_ONE' : 'SECONDARY_IMU_ADDRESS_TWO'
+        index <= 0 ? primaryImuAddress : secondaryImuAddress
       }, ${rotationToFirmware(imuConfig.rotation)}, PIN_IMU_SCL, PIN_IMU_SDA, ${
         index <= 0 ? 'false' : 'true'
       }, ${imuConfig.imuINT || 255})`;

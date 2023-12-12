@@ -38,6 +38,7 @@ const defaultFormValues = {
     resistance: null,
     pin: null,
   },
+  swapAddresses: false,
   wifi: {
     ssid: null,
     password: null,

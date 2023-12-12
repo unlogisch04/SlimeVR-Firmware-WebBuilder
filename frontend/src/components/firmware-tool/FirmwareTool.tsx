@@ -65,7 +65,8 @@ export function FirmwareTool() {
       )}
       <Alert variant="filled" severity="warning" sx={{ my: 2 }}>
         This is an experimental version of the SlimeVR Firmware Tool run by
-        Butterscotch, so uptime, functionality, and performance is not guaranteed.
+        Butterscotch, so uptime, functionality, and performance is not
+        guaranteed.
       </Alert>
       <Alert variant="outlined" severity="info" sx={{ my: 2 }}>
         SlimeVR/vX.X.X - SlimeVR stable release(s)

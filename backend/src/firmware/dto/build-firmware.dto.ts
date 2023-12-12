@@ -25,6 +25,10 @@ export class BuildFirmwareDTO {
   @IsOptional()
   public battery?: BatteryDTO;
 
+  @ApiProperty({ required: false })
+  @IsOptional()
+  public swapAddresses?: boolean;
+
   static completeDefaults(dto: BuildFirmwareDTO): BuildFirmwareDTO {
     const boardInts = {
       [BoardType.BOARD_SLIMEVR]: ['16', '13'],
@@ -115,6 +119,10 @@ export class BuildFirmwareDTO {
       };
 
       dto.board.enableLed = enableLedMap[dto.board.type];
+    }
+
+    if (dto.swapAddresses === undefined) {
+      dto.swapAddresses = false;
     }
 
     return dto;

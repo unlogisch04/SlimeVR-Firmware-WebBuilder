@@ -64,6 +64,7 @@ export interface BuildFirmwareDTO {
   board: FirmwareBoardDTO;
   imus: IMUConfigDTO[];
   battery?: BatteryDTO;
+  swapAddresses?: boolean;
 }
 
 export interface FirmwareFile {
