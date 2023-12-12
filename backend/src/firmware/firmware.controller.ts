@@ -101,9 +101,13 @@ export class FirmwareController {
     dto.board.type = board;
 
     const imu = new IMUConfigDTO();
-    imu.type = IMUType.IMU_BMI160;
+    imu.type =
+      board == BoardType.BOARD_SLIMEVR || board == BoardType.BOARD_SLIMEVR_DEV
+        ? IMUType.IMU_BNO085
+        : IMUType.IMU_BMI160;
+    imu.rotation = 270;
 
-    dto.imus = [imu];
+    dto.imus = [imu, imu];
 
     return BuildFirmwareDTO.completeDefaults(dto);
   }

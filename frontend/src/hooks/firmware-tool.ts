@@ -27,7 +27,7 @@ const defaultFormValues = {
       imuINT: null,
     },
     {
-      enabled: false,
+      enabled: true,
       type: null,
       rotation: 0,
       imuINT: null,
