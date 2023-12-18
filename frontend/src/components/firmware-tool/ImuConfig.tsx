@@ -97,7 +97,7 @@ export function ImuConfig({
                         </MenuItem>
                       )}
                       <MenuItem value="none" disabled>
-                        Please select the imu type
+                        Please select the IMU type
                       </MenuItem>
                       {!imusLoading &&
                         sortedImus &&

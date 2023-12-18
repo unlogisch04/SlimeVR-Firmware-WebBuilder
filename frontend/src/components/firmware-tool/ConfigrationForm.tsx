@@ -228,7 +228,7 @@ export function ConfigurationForm({
                           onChange={onChange}
                           value={value || ""}
                           disabled={!enableLed}
-                          label={"Led pin"}
+                          label={"Led Pin"}
                         />
                       )}
                     />

@@ -86,7 +86,7 @@ export function BatteryConfig({
                     error={!!errors.battery?.resistance}
                     onChange={onChange}
                     value={value || ""}
-                    label={"Battery shield resistance (kOhm)"}
+                    label={"Battery Shield Resistance (kOhm)"}
                   />
                 )}
               />
@@ -103,7 +103,7 @@ export function BatteryConfig({
                     error={!!errors.battery?.pin}
                     onChange={onChange}
                     value={value || ""}
-                    label={"Battery sense PIN"}
+                    label={"Battery Sense Pin"}
                   />
                 )}
               />
