@@ -63,7 +63,7 @@ export function useSerial() {
               if (readBytes === undefined) continue;
               lineBuffer += textDecoder.decode(readBytes);
               // Cut output that's obscenely long
-              if (lineBuffer.length > 4096) lineBuffer += "\n";
+              if (lineBuffer.length > 4096) break;
             } catch (e) {
               // Ignore timeout
               if (e instanceof Error && e.message === "Timeout") {
