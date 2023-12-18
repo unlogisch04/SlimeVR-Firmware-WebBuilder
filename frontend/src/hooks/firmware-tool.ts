@@ -7,6 +7,7 @@ import {
 } from "../generated-types";
 import { useSerial } from "./serial";
 import { decode, encode } from "universal-base64url";
+import { FlashOptions } from "esptool-js";
 
 const defaultFormValues = {
   version: null,
@@ -52,7 +53,7 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 export function useFirmwareTool() {
   const form = useForm({ defaultValues: defaultFormValues });
 
-  const { serialConnect, espStubRef, disconnect, setWifi } = useSerial();
+  const { serialConnect, espRef, disconnect, setWifi } = useSerial();
 
   const formValue = form.watch();
 
@@ -112,31 +113,62 @@ export function useFirmwareTool() {
     try {
       await serialConnect();
 
-      if (!espStubRef.current) throw new Error("Invalid state. no stub ref");
+      if (!espRef.current) throw new Error("Invalid state. No stub ref.");
 
-      const totalSize = downloadedFilesRef.current.reduce(
-        (size, file) => size + file.binary.byteLength,
-        0,
-      );
-      let totalWriten = 0;
+      // Workaround to use the esptool-js flash function
+      function arrayBufferToBinaryString(buffer: ArrayBuffer) {
+        let binary = "";
+        const bytes = new Uint8Array(buffer);
+        const length = bytes.byteLength;
+        for (let i = 0; i < length; i++) {
+          binary += String.fromCharCode(bytes[i]);
+        }
+        return binary;
+      }
+
+      const fileCount = downloadedFilesRef.current.length;
+      const filePercents: number[] = [];
       setStatusValue(0);
 
-      // await espStubRef.current.hardReset()
-      for (const file of downloadedFilesRef.current) {
-        // eslint-disable-next-line no-loop-func
-        await espStubRef.current.flashData(
-          file.binary,
-          (bytes) => {
-            const percents = Math.floor(
-              ((totalWriten + bytes) / totalSize) * 100,
-            );
-            setStatusValue(percents);
-            setStatusMessage(`Flashing firmware (${percents}%)`);
+      try {
+        const flashOptions: FlashOptions = {
+          fileArray: downloadedFilesRef.current.map((file) => {
+            return {
+              data: arrayBufferToBinaryString(file.binary),
+              address: file.infos.offset,
+            };
+          }),
+          flashSize: "keep",
+          flashMode: "keep",
+          flashFreq: "keep",
+          eraseAll: false,
+          compress: true,
+          reportProgress: (
+            fileIndex: number,
+            written: number,
+            total: number,
+          ) => {
+            filePercents[fileIndex] = (written / total) * 100;
+            const percentage =
+              filePercents.reduce((a, b) => a + b, 0) / fileCount;
+            setStatusValue(percentage);
+            setStatusMessage(`Flashing firmware (${percentage.toFixed(1)}%)`);
           },
-          file.infos.offset,
-          true,
-        );
-        totalWriten += file.binary.byteLength;
+        };
+        await espRef.current.write_flash(flashOptions);
+      } catch (e) {
+        console.error(e);
+        setCurrentError({
+          title: "Lost connection to serial",
+          message: "Something went wrong",
+          action: () => {
+            setCurrentError(null);
+            flash();
+          },
+          actionText: "Retry",
+        });
+        await disconnect();
+        return;
       }
 
       if (wifi?.password && wifi?.ssid) {

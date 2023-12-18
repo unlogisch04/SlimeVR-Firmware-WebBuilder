@@ -1,148 +1,149 @@
-import { connect, ESPLoader } from "esp-web-flasher";
+import { ESPLoader, Transport } from "esptool-js";
 import { useMemo, useRef } from "react";
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export function useSerial() {
-  const espToolRef = useRef<ESPLoader | null>(null);
-  const espStubRef = useRef<
-    (ESPLoader & { eraseFlash: () => Promise<void> }) | null
-  >(null);
+  const espRef = useRef<ESPLoader | null>(null);
   const serialSupported = useMemo(() => "serial" in navigator, []);
 
   const serialConnect = async () => {
-    if (
-      espStubRef.current &&
-      espStubRef.current.connected &&
-      espToolRef.current &&
-      espToolRef.current.connected
-    )
-      return;
-
-    espToolRef.current = await connect({
-      debug: console.log,
-      error: console.log,
-      log: console.log,
-    });
-
-    espToolRef.current.readLoop = async () => {
-      if (!espToolRef.current) return;
-
-      const reader = espToolRef.current.port.readable.getReader();
-      espToolRef.current.logger.debug("Starting read loop");
-      (espToolRef.current as any)._reader = reader;
-      try {
-        while (true) {
-          const { value, done } = await reader.read();
-          if (done) {
-            reader.releaseLock();
-            break;
-          }
-
-          const event = new CustomEvent("serial-in", { detail: value });
-          espToolRef.current.dispatchEvent(event);
-          if (!value || value.length === 0) {
-            continue;
-          }
-          (espToolRef.current as any)._inputBuffer.push(...Array.from(value));
-        }
-      } catch (err) {
-        console.error("Read loop got disconnected");
-      }
-      // Disconnected!
-      espToolRef.current.connected = false;
-      espToolRef.current.dispatchEvent(new Event("disconnect"));
-      espToolRef.current.logger.debug("Finished read loop");
-    };
+    if (espRef.current) return;
 
     try {
-      await espToolRef.current.initialize();
-
-      espStubRef.current = await espToolRef.current.runStub();
+      espRef.current = new ESPLoader({
+        transport: new Transport(await navigator.serial.requestPort()),
+        baudrate: 115200,
+        romBaudrate: 115200,
+      });
+      await espRef.current.main_fn();
     } catch (e) {
       await disconnect();
       throw e;
     }
-    // await espStubRef.current.initialize();
   };
 
   const disconnect = async () => {
-    if (!espToolRef.current || !espToolRef.current.connected) return;
+    if (!espRef.current) return;
 
-    await sleep(100);
-    await espToolRef.current.disconnect();
-    await espToolRef.current.hardReset();
+    try {
+      await sleep(100);
+      await espRef.current.hard_reset();
 
-    await espToolRef.current.port.setSignals({
-      dataTerminalReady: false,
-      requestToSend: true,
+      await espRef.current.transport.setDTR(false);
+      await espRef.current.transport.setRTS(false);
+    } catch {}
+
+    try {
+      await espRef.current.transport.disconnect();
+    } catch {}
+
+    espRef.current = null;
+  };
+
+  const setWifi = async (ssid: string, password: string) => {
+    if (!espRef.current) throw new Error("Connection not open");
+
+    await new Promise(async (resolve, reject) => {
+      if (!espRef.current) return;
+
+      let timedOut = false;
+      const readerPromise = new Promise(async (resolve, reject) => {
+        if (!espRef.current) return;
+
+        console.log("Opening serial console...");
+        const textDecoder = new TextDecoder();
+        let lineBuffer = "";
+        let timeouts = 0;
+        while (!timedOut) {
+          while (!lineBuffer.includes("\n")) {
+            try {
+              const readBytes = await espRef.current.transport.rawRead(8000);
+              timeouts = 0;
+              if (readBytes === undefined) continue;
+              lineBuffer += textDecoder.decode(readBytes);
+              // Cut output that's obscenely long
+              if (lineBuffer.length > 4096) lineBuffer += "\n";
+            } catch (e) {
+              // Ignore timeout
+              if (e instanceof Error && e.message === "Timeout") {
+                if (++timeouts >= 16) {
+                  console.error("Timed out too many times:", e);
+                  reject("Timed out too many times");
+                  return;
+                }
+              } else {
+                console.error(e);
+                reject("Serial error");
+                return;
+              }
+            }
+          }
+
+          // Cut on the newline
+          const [, line, remainder] = RegExp(/(.*?)\n(.*)/).exec(
+            lineBuffer,
+          ) ?? [undefined, lineBuffer, ""];
+          lineBuffer = remainder;
+
+          console.log("Serial Console:", line);
+
+          if (line.includes("CMD SET WIFI OK")) {
+            console.log("WiFi serial command was successful.");
+          }
+          if (line.includes("Connected successfully to SSID")) {
+            resolve(true);
+            return;
+          }
+          if (line.includes("Can't connect from any credentials")) {
+            reject("Invalid credentials");
+            return;
+          }
+        }
+        // Timeout if exited
+        reject("timeout");
+      });
+
+      console.log("Resetting ESP...");
+      await espRef.current.hard_reset();
+
+      console.log("Waiting for ESP to boot...");
+      await sleep(500);
+
+      console.log("Setting WiFi via serial command...");
+      const writer = espRef.current.transport.device.writable?.getWriter();
+      if (!writer) {
+        return reject("Device is not writable");
+      }
+      try {
+        writer.write(
+          new TextEncoder().encode(`SET WIFI "${ssid}" "${password}"\n`),
+        );
+      } finally {
+        writer.releaseLock();
+      }
+
+      console.log("Waiting for WiFi connection...");
+      setTimeout(() => {
+        timedOut = true;
+        reject("timeout");
+      }, 30000);
+      try {
+        resolve(await readerPromise);
+      } catch (e) {
+        reject(e);
+        return;
+      }
     });
-    await espToolRef.current.port.setSignals({
-      dataTerminalReady: false,
-      requestToSend: false,
-    });
-
-    await espToolRef.current.port.close();
   };
 
   return {
     serialConnect,
     disconnect,
-    eraseFlash: () => espStubRef.current && espStubRef.current.eraseFlash(),
-    isConnected: () => espToolRef.current && espToolRef.current.connected,
-    setWifi: async (ssid: string, password: string) => {
-      if (!espStubRef.current) throw new Error("Connection not open");
-
-      const port = espStubRef.current.port;
-
-      await espStubRef.current.hardReset();
-
-      await new Promise((resolve, reject) => {
-        if (!espToolRef.current) return;
-
-        let readBytes = new Uint8Array();
-
-        const appendBuffer = function (
-          buffer1: Uint8Array,
-          buffer2: Uint8Array,
-        ) {
-          var tmp = new Uint8Array(buffer1.byteLength + buffer2.byteLength);
-          tmp.set(new Uint8Array(buffer1), 0);
-          tmp.set(new Uint8Array(buffer2), buffer1.byteLength);
-          return tmp;
-        };
-
-        const onSerial = (value: any) => {
-          if (!espToolRef.current) return;
-
-          readBytes = appendBuffer(readBytes, value.detail);
-
-          const decoded = new TextDecoder().decode(readBytes);
-
-          if (decoded.includes("Connected successfully to SSID")) {
-            espToolRef.current.removeEventListener("serial-in", onSerial);
-            resolve(true);
-          }
-          if (decoded.includes(`Can't connect from any credentials`)) {
-            espToolRef.current.removeEventListener("serial-in", onSerial);
-            reject("Invalid credentials");
-          }
-        };
-
-        espToolRef.current.addEventListener("serial-in", onSerial);
-
-        const writer = port.writable.getWriter();
-        writer.write(
-          new TextEncoder().encode(`SET WIFI "${ssid}" "${password}"\n`),
-        );
-        writer.releaseLock();
-
-        setTimeout(() => {
-          reject("timeout");
-        }, 30000);
-      });
-    },
+    eraseFlash: () => espRef.current?.erase_flash(),
+    isConnected: () => espRef.current,
+    setWifi,
     serialSupported,
-    espStubRef,
+    espRef,
   };
 }
