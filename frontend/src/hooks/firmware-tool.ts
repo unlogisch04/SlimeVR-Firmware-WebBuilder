@@ -139,30 +139,31 @@ export function useFirmwareTool() {
         totalWriten += file.binary.byteLength;
       }
 
-      if (wifi && wifi.password && wifi.ssid) {
-        setStatusMessage(`Setting wifi credentials`);
+      if (wifi?.password && wifi?.ssid) {
+        setStatusMessage(`Setting WiFi credentials`);
         setStatusValue(null);
         await sleep(1000);
 
         try {
           await setWifi(wifi.ssid, wifi.password);
         } catch (e) {
+          console.error(e);
           if (e === "Invalid credentials") {
             setCurrentError({
-              title: "Could not connect to wifi, Invalid credentials",
+              title: "Could not connect to WiFi, invalid credentials",
               message: "Check the configuration",
               action: () => {
                 setCurrentError(null);
                 setActiveStep(0);
               },
-              actionText: "Go back to configuration",
+              actionText: "Return to configuration",
             });
             await disconnect();
             return;
           } else {
             setCurrentError({
               title: "Lost connection to serial",
-              message: "Something did go wrong",
+              message: "Something went wrong",
               action: () => {
                 setCurrentError(null);
                 flash();
@@ -180,7 +181,7 @@ export function useFirmwareTool() {
       setCurrentError({
         title: "Unable to connect to serial",
         message:
-          "Check that you have the right drivers. You can also hold the Boot button on your esp if you have one",
+          "Check that you have the right drivers. You can also hold the Boot button on your ESP if you have one.",
         action: () => {
           setCurrentError(null);
           flash();
@@ -195,7 +196,7 @@ export function useFirmwareTool() {
   const downloadBuild = async (id: string, firmwareFiles: FirmwareFile[]) => {
     setActiveStep(2);
 
-    setStatusMessage("Downloading Firmware");
+    setStatusMessage("Downloading firmware");
 
     const firmwaresBytes = await Promise.all(
       firmwareFiles.map(({ url }) =>

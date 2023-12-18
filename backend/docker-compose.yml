@@ -67,6 +67,7 @@ services:
       - secret_key
     entrypoint: >
       /bin/sh -xc "
+      sleep 5;
       /usr/bin/mc alias set slimevr http://slimevr-api-s3:9099 `cat /run/secrets/access_key` `cat /run/secrets/secret_key`;
       /usr/bin/mc admin update slimevr;
       /usr/bin/mc mb --ignore-existing slimevr/slimevr-firmware-builds;

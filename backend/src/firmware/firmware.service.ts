@@ -460,7 +460,7 @@ export class FirmwareService implements OnApplicationBootstrap {
         dto.version = 'ButterscotchV/v0.3.3-bno-patched';
       }
 
-      const [, owner, version] = RegExp(/(.*?)\/(.*)/).exec(dto.version) || [
+      const [, owner, version] = RegExp(/(.*?)\/(.*)/).exec(dto.version) ?? [
         undefined,
         'SlimeVR',
         dto.version,

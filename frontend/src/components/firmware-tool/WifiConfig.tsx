@@ -16,17 +16,17 @@ export function WifiConfig({ control, errors }: { control: any; errors: any }) {
     <Accordion variant="outlined">
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-          Wifi Settings (optional)
+          WiFi Settings (optional)
         </Typography>
       </AccordionSummary>
       <AccordionDetails>
         <Grid container spacing={3}>
           <Grid item xs={12} sm={12}>
             <Alert severity="info">
-              For your safety, the wifi settings are set on the client side
+              For your safety, the WiFi settings are set on the client side
               after the flashing.
               <p>
-                <b>We do not store your wifi credentials and will never do!</b>
+                <b>Your WiFi credentials will not be saved.</b>
               </p>
             </Alert>
           </Grid>
@@ -40,7 +40,7 @@ export function WifiConfig({ control, errors }: { control: any; errors: any }) {
                     error={!!errors.wifi?.ssid}
                     onChange={onChange}
                     value={value || ""}
-                    label={"Wifi SSID"}
+                    label={"WiFi SSID"}
                   />
                 )}
               />
@@ -56,7 +56,7 @@ export function WifiConfig({ control, errors }: { control: any; errors: any }) {
                     error={!!errors.wifi?.password}
                     onChange={onChange}
                     value={value || ""}
-                    label={"Wifi Password"}
+                    label={"WiFi Password"}
                   />
                 )}
               />
