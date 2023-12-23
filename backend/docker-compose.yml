@@ -2,7 +2,7 @@ version: '3'
 services:
   slimevr-database:
     image: "postgres"
-    restart: always
+    restart: unless-stopped
     environment:
       POSTGRES_USER: slimevr
       POSTGRES_PASSWORD: 123456
@@ -53,7 +53,7 @@ services:
       - access_key
       - secret_key
     command: server --address ":9099" --console-address ":9000" /data/disk{1...4}
-    restart: always
+    restart: unless-stopped
     networks:
       - slimevr-network
   slimevr-api-s3-init:
