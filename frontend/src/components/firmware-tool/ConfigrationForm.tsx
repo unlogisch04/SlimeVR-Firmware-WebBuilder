@@ -237,6 +237,22 @@ export function ConfigurationForm({
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
                     <Controller
+                      name={"board.ledInverted"}
+                      control={control}
+                      render={({ field: { onChange, value } }) => (
+                        <FormControlLabel
+                          control={
+                            <Checkbox onChange={onChange} checked={value} />
+                          }
+                          label="LED Inverted"
+                        />
+                      )}
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <FormControl fullWidth>
+                    <Controller
                       name={"swapAddresses"}
                       control={control}
                       render={({ field: { onChange, value } }) => (

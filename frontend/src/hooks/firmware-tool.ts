@@ -18,6 +18,7 @@ const defaultFormValues = {
       imuSCL: null,
       led: null,
     },
+    ledInverted: true,
     enableLed: true,
   },
   imus: [
@@ -37,6 +38,8 @@ const defaultFormValues = {
   battery: {
     type: null,
     resistance: null,
+    r1: null,
+    r2: null,
     pin: null,
   },
   swapAddresses: false,

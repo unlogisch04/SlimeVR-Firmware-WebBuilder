@@ -23,11 +23,16 @@ export interface FirmwareBoardDTO {
     | "BOARD_SLIMEVR"
     | "BOARD_SLIMEVR_DEV"
     | "BOARD_NODEMCU"
-    | "BOARD_WROOM32"
     | "BOARD_WEMOSD1MINI"
     | "BOARD_TTGO_TBASE"
-    | "BOARD_ESP01";
+    | "BOARD_WEMOSWROOM02"
+    | "BOARD_WROOM32"
+    | "BOARD_ESP01"
+    | "BOARD_LOLIN_C3_MINI"
+    | "BOARD_BEETLE32C3"
+    | "BOARD_ES32C3DEVKITM1";
   pins?: BoardPins;
+  ledInverted?: boolean;
   enableLed?: boolean;
 }
 
@@ -56,6 +61,8 @@ export interface BatteryDTO {
     | "BAT_MCP3021"
     | "BAT_INTERNAL_MCP3021";
   resistance: number;
+  r1: number;
+  r2: number;
   pin: string;
 }
 
@@ -93,11 +100,14 @@ export interface BoardTypeBoard {
     | "BOARD_SLIMEVR"
     | "BOARD_SLIMEVR_DEV"
     | "BOARD_NODEMCU"
-    | "BOARD_WROOM32"
     | "BOARD_WEMOSD1MINI"
     | "BOARD_TTGO_TBASE"
-    | "BOARD_ESP01";
-  board: string;
+    | "BOARD_WEMOSWROOM02"
+    | "BOARD_WROOM32"
+    | "BOARD_ESP01"
+    | "BOARD_LOLIN_C3_MINI"
+    | "BOARD_BEETLE32C3"
+    | "BOARD_ES32C3DEVKITM1";
 }
 
 export interface ReleaseDTO {

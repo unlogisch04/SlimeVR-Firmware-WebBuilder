@@ -85,8 +85,42 @@ export function BatteryConfig({
                   <TextField
                     error={!!errors.battery?.resistance}
                     onChange={onChange}
-                    value={value || ""}
+                    value={value || "0"}
                     label={"Battery Shield Resistance (kOhm)"}
+                  />
+                )}
+              />
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={12}>
+            <FormControl fullWidth>
+              <Controller
+                name={"battery.r1"}
+                control={control}
+                rules={{ required: true, min: 0 }}
+                render={({ field: { onChange, value } }) => (
+                  <TextField
+                    error={!!errors.battery?.r1}
+                    onChange={onChange}
+                    value={value || "0"}
+                    label={"Battery Shield R1 (kOhm)"}
+                  />
+                )}
+              />
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={12}>
+            <FormControl fullWidth>
+              <Controller
+                name={"battery.r2"}
+                control={control}
+                rules={{ required: true, min: 0 }}
+                render={({ field: { onChange, value } }) => (
+                  <TextField
+                    error={!!errors.battery?.r2}
+                    onChange={onChange}
+                    value={value || "0"}
+                    label={"Battery Shield R2 (kOhm)"}
                   />
                 )}
               />
