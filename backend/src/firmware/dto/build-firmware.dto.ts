@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsOptional, ValidateNested } from 'class-validator';
 import { BatteryDTO, BatteryType } from './battery.dto';
-import { FirmwareBoardDTO } from './firmware-board.dto';
+import { BoardPins, FirmwareBoardDTO } from './firmware-board.dto';
 import { IMUConfigDTO } from './imu.dto';
 import { BOARD_DEFAULTS } from '../firmware.constants';
 
@@ -43,22 +43,34 @@ export class BuildFirmwareDTO {
     }));
 
     if (!dto.board.pins) {
-      dto.board.pins = {
-        imuSDA: boardDefaults['PIN_IMU_SDA'],
-        imuSCL: boardDefaults['PIN_IMU_SCL'],
-        led: boardDefaults['LED_PIN'] || '2',
-      };
+      dto.board.pins = new BoardPins();
+    }
+    if (dto.board.pins.imuSDA === undefined) {
+      dto.board.pins.imuSDA = boardDefaults['PIN_IMU_SDA'];
+    }
+    if (dto.board.pins.imuSCL === undefined) {
+      dto.board.pins.imuSCL = boardDefaults['PIN_IMU_SCL'];
+    }
+    if (dto.board.pins.led === undefined) {
+      dto.board.pins.led = boardDefaults['LED_PIN'] || '2';
     }
 
     if (!dto.battery) {
       dto.battery = new BatteryDTO();
+    }
+    if (!dto.battery.type) {
       dto.battery.type = BatteryType.BAT_EXTERNAL;
+    }
+    if (dto.battery.resistance === undefined) {
       dto.battery.resistance =
         boardDefaults['BATTERY_SHIELD_RESISTANCE'] ?? 180;
+    }
+    if (dto.battery.r1 === undefined) {
       dto.battery.r1 = boardDefaults['BATTERY_SHIELD_R1'] ?? 100;
+    }
+    if (dto.battery.r2 === undefined) {
       dto.battery.r2 = boardDefaults['BATTERY_SHIELD_R2'] ?? 220;
     }
-
     if (!dto.battery.pin) {
       dto.battery.pin = boardDefaults['PIN_BATTERY_LEVEL'];
     }
@@ -66,7 +78,6 @@ export class BuildFirmwareDTO {
     if (dto.board.ledInverted === undefined) {
       dto.board.ledInverted = boardDefaults['LED_INVERTED'] ?? true;
     }
-
     if (dto.board.enableLed === undefined) {
       dto.board.enableLed = !['LED_OFF', '255'].includes(
         boardDefaults['LED_PIN'],
