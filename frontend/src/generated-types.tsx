@@ -49,7 +49,8 @@ export interface IMUConfigDTO {
     | "IMU_ICM20948"
     | "IMU_BMI270"
     | "IMU_MPU6500_NODMP"
-    | "IMU_MPU6050_NODMP";
+    | "IMU_MPU6050_NODMP"
+    | "IMU_LSM6DSV";
   rotation: number;
   imuINT?: string;
 }
@@ -132,7 +133,8 @@ export interface Imudto {
     | "IMU_ICM20948"
     | "IMU_BMI270"
     | "IMU_MPU6500_NODMP"
-    | "IMU_MPU6050_NODMP";
+    | "IMU_MPU6050_NODMP"
+    | "IMU_LSM6DSV";
   hasIntPin: boolean;
 }
 

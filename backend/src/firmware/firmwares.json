@@ -24,6 +24,6 @@
     "SlimeVR-Tracker-ESP": ["mpu6050_nodmp"]
   },
   "wigwagwent": {
-    "LSM6DSV16X": ["BMI_senscal"]
+    "LSM6DSV16X": ["BMI_senscal", "lsm6dsv-with-bug-fix"]
   }
 }

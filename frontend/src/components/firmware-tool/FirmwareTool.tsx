@@ -117,7 +117,7 @@ export function FirmwareTool() {
         </p>
         <p>
           {ghLink("l0ud", "main", "SlimeVR-Tracker-ESP-BMI270")} - Adds support
-          for the BMI270 and includes ESP32-C3 fixes
+          for BMI270 and includes ESP32-C3 fixes
         </p>
         <p>
           {ghLink("furrycoding", "mpu6050_nodmp")} - Adds a new sensor that uses
@@ -126,6 +126,10 @@ export function FirmwareTool() {
         <p>
           {ghLink("wigwagwent", "BMI_senscal", "LSM6DSV16X")} - Adds BMI160
           sensitivity calibration to the regular calibration routine
+        </p>
+        <p>
+          {ghLink("wigwagwent", "lsm6dsv-with-bug-fix", "LSM6DSV16X")} - Adds
+          support for LSM6DSV
         </p>
       </Alert>
       <Alert variant="filled" severity="warning" sx={{ my: 2 }}>
