@@ -85,7 +85,7 @@ export function BatteryConfig({
                   <TextField
                     error={!!errors.battery?.resistance}
                     onChange={onChange}
-                    value={value || "0"}
+                    value={value ?? ""}
                     label={"Battery Shield Resistance (kOhm)"}
                   />
                 )}
@@ -102,7 +102,7 @@ export function BatteryConfig({
                   <TextField
                     error={!!errors.battery?.r1}
                     onChange={onChange}
-                    value={value || "0"}
+                    value={value ?? ""}
                     label={"Battery Shield R1 (kOhm)"}
                   />
                 )}
@@ -119,7 +119,7 @@ export function BatteryConfig({
                   <TextField
                     error={!!errors.battery?.r2}
                     onChange={onChange}
-                    value={value || "0"}
+                    value={value ?? ""}
                     label={"Battery Shield R2 (kOhm)"}
                   />
                 )}
