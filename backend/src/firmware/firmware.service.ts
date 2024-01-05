@@ -17,10 +17,7 @@ import { Not } from 'typeorm';
 import { APP_CONFIG, ConfigService } from 'src/config/config.service';
 import { debounceTime, filter, map, Subject } from 'rxjs';
 import { BuildStatusMessage } from './dto/build-status-message.dto';
-import {
-  AVAILABLE_FIRMWARE_REPOS,
-  AVAILABLE_BOARDS,
-} from './firmware.constants';
+import { AVAILABLE_FIRMWARE_REPOS } from './firmware.constants';
 import {
   DeleteObjectsCommand,
   ListObjectsV2Command,
@@ -29,7 +26,6 @@ import {
 } from '@aws-sdk/client-s3';
 import { InjectAws } from 'aws-sdk-v3-nest';
 import { IMUConfigDTO, IMUS } from './dto/imu.dto';
-import { BatteryType } from './dto/battery.dto';
 
 @Injectable()
 export class FirmwareService implements OnApplicationBootstrap {
@@ -115,10 +111,6 @@ export class FirmwareService implements OnApplicationBootstrap {
       );
       console.log('deleted firmware id:', firmware.id);
     });
-  }
-
-  public getBoard(boardType: BoardType): string {
-    return AVAILABLE_BOARDS[boardType].board;
   }
 
   /**
@@ -231,17 +223,6 @@ export class FirmwareService implements OnApplicationBootstrap {
     const secondImu =
       boardConfig.imus.length === 1 ? boardConfig.imus[0] : boardConfig.imus[1];
 
-    const batteryDef = [
-      BoardType.BOARD_SLIMEVR,
-      BoardType.BOARD_SLIMEVR_DEV,
-    ].includes(boardConfig.board.type)
-      ? `
-          #define BATTERY_SHIELD_R1 10
-          #define BATTERY_SHIELD_R2 40.2`
-      : `
-          #define BATTERY_SHIELD_R1 100
-          #define BATTERY_SHIELD_R2 220`;
-
     return `
           #define IMU ${boardConfig.imus[0].type}
           #define SECOND_IMU ${secondImu.type}
@@ -264,18 +245,15 @@ export class FirmwareService implements OnApplicationBootstrap {
           #define BATTERY_MONITOR ${boardConfig.battery.type}
           #define PIN_BATTERY_LEVEL ${boardConfig.battery.pin}
           #define BATTERY_SHIELD_RESISTANCE ${boardConfig.battery.resistance}
-          ${
-            boardConfig.battery.type === BatteryType.BAT_EXTERNAL
-              ? batteryDef
-              : ''
-          }
+          #define BATTERY_SHIELD_R1 ${boardConfig.battery.r1}
+          #define BATTERY_SHIELD_R2 ${boardConfig.battery.r2}
     
           #define PIN_IMU_SDA ${boardConfig.board.pins.imuSDA}
           #define PIN_IMU_SCL ${boardConfig.board.pins.imuSCL}
           #define PIN_IMU_INT ${boardConfig.imus[0].imuINT || 255}
           #define PIN_IMU_INT_2 ${secondImu.imuINT || 255}
           #define LED_BUILTIN ${boardConfig.board.pins.led}
-          #define LED_INVERTED true
+          #define LED_INVERTED ${boardConfig.board.ledInverted}
           #define LED_PIN ${
             boardConfig.board.enableLed ? boardConfig.board.pins.led : 255
           }

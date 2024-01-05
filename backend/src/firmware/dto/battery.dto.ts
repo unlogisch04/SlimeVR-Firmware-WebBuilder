@@ -16,6 +16,12 @@ export class BatteryDTO {
   @ApiProperty({ default: 180 })
   public resistance: number;
 
+  @ApiProperty({ default: 100 })
+  public r1: number;
+
+  @ApiProperty({ default: 220 })
+  public r2: number;
+
   @ApiProperty()
   public pin: string;
 }

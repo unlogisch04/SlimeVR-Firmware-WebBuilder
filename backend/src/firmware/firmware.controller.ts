@@ -69,7 +69,6 @@ export class FirmwareController {
   getBoardsTypes(): BoardTypeBoard[] {
     return Object.keys(BoardType).map((board) => ({
       boardType: BoardType[board],
-      board: this.firmwareService.getBoard(BoardType[board]),
     }));
   }
 

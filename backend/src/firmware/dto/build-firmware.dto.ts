@@ -2,8 +2,9 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsOptional, ValidateNested } from 'class-validator';
 import { BatteryDTO, BatteryType } from './battery.dto';
-import { BoardPins, BoardType, FirmwareBoardDTO } from './firmware-board.dto';
+import { FirmwareBoardDTO } from './firmware-board.dto';
 import { IMUConfigDTO } from './imu.dto';
+import { BOARD_DEFAULTS } from '../firmware.constants';
 
 export class BuildFirmwareDTO {
   @ApiProperty()
@@ -30,95 +31,46 @@ export class BuildFirmwareDTO {
   public swapAddresses?: boolean;
 
   static completeDefaults(dto: BuildFirmwareDTO): BuildFirmwareDTO {
-    const boardInts = {
-      [BoardType.BOARD_SLIMEVR]: ['16', '13'],
-      [BoardType.BOARD_SLIMEVR_DEV]: ['16', '13'],
-      [BoardType.BOARD_NODEMCU]: ['D5', 'D6'],
-      [BoardType.BOARD_WEMOSD1MINI]: ['D5', 'D6'],
-      [BoardType.BOARD_ESP01]: ['255', '255'],
-      [BoardType.BOARD_TTGO_TBASE]: ['14', '13'],
-      [BoardType.BOARD_WROOM32]: ['23', '25'],
-    };
+    const boardDefaults = BOARD_DEFAULTS[dto.board.type];
 
+    const defaultInts = [
+      boardDefaults['PIN_IMU_INT'],
+      boardDefaults['PIN_IMU_INT_2'],
+    ];
     dto.imus = dto.imus.map((imu, index) => ({
       ...imu,
-      imuINT: imu.imuINT || boardInts[dto.board.type][index] || '255',
+      imuINT: imu.imuINT || defaultInts[index] || '255',
     }));
 
     if (!dto.board.pins) {
-      const boardsPins: { [key: string]: BoardPins } = {
-        [BoardType.BOARD_SLIMEVR]: {
-          imuSDA: '14',
-          imuSCL: '12',
-          led: '2',
-        },
-        [BoardType.BOARD_SLIMEVR_DEV]: {
-          imuSDA: '14',
-          imuSCL: '12',
-          led: '2',
-        },
-        [BoardType.BOARD_NODEMCU]: {
-          imuSDA: 'D2',
-          imuSCL: 'D1',
-          led: '2',
-        },
-        [BoardType.BOARD_WEMOSD1MINI]: {
-          imuSDA: 'D2',
-          imuSCL: 'D1',
-          led: '2',
-        },
-        [BoardType.BOARD_TTGO_TBASE]: {
-          imuSDA: '4',
-          imuSCL: '5',
-          led: '2',
-        },
-        [BoardType.BOARD_ESP01]: {
-          imuSDA: '2',
-          imuSCL: '0',
-          led: '255',
-        },
-        [BoardType.BOARD_WROOM32]: {
-          imuSDA: '2',
-          imuSCL: '0',
-          led: '2',
-        },
+      dto.board.pins = {
+        imuSDA: boardDefaults['PIN_IMU_SDA'],
+        imuSCL: boardDefaults['PIN_IMU_SCL'],
+        led: boardDefaults['LED_PIN'] || '2',
       };
-
-      dto.board.pins = boardsPins[dto.board.type];
     }
 
     if (!dto.battery) {
       dto.battery = new BatteryDTO();
       dto.battery.type = BatteryType.BAT_EXTERNAL;
-      dto.battery.resistance = 180;
+      dto.battery.resistance =
+        boardDefaults['BATTERY_SHIELD_RESISTANCE'] ?? 180;
+      dto.battery.r1 = boardDefaults['BATTERY_SHIELD_R1'] ?? 100;
+      dto.battery.r2 = boardDefaults['BATTERY_SHIELD_R2'] ?? 220;
     }
 
     if (!dto.battery.pin) {
-      const batteryPins = {
-        [BoardType.BOARD_SLIMEVR]: '17',
-        [BoardType.BOARD_SLIMEVR_DEV]: '17',
-        [BoardType.BOARD_NODEMCU]: 'A0',
-        [BoardType.BOARD_WEMOSD1MINI]: 'A0',
-        [BoardType.BOARD_ESP01]: 'A0',
-        [BoardType.BOARD_TTGO_TBASE]: 'A0',
-        [BoardType.BOARD_WROOM32]: '36',
-      };
-
-      dto.battery.pin = batteryPins[dto.board.type];
+      dto.battery.pin = boardDefaults['PIN_BATTERY_LEVEL'];
     }
 
-    if (!dto.board.enableLed) {
-      const enableLedMap = {
-        [BoardType.BOARD_SLIMEVR]: true,
-        [BoardType.BOARD_SLIMEVR_DEV]: true,
-        [BoardType.BOARD_NODEMCU]: true,
-        [BoardType.BOARD_WEMOSD1MINI]: true,
-        [BoardType.BOARD_ESP01]: false,
-        [BoardType.BOARD_TTGO_TBASE]: true,
-        [BoardType.BOARD_WROOM32]: true,
-      };
+    if (dto.board.ledInverted === undefined) {
+      dto.board.ledInverted = boardDefaults['LED_INVERTED'] ?? true;
+    }
 
-      dto.board.enableLed = enableLedMap[dto.board.type];
+    if (dto.board.enableLed === undefined) {
+      dto.board.enableLed = !['LED_OFF', '255'].includes(
+        boardDefaults['LED_PIN'],
+      );
     }
 
     if (dto.swapAddresses === undefined) {

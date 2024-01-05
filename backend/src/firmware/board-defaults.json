@@ -1,0 +1,103 @@
+{
+    "BOARD_SLIMEVR": {
+        "PIN_IMU_SDA": "14",
+        "PIN_IMU_SCL": "12",
+        "PIN_IMU_INT": "16",
+        "PIN_IMU_INT_2": "13",
+        "PIN_BATTERY_LEVEL": "17",
+        "LED_PIN": "2",
+        "LED_INVERTED": true,
+        "BATTERY_SHIELD_RESISTANCE": 0.0,
+        "BATTERY_SHIELD_R1": 10.0,
+        "BATTERY_SHIELD_R2": 40.2
+    },
+    "BOARD_SLIMEVR_DEV": {
+        "PIN_IMU_SDA": "4",
+        "PIN_IMU_SCL": "5",
+        "PIN_IMU_INT": "10",
+        "PIN_IMU_INT_2": "13",
+        "PIN_BATTERY_LEVEL": "17",
+        "LED_PIN": "2",
+        "LED_INVERTED": true,
+        "BATTERY_SHIELD_RESISTANCE": 0.0,
+        "BATTERY_SHIELD_R1": 10.0,
+        "BATTERY_SHIELD_R2": 40.2
+    },
+    "BOARD_NODEMCU": {
+        "PIN_IMU_SDA": "D2",
+        "PIN_IMU_SCL": "D1",
+        "PIN_IMU_INT": "D5",
+        "PIN_IMU_INT_2": "D6",
+        "PIN_BATTERY_LEVEL": "A0",
+        "BATTERY_SHIELD_RESISTANCE": 180.0,
+        "BATTERY_SHIELD_R1": 100.0,
+        "BATTERY_SHIELD_R2": 220.0
+    },
+    "BOARD_WEMOSD1MINI": {
+        "PIN_IMU_SDA": "D2",
+        "PIN_IMU_SCL": "D1",
+        "PIN_IMU_INT": "D5",
+        "PIN_IMU_INT_2": "D6",
+        "PIN_BATTERY_LEVEL": "A0",
+        "BATTERY_SHIELD_RESISTANCE": 180.0,
+        "BATTERY_SHIELD_R1": 100.0,
+        "BATTERY_SHIELD_R2": 220.0
+    },
+    "BOARD_TTGO_TBASE": {
+        "PIN_IMU_SDA": "5",
+        "PIN_IMU_SCL": "4",
+        "PIN_IMU_INT": "14",
+        "PIN_IMU_INT_2": "13",
+        "PIN_BATTERY_LEVEL": "A0"
+    },
+    "BOARD_WEMOSWROOM02": {
+        "PIN_IMU_SDA": "2",
+        "PIN_IMU_SCL": "14",
+        "PIN_IMU_INT": "0",
+        "PIN_IMU_INT_2": "4",
+        "PIN_BATTERY_LEVEL": "A0",
+        "LED_PIN": "16",
+        "LED_INVERTED": true
+    },
+    "BOARD_WROOM32": {
+        "PIN_IMU_SDA": "21",
+        "PIN_IMU_SCL": "22",
+        "PIN_IMU_INT": "23",
+        "PIN_IMU_INT_2": "25",
+        "PIN_BATTERY_LEVEL": "36"
+    },
+    "BOARD_ESP01": {
+        "PIN_IMU_SDA": "2",
+        "PIN_IMU_SCL": "0",
+        "PIN_IMU_INT": "255",
+        "PIN_IMU_INT_2": "255",
+        "PIN_BATTERY_LEVEL": "255",
+        "LED_PIN": "LED_OFF",
+        "LED_INVERTED": false
+    },
+    "BOARD_LOLIN_C3_MINI": {
+        "PIN_IMU_SDA": "5",
+        "PIN_IMU_SCL": "4",
+        "PIN_IMU_INT": "6",
+        "PIN_IMU_INT_2": "8",
+        "PIN_BATTERY_LEVEL": "3",
+        "LED_PIN": "7"
+    },
+    "BOARD_BEETLE32C3": {
+        "PIN_IMU_SDA": "8",
+        "PIN_IMU_SCL": "9",
+        "PIN_IMU_INT": "6",
+        "PIN_IMU_INT_2": "7",
+        "PIN_BATTERY_LEVEL": "3",
+        "LED_PIN": "10",
+        "LED_INVERTED": false
+    },
+    "BOARD_ES32C3DEVKITM1": {
+        "PIN_IMU_SDA": "5",
+        "PIN_IMU_SCL": "4",
+        "PIN_IMU_INT": "6",
+        "PIN_IMU_INT_2": "7",
+        "PIN_BATTERY_LEVEL": "3",
+        "LED_PIN": "LED_OFF"
+    }
+}
