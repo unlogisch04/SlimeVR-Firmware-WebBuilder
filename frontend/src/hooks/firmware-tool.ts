@@ -4,6 +4,7 @@ import { ErrorMessage } from "../components/firmware-tool/ErrorPane";
 import {
   FirmwareFile,
   useFirmwareControllerBuildAll,
+  useFirmwareControllerGetDefaultConfig,
 } from "../generated-types";
 import { useSerial } from "./serial";
 import { decode, encode } from "universal-base64url";
@@ -60,6 +61,23 @@ export function useFirmwareTool() {
 
   const formValue = form.watch();
 
+  const { refetch } = useFirmwareControllerGetDefaultConfig({
+    board: "",
+    lazy: true,
+  });
+
+  function fillMissingValues(target: any, defaults: any) {
+    let result = { ...defaults };
+    for (let key in target) {
+      if (typeof target[key] === "object" && defaults[key] !== undefined) {
+        result[key] = fillMissingValues(target[key], defaults[key]);
+      } else {
+        result[key] = target[key];
+      }
+    }
+    return result;
+  }
+
   useEffect(() => {
     const params = new URL(window.location.href).searchParams;
 
@@ -68,7 +86,17 @@ export function useFirmwareTool() {
         const str = decode(params.get("config") as string);
 
         const config = JSON.parse(str);
+        // Set the initial form from the config in-case fetching fails
         form.reset(config, { keepDirty: false, keepTouched: false });
+
+        // Update the form when the defaults are fetched
+        refetch({ pathParams: { board: config.board.type } }).then((data) => {
+          if (!data) return;
+          form.reset(fillMissingValues(config, data), {
+            keepDirty: false,
+            keepTouched: false,
+          });
+        });
       }
     } catch (e) {
       setCurrentError({
