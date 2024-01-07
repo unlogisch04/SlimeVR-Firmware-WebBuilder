@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from "@nestjs/swagger";
 import {
   BaseEntity,
   Column,
@@ -7,25 +7,25 @@ import {
   Generated,
   PrimaryColumn,
   UpdateDateColumn,
-} from 'typeorm';
-import { BuildFirmwareDTO } from '../dto/build-firmware.dto';
-import { FirmwareFile } from '../dto/firmware-files.dto';
+} from "typeorm";
+import { BuildFirmwareDTO } from "../dto/build-firmware.dto";
+import { FirmwareFile } from "../dto/firmware-files.dto";
 
 export enum BuildStatus {
-  BUILDING = 'BUILDING',
-  DONE = 'DONE',
-  FAILED = 'FAILED',
+  BUILDING = "BUILDING",
+  DONE = "DONE",
+  FAILED = "FAILED",
 }
 
 @Entity()
 export class Firmware extends BaseEntity {
   @ApiProperty()
   @PrimaryColumn()
-  @Generated('uuid')
+  @Generated("uuid")
   public id: string;
 
   @ApiProperty()
-  @PrimaryColumn({ default: 'legacy' })
+  @PrimaryColumn({ default: "legacy" })
   public releaseID: string;
 
   @ApiProperty({ enum: BuildStatus })
@@ -33,11 +33,11 @@ export class Firmware extends BaseEntity {
   public buildStatus: BuildStatus;
 
   @ApiProperty({ type: BuildFirmwareDTO })
-  @Column({ type: 'simple-json' })
+  @Column({ type: "simple-json" })
   public buildConfig: BuildFirmwareDTO;
 
   @ApiProperty({ type: [FirmwareFile], required: false })
-  @Column({ type: 'simple-json', nullable: true })
+  @Column({ type: "simple-json", nullable: true })
   public firmwareFiles?: FirmwareFile[];
 
   @ApiProperty()

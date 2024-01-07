@@ -1,18 +1,18 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsOptional } from 'class-validator';
+import { ApiProperty } from "@nestjs/swagger";
+import { IsEnum, IsOptional } from "class-validator";
 
 export enum BoardType {
-  BOARD_SLIMEVR = 'BOARD_SLIMEVR',
-  BOARD_SLIMEVR_DEV = 'BOARD_SLIMEVR_DEV',
-  BOARD_NODEMCU = 'BOARD_NODEMCU',
-  BOARD_WEMOSD1MINI = 'BOARD_WEMOSD1MINI',
-  BOARD_TTGO_TBASE = 'BOARD_TTGO_TBASE',
-  BOARD_WEMOSWROOM02 = 'BOARD_WEMOSWROOM02',
-  BOARD_WROOM32 = 'BOARD_WROOM32',
-  BOARD_ESP01 = 'BOARD_ESP01',
-  BOARD_LOLIN_C3_MINI = 'BOARD_LOLIN_C3_MINI',
-  BOARD_BEETLE32C3 = 'BOARD_BEETLE32C3',
-  BOARD_ES32C3DEVKITM1 = 'BOARD_ES32C3DEVKITM1',
+  BOARD_SLIMEVR = "BOARD_SLIMEVR",
+  BOARD_SLIMEVR_DEV = "BOARD_SLIMEVR_DEV",
+  BOARD_NODEMCU = "BOARD_NODEMCU",
+  BOARD_WEMOSD1MINI = "BOARD_WEMOSD1MINI",
+  BOARD_TTGO_TBASE = "BOARD_TTGO_TBASE",
+  BOARD_WEMOSWROOM02 = "BOARD_WEMOSWROOM02",
+  BOARD_WROOM32 = "BOARD_WROOM32",
+  BOARD_ESP01 = "BOARD_ESP01",
+  BOARD_LOLIN_C3_MINI = "BOARD_LOLIN_C3_MINI",
+  BOARD_BEETLE32C3 = "BOARD_BEETLE32C3",
+  BOARD_ES32C3DEVKITM1 = "BOARD_ES32C3DEVKITM1",
 }
 
 export class BoardPins {
@@ -22,7 +22,7 @@ export class BoardPins {
   @ApiProperty()
   public imuSCL: string;
 
-  @ApiProperty({ required: false, default: '2' })
+  @ApiProperty({ required: false, default: "2" })
   public led?: string;
 }
 

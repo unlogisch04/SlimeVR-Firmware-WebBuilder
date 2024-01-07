@@ -1,10 +1,10 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { Cache } from 'cache-manager';
-import { FetchService } from 'src/commons/http/fetch.service';
-import { AVAILABLE_FIRMWARE_REPOS } from 'src/firmware/firmware.constants';
-import { ReleaseDTO } from './dto/release.dto';
-import { GithubRepositoryDTO } from './dto/repository.dto';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Inject, Injectable } from "@nestjs/common";
+import { Cache } from "cache-manager";
+import { FetchService } from "src/commons/http/fetch.service";
+import { AVAILABLE_FIRMWARE_REPOS } from "src/firmware/firmware.constants";
+import { ReleaseDTO } from "./dto/release.dto";
+import { GithubRepositoryDTO } from "./dto/repository.dto";
+import { CACHE_MANAGER } from "@nestjs/cache-manager";
 
 @Injectable()
 export class GithubService {
@@ -33,7 +33,7 @@ export class GithubService {
   private async getBranchRelease(
     owner: string,
     repo: string,
-    branch = 'main',
+    branch = "main",
   ): Promise<ReleaseDTO> {
     return this.cacheManager.wrap(
       `/repos/${owner}/${repo}/branches/${branch}`,
@@ -82,9 +82,9 @@ export class GithubService {
             .filter(
               ({ name }) =>
                 ![
-                  'SlimeVR/v0.2.0',
-                  'SlimeVR/v0.2.1',
-                  'SlimeVR/v0.2.2',
+                  "SlimeVR/v0.2.0",
+                  "SlimeVR/v0.2.1",
+                  "SlimeVR/v0.2.2",
                 ].includes(name),
             ),
         ];
@@ -123,7 +123,7 @@ export class GithubService {
 
     const settled = await Promise.allSettled(releases);
     return settled.flatMap((it) => {
-      if (it.status === 'fulfilled') {
+      if (it.status === "fulfilled") {
         return it.value;
       }
       console.warn(`${it.reason.message}: `, it.reason.cause);

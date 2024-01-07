@@ -1,8 +1,8 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { FetchModuleConfig } from './fetch.module';
-import fetch, { RequestInit, Response } from 'node-fetch';
-import { URL } from 'url';
-import { FETCH_CONFIG } from './fetch.constants';
+import { Inject, Injectable } from "@nestjs/common";
+import { FetchModuleConfig } from "./fetch.module";
+import fetch, { RequestInit, Response } from "node-fetch";
+import { URL } from "url";
+import { FETCH_CONFIG } from "./fetch.constants";
 
 export interface FetchResponse<T> {
   response: Response;
@@ -23,8 +23,8 @@ export class FetchService {
     });
 
     const data = response.headers
-      .get('Content-Type')
-      .includes('application/json')
+      .get("Content-Type")
+      .includes("application/json")
       ? ((await response.json()) as T)
       : ((await response.text()) as any);
 
@@ -42,7 +42,7 @@ export class FetchService {
     options?: RequestInit,
   ): Promise<FetchResponse<T>> {
     return this.request(new URL(url, this.fetchConfig.baseUrl).toString(), {
-      method: 'POST',
+      method: "POST",
       body: new URLSearchParams(params),
       ...options,
     });
@@ -54,7 +54,7 @@ export class FetchService {
     options?: RequestInit,
   ): Promise<FetchResponse<T>> {
     return this.request(new URL(url, this.fetchConfig.baseUrl).toString(), {
-      method: 'PUT',
+      method: "PUT",
       body: new URLSearchParams(params),
       ...options,
     });
@@ -69,7 +69,7 @@ export class FetchService {
     reqUrl.search = new URLSearchParams(params).toString();
 
     return this.request(reqUrl.toString(), {
-      method: 'GET',
+      method: "GET",
       ...options,
     });
   }

@@ -1,6 +1,6 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { BuildStatus } from '../entity/firmware.entity';
-import { FirmwareFile } from './firmware-files.dto';
+import { ApiProperty } from "@nestjs/swagger";
+import { BuildStatus } from "../entity/firmware.entity";
+import { FirmwareFile } from "./firmware-files.dto";
 
 export class BuildResponse {
   @ApiProperty()

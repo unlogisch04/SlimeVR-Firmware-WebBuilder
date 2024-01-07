@@ -1,6 +1,6 @@
-import { DynamicModule, Module } from '@nestjs/common';
-import { FETCH_CONFIG } from './fetch.constants';
-import { FetchService } from './fetch.service';
+import { DynamicModule, Module } from "@nestjs/common";
+import { FETCH_CONFIG } from "./fetch.constants";
+import { FetchService } from "./fetch.service";
 
 export interface FetchModuleConfig {
   baseUrl: string;

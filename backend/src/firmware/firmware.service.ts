@@ -1,31 +1,31 @@
-import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
-import { ReleaseDTO } from 'src/github/dto/release.dto';
-import { GithubService } from 'src/github/github.service';
-import { BuildFirmwareDTO } from './dto/build-firmware.dto';
-import { BuildResponse } from './dto/build-response.dto';
-import { BuildStatus, Firmware } from './entity/firmware.entity';
-import { VersionNotFoundExeption } from './errors/version-not-found.error';
-import os from 'os';
-import fs from 'fs';
-import { mkdtemp, readdir, readFile, rename, rm, writeFile } from 'fs/promises';
-import path, { join } from 'path';
-import AdmZip from 'adm-zip';
-import fetch from 'node-fetch';
-import { BoardType } from './dto/firmware-board.dto';
-import { exec, execSync } from 'child_process';
-import { Not } from 'typeorm';
-import { APP_CONFIG, ConfigService } from 'src/config/config.service';
-import { debounceTime, filter, map, Subject } from 'rxjs';
-import { BuildStatusMessage } from './dto/build-status-message.dto';
-import { AVAILABLE_FIRMWARE_REPOS } from './firmware.constants';
+import { Inject, Injectable, OnApplicationBootstrap } from "@nestjs/common";
+import { ReleaseDTO } from "src/github/dto/release.dto";
+import { GithubService } from "src/github/github.service";
+import { BuildFirmwareDTO } from "./dto/build-firmware.dto";
+import { BuildResponse } from "./dto/build-response.dto";
+import { BuildStatus, Firmware } from "./entity/firmware.entity";
+import { VersionNotFoundExeption } from "./errors/version-not-found.error";
+import os from "os";
+import fs from "fs";
+import { mkdtemp, readdir, readFile, rename, rm, writeFile } from "fs/promises";
+import path, { join } from "path";
+import AdmZip from "adm-zip";
+import fetch from "node-fetch";
+import { BoardType } from "./dto/firmware-board.dto";
+import { exec, execSync } from "child_process";
+import { Not } from "typeorm";
+import { APP_CONFIG, ConfigService } from "src/config/config.service";
+import { debounceTime, filter, map, Subject } from "rxjs";
+import { BuildStatusMessage } from "./dto/build-status-message.dto";
+import { AVAILABLE_FIRMWARE_REPOS } from "./firmware.constants";
 import {
   DeleteObjectsCommand,
   ListObjectsV2Command,
   PutObjectCommand,
   S3Client,
-} from '@aws-sdk/client-s3';
-import { InjectAws } from 'aws-sdk-v3-nest';
-import { IMUConfigDTO, IMUS } from './dto/imu.dto';
+} from "@aws-sdk/client-s3";
+import { InjectAws } from "aws-sdk-v3-nest";
+import { IMUConfigDTO, IMUS } from "./dto/imu.dto";
 
 @Injectable()
 export class FirmwareService implements OnApplicationBootstrap {
@@ -59,7 +59,7 @@ export class FirmwareService implements OnApplicationBootstrap {
       .set({
         buildStatus: BuildStatus.FAILED,
       })
-      .where('buildStatus = :buildStatus', {
+      .where("buildStatus = :buildStatus", {
         buildStatus: BuildStatus.BUILDING,
       })
       .execute();
@@ -81,9 +81,9 @@ export class FirmwareService implements OnApplicationBootstrap {
   }
 
   public async cleanOldReleases(
-    owner = 'SlimeVR',
-    repo = 'SlimeVR-Tracker-ESP',
-    branch = 'main',
+    owner = "SlimeVR",
+    repo = "SlimeVR-Tracker-ESP",
+    branch = "main",
   ): Promise<void> {
     const branchRelease = await this.githubService.getRelease(
       owner,
@@ -109,7 +109,7 @@ export class FirmwareService implements OnApplicationBootstrap {
         this.appConfig.getBuildsBucket(),
         `${firmware.id}`,
       );
-      console.log('deleted firmware id:', firmware.id);
+      console.log("deleted firmware id:", firmware.id);
     });
   }
 
@@ -125,7 +125,7 @@ export class FirmwareService implements OnApplicationBootstrap {
         `platformio project metadata --json-output -e ${boardType}`,
         {
           cwd: rootFoler,
-          shell: '/bin/bash',
+          shell: "/bin/bash",
         },
       );
       resolve(JSON.parse(metadata.toString()));
@@ -144,7 +144,7 @@ export class FirmwareService implements OnApplicationBootstrap {
       ),
       {
         path: join(rootFoler, `.pio/build/${boardType}/firmware.bin`),
-        offset: parseInt(ideInfos[boardType].extra.application_offset ?? '0'),
+        offset: parseInt(ideInfos[boardType].extra.application_offset ?? "0"),
       },
     ];
   }
@@ -200,11 +200,11 @@ export class FirmwareService implements OnApplicationBootstrap {
     /**
      * Define of one IMU entry, uses the appropriate addess for the first and second IMUs
      */
-    let primaryImuAddress = 'PRIMARY_IMU_ADDRESS_ONE';
-    let secondaryImuAddress = 'SECONDARY_IMU_ADDRESS_TWO';
+    let primaryImuAddress = "PRIMARY_IMU_ADDRESS_ONE";
+    let secondaryImuAddress = "SECONDARY_IMU_ADDRESS_TWO";
     if (boardConfig.swapAddresses) {
-      primaryImuAddress = 'PRIMARY_IMU_ADDRESS_TWO';
-      secondaryImuAddress = 'SECONDARY_IMU_ADDRESS_ONE';
+      primaryImuAddress = "PRIMARY_IMU_ADDRESS_TWO";
+      secondaryImuAddress = "SECONDARY_IMU_ADDRESS_ONE";
     }
 
     const imuDesc = (imuConfig: IMUConfigDTO, index: number) => {
@@ -214,7 +214,7 @@ export class FirmwareService implements OnApplicationBootstrap {
       return `IMU_DESC_ENTRY(${imuConfig.type}, ${
         index <= 0 ? primaryImuAddress : secondaryImuAddress
       }, ${rotationToFirmware(imuConfig.rotation)}, PIN_IMU_SCL, PIN_IMU_SDA, ${
-        index <= 0 ? 'false' : 'true'
+        index <= 0 ? "false" : "true"
       }, ${imuConfig.imuINT || 255})`;
     };
 
@@ -239,7 +239,7 @@ export class FirmwareService implements OnApplicationBootstrap {
                 ${boardConfig.imus
                   .map(imuDesc)
                   .filter((imu) => !!imu)
-                  .join(' \\\n\t\t ')}
+                  .join(" \\\n\t\t ")}
           #endif
 
           #define BATTERY_MONITOR ${boardConfig.battery.type}
@@ -267,14 +267,14 @@ export class FirmwareService implements OnApplicationBootstrap {
       this.buildStatusSubject.next({
         buildStatus: BuildStatus.BUILDING,
         id: firmware.id,
-        message: 'Creating temporary build folder',
+        message: "Creating temporary build folder",
       });
 
-      tmpDir = await mkdtemp(path.join(os.tmpdir(), 'slimevr-api'));
+      tmpDir = await mkdtemp(path.join(os.tmpdir(), "slimevr-api"));
 
       const releaseFileName = `release-${release.name.replace(
         /[^A-Za-z0-9. ]/gi,
-        '_',
+        "_",
       )}.zip`;
       const releaseFilePath = path.join(tmpDir, releaseFileName);
 
@@ -283,15 +283,15 @@ export class FirmwareService implements OnApplicationBootstrap {
         const fileStream = fs.createWriteStream(path);
         await new Promise((resolve, reject) => {
           res.body.pipe(fileStream);
-          res.body.on('error', reject);
-          fileStream.on('finish', resolve);
+          res.body.on("error", reject);
+          fileStream.on("finish", resolve);
         });
       };
 
       this.buildStatusSubject.next({
         buildStatus: BuildStatus.BUILDING,
         id: firmware.id,
-        message: 'Downloading SlimeVR firmware from Github',
+        message: "Downloading SlimeVR firmware from Github",
       });
 
       await downloadFile(release.zipball_url, releaseFilePath);
@@ -299,13 +299,13 @@ export class FirmwareService implements OnApplicationBootstrap {
       this.buildStatusSubject.next({
         buildStatus: BuildStatus.BUILDING,
         id: firmware.id,
-        message: 'Extracting firmware',
+        message: "Extracting firmware",
       });
 
       const releaseFolderPath = path.join(tmpDir, `release-${release.name}`);
       const zip = new AdmZip(releaseFilePath);
       // Extract release
-      console.log('start extract', releaseFilePath, releaseFolderPath);
+      console.log("start extract", releaseFilePath, releaseFolderPath);
       await new Promise((resolve) => {
         zip.extractAllTo(releaseFolderPath, true);
         resolve(true);
@@ -314,7 +314,7 @@ export class FirmwareService implements OnApplicationBootstrap {
       this.buildStatusSubject.next({
         buildStatus: BuildStatus.BUILDING,
         id: firmware.id,
-        message: 'Setting up defines and configs',
+        message: "Setting up defines and configs",
       });
 
       const [root] = await readdir(releaseFolderPath);
@@ -322,19 +322,19 @@ export class FirmwareService implements OnApplicationBootstrap {
 
       // Overwrite the defines.h file with the one generated from the configuration
       const newDef = this.getDefines(firmware.buildConfig);
-      console.log('[BUILD DEFINES]', newDef);
-      await writeFile(path.join(rootFoler, 'src', 'defines.h'), newDef);
+      console.log("[BUILD DEFINES]", newDef);
+      await writeFile(path.join(rootFoler, "src", "defines.h"), newDef);
 
-      await rm(join(rootFoler, 'platformio.ini'));
+      await rm(join(rootFoler, "platformio.ini"));
       await rename(
-        join(rootFoler, 'platformio-tools.ini'),
-        join(rootFoler, 'platformio.ini'),
+        join(rootFoler, "platformio-tools.ini"),
+        join(rootFoler, "platformio.ini"),
       );
 
       this.buildStatusSubject.next({
         buildStatus: BuildStatus.BUILDING,
         id: firmware.id,
-        message: 'Building Firmware (this might take a minute)',
+        message: "Building Firmware (this might take a minute)",
       });
 
       await new Promise((resolve, reject) => {
@@ -351,30 +351,30 @@ export class FirmwareService implements OnApplicationBootstrap {
           },
         );
 
-        platformioRun.stdout.on('data', (data) => {
-          console.log('[BUILD LOG]', `[${firmware.id}]`, data.toString());
+        platformioRun.stdout.on("data", (data) => {
+          console.log("[BUILD LOG]", `[${firmware.id}]`, data.toString());
           this.buildStatusSubject.next({
             buildStatus: BuildStatus.BUILDING,
             id: firmware.id,
-            message: 'Building Firmware (this might take a minute)',
+            message: "Building Firmware (this might take a minute)",
           });
         });
 
-        platformioRun.stderr.on('data', (data) => {
-          console.log('[BUILD LOG]', `[${firmware.id}]`, data.toString());
+        platformioRun.stderr.on("data", (data) => {
+          console.log("[BUILD LOG]", `[${firmware.id}]`, data.toString());
         });
 
-        platformioRun.on('exit', (code) => {
+        platformioRun.on("exit", (code) => {
           if (code === 0) {
             resolve(true);
-          } else reject({ message: 'bad exit code' });
+          } else reject({ message: "bad exit code" });
         });
       });
 
       this.buildStatusSubject.next({
         buildStatus: BuildStatus.BUILDING,
         id: firmware.id,
-        message: 'Uploading Firmware to Bucket',
+        message: "Uploading Firmware to Bucket",
       });
 
       const files = await this.getPartitions(
@@ -404,7 +404,7 @@ export class FirmwareService implements OnApplicationBootstrap {
       this.buildStatusSubject.next({
         buildStatus: BuildStatus.DONE,
         id: firmware.id,
-        message: 'Build complete',
+        message: "Build complete",
         firmwareFiles: firmware.firmwareFiles,
       });
     } catch (e) {
@@ -434,16 +434,16 @@ export class FirmwareService implements OnApplicationBootstrap {
   public async buildFirmware(dto: BuildFirmwareDTO): Promise<BuildResponse> {
     try {
       // Redirect v0.3.3 to the patched version
-      if (dto.version == 'SlimeVR/v0.3.3') {
-        dto.version = 'ButterscotchV/v0.3.3-bno-patched';
+      if (dto.version == "SlimeVR/v0.3.3") {
+        dto.version = "ButterscotchV/v0.3.3-bno-patched";
       }
 
       const [, owner, version] = RegExp(/(.*?)\/(.*)/).exec(dto.version) ?? [
         undefined,
-        'SlimeVR',
+        "SlimeVR",
         dto.version,
       ];
-      let repo = 'SlimeVR-Tracker-ESP';
+      let repo = "SlimeVR-Tracker-ESP";
 
       // TODO: Make the site say what repo to use, please
       // If there's a matching owner

@@ -1,8 +1,8 @@
-import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { FirmwareModule } from './firmware/firmware.module';
-import { connectionSource } from './config/typeorm.datasource';
-import { CacheModule } from '@nestjs/cache-manager';
+import { Module } from "@nestjs/common";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { FirmwareModule } from "./firmware/firmware.module";
+import { connectionSource } from "./config/typeorm.datasource";
+import { CacheModule } from "@nestjs/cache-manager";
 
 @Module({
   imports: [
