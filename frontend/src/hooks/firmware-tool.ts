@@ -67,10 +67,10 @@ export function useFirmwareTool() {
   });
 
   function fillMissingValues(target: any, defaults: any) {
-    let result = { ...defaults };
+    let result = Array.isArray(defaults) ? [...defaults] : { ...defaults };
     for (let key in target) {
-      if (typeof target[key] === "object" && defaults[key] !== undefined) {
-        result[key] = fillMissingValues(target[key], defaults[key]);
+      if (typeof target[key] === "object" && typeof result[key] === "object") {
+        result[key] = fillMissingValues(target[key], result[key]);
       } else {
         result[key] = target[key];
       }
