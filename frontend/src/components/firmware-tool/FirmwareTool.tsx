@@ -113,6 +113,15 @@ export function FirmwareTool() {
           with "trackerPort" set to 6970 instead of 6969
         </p>
         <p>
+          {ghLink("ButterscotchV", "bno-dcd-save")} - Adds a save calibration
+          packet for use with the corresponding server and GUI (
+          {link(
+            "discord.com/channels/817184208525983775/1192242174536982528/1196639832890409090",
+            "Discord",
+          )}
+          )
+        </p>
+        <p>
           {ghLink("nekomona", "unify-fusion")} - Unifying sensor fusion code
         </p>
         <p>

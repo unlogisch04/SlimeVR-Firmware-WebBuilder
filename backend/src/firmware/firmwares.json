@@ -17,7 +17,8 @@
       "mag-enabled-stable",
       "mag-enabled-main",
       "alt-port-stable",
-      "alt-port-main"
+      "alt-port-main",
+      "bno-dcd-save"
     ]
   },
   "nekomona": {
