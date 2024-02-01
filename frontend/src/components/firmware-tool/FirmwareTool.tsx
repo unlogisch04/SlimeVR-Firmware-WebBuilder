@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { ConfigurationForm } from "./ConfigrationForm";
 import { ErrorPane } from "./ErrorPane";
-import { FinishStep } from "./FinisStep";
+import { FinishStep } from "./FinishStep";
 import { ProgressStep } from "./ProgressStep";
 import { useSerial } from "../../hooks/serial";
 import { useFirmwareTool } from "../../hooks/firmware-tool";
