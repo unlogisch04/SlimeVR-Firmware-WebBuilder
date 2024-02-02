@@ -3,6 +3,23 @@ import { useMemo, useRef } from "react";
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+export class SerialError extends Error {
+  serialOutput?: string[];
+
+  constructor(cause: string, serialOutput?: string[]) {
+    super();
+    this.cause = cause;
+    this.serialOutput = serialOutput;
+  }
+
+  public toString(): string {
+    const serialText =
+      this.serialOutput &&
+      `\n\nSerial console:\n${this.serialOutput.join("\n")}`;
+    return `${this.cause}${serialText}`;
+  }
+}
+
 export function useSerial() {
   const espRef = useRef<ESPLoader | null>(null);
   const serialSupported = useMemo(() => "serial" in navigator, []);
@@ -44,6 +61,7 @@ export function useSerial() {
   const setWifi = async (ssid: string, password: string) => {
     if (!espRef.current) throw new Error("Connection not open");
 
+    let serialOutput: string[] = [];
     await new Promise(async (resolve, reject) => {
       if (!espRef.current) return;
 
@@ -69,12 +87,14 @@ export function useSerial() {
               if (e instanceof Error && e.message === "Timeout") {
                 if (++timeouts >= 16) {
                   console.error("Timed out too many times:", e);
-                  reject("Timed out too many times");
+                  reject(
+                    new SerialError("Timed out too many times", serialOutput),
+                  );
                   return;
                 }
               } else {
                 console.error(e);
-                reject("Serial error");
+                reject(new SerialError("Serial error", serialOutput));
                 return;
               }
             }
@@ -87,6 +107,7 @@ export function useSerial() {
           lineBuffer = remainder;
 
           console.log("Serial Console:", line);
+          serialOutput.push(line);
 
           if (line.includes("CMD SET WIFI OK")) {
             console.log("WiFi serial command was successful.");
@@ -96,12 +117,12 @@ export function useSerial() {
             return;
           }
           if (line.includes("Can't connect from any credentials")) {
-            reject("Invalid credentials");
+            reject(new SerialError("Invalid credentials", serialOutput));
             return;
           }
         }
         // Timeout if exited
-        reject("timeout");
+        reject(new SerialError("Timeout", serialOutput));
       });
 
       console.log("Resetting ESP...");
@@ -113,7 +134,7 @@ export function useSerial() {
       console.log("Setting WiFi via serial command...");
       const writer = espRef.current.transport.device.writable?.getWriter();
       if (!writer) {
-        return reject("Device is not writable");
+        return reject(new SerialError("Device is not writable", serialOutput));
       }
       try {
         writer.write(
@@ -126,7 +147,7 @@ export function useSerial() {
       console.log("Waiting for WiFi connection...");
       setTimeout(() => {
         timedOut = true;
-        reject("timeout");
+        reject(new SerialError("Timeout", serialOutput));
       }, 30000);
       try {
         resolve(await readerPromise);

@@ -108,6 +108,7 @@ export function useFirmwareTool() {
           window.history.replaceState(null, "", window.location.pathname);
         },
         actionText: "Reset configuration",
+        consoleOutput: String(e),
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -197,6 +198,7 @@ export function useFirmwareTool() {
             flash();
           },
           actionText: "Retry",
+          consoleOutput: String(e),
         });
         await disconnect();
         return;
@@ -212,7 +214,7 @@ export function useFirmwareTool() {
           await setWifi(wifi.ssid, wifi?.password ?? "");
         } catch (e) {
           console.error(e);
-          if (e === "Invalid credentials") {
+          if (e instanceof Error && e.cause === "Invalid credentials") {
             setCurrentError({
               title: "Could not connect to WiFi, invalid credentials",
               message: "Check the configuration",
@@ -221,9 +223,8 @@ export function useFirmwareTool() {
                 setActiveStep(0);
               },
               actionText: "Return to configuration",
+              consoleOutput: String(e),
             });
-            await disconnect();
-            return;
           } else {
             setCurrentError({
               title: "Lost connection to serial",
@@ -234,10 +235,11 @@ export function useFirmwareTool() {
                 flash();
               },
               actionText: "Retry",
+              consoleOutput: String(e),
             });
-            await disconnect();
-            return;
           }
+          await disconnect();
+          return;
         }
       }
       await disconnect();
@@ -252,6 +254,7 @@ export function useFirmwareTool() {
           flash();
         },
         actionText: "Retry",
+        consoleOutput: String(e),
       });
       await disconnect();
       throw e;
@@ -298,7 +301,7 @@ export function useFirmwareTool() {
     try {
       await serialConnect();
     } catch (e) {
-      setCurrentError(connectError);
+      setCurrentError({ ...connectError, consoleOutput: String(e) });
       return;
     }
 
@@ -345,7 +348,7 @@ export function useFirmwareTool() {
         setCurrentError(buildFailedError);
       }
     } catch (e) {
-      setCurrentError(connectError);
+      setCurrentError({ ...connectError, consoleOutput: String(e) });
       throw e;
     }
   };

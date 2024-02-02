@@ -36,9 +36,7 @@ export function WifiConfig({ control, errors }: { control: any; errors: any }) {
                 name={"wifi.ssid"}
                 control={control}
                 rules={{
-                  validate: (s: string) => {
-                    return !s || s.length <= 32;
-                  },
+                  maxLength: 32,
                 }}
                 render={({ field: { onChange, value } }) => (
                   <TextField

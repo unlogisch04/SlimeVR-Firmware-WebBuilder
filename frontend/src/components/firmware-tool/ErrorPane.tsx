@@ -1,14 +1,26 @@
-import { Button, Card, CardContent, Grid, Typography } from "@mui/material";
+import { ExpandMore } from "@mui/icons-material";
+import {
+  Button,
+  Card,
+  CardContent,
+  Collapse,
+  Grid,
+  Typography,
+} from "@mui/material";
 import { Box } from "@mui/system";
+import { useState } from "react";
 
 export type ErrorMessage = {
   title: string;
   message: string;
   action?: () => void;
   actionText?: string;
+  consoleOutput?: string;
 };
 
 export function ErrorPane({ error }: { error: ErrorMessage }) {
+  const [expanded, setExpanded] = useState(false);
+
   return (
     <Card variant="outlined">
       <CardContent>
@@ -38,6 +50,36 @@ export function ErrorPane({ error }: { error: ErrorMessage }) {
                 </Button>
               </Grid>
             </Grid>
+          )}
+          {error.consoleOutput && (
+            <Card variant="outlined" sx={{ mt: 2 }}>
+              <Button
+                fullWidth
+                variant="outlined"
+                onClick={() => setExpanded((v) => !v)}
+              >
+                {expanded ? "Hide output" : "Show output"}
+                <ExpandMore
+                  sx={{
+                    ml: 0.5,
+                    transform: expanded ? "rotate(180deg)" : "rotate(0deg)",
+                    transition: "transform 0.2s",
+                  }}
+                />
+              </Button>
+              <Collapse in={expanded}>
+                <Typography
+                  variant="body1"
+                  color="inherit"
+                  textAlign="left"
+                  fontFamily="monospace"
+                  padding={1}
+                  whiteSpace="pre-line"
+                >
+                  {error.consoleOutput}
+                </Typography>
+              </Collapse>
+            </Card>
           )}
         </Box>
       </CardContent>
