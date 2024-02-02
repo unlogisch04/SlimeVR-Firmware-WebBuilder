@@ -191,7 +191,7 @@ export function useFirmwareTool() {
         console.error(e);
         setCurrentError({
           title: "Lost connection to serial",
-          message: "Something went wrong",
+          message: "Something went wrong while flashing the firmware",
           action: () => {
             setCurrentError(null);
             flash();
@@ -202,6 +202,7 @@ export function useFirmwareTool() {
         return;
       }
 
+      setActiveStep(4);
       if (wifi?.ssid) {
         setStatusMessage(`Setting WiFi credentials`);
         setStatusValue(null);
@@ -226,7 +227,8 @@ export function useFirmwareTool() {
           } else {
             setCurrentError({
               title: "Lost connection to serial",
-              message: "Something went wrong",
+              message:
+                "Something went wrong while setting the WiFi credentials",
               action: () => {
                 setCurrentError(null);
                 flash();
@@ -239,7 +241,7 @@ export function useFirmwareTool() {
         }
       }
       await disconnect();
-      setActiveStep(4);
+      setActiveStep(5);
     } catch (e) {
       setCurrentError({
         title: "Unable to connect to serial",

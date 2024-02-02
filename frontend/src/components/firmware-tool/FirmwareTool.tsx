@@ -16,7 +16,14 @@ import { ProgressStep } from "./ProgressStep";
 import { useSerial } from "../../hooks/serial";
 import { useFirmwareTool } from "../../hooks/firmware-tool";
 
-const steps = ["Configuration", "Building", "Downloading", "Flashing", "Done"];
+const steps = [
+  "Configuration",
+  "Building",
+  "Downloading",
+  "Flashing",
+  "Setting WiFi",
+  "Done",
+];
 
 const link = (href: string, text: string, prefix: string = "https://") => {
   return (
@@ -170,14 +177,14 @@ export function FirmwareTool() {
                     {activeStep === 0 && (
                       <ConfigurationForm form={form} nextStep={buildConfig} />
                     )}
-                    {activeStep > 0 && activeStep < 4 && (
+                    {activeStep > 0 && activeStep < 5 && (
                       <ProgressStep
                         value={statusValue}
                         message={statusMessage}
                         showRickOption={activeStep === 3}
                       ></ProgressStep>
                     )}
-                    {activeStep === 4 && (
+                    {activeStep === 5 && (
                       <FinishStep doAnother={doAnother} toConfig={toConfig} />
                     )}
                   </>
