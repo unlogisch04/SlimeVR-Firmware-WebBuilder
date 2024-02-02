@@ -35,6 +35,11 @@ export function WifiConfig({ control, errors }: { control: any; errors: any }) {
               <Controller
                 name={"wifi.ssid"}
                 control={control}
+                rules={{
+                  validate: (s: string) => {
+                    return !s || s.length <= 32;
+                  },
+                }}
                 render={({ field: { onChange, value } }) => (
                   <TextField
                     error={!!errors.wifi?.ssid}
@@ -51,6 +56,11 @@ export function WifiConfig({ control, errors }: { control: any; errors: any }) {
               <Controller
                 name={"wifi.password"}
                 control={control}
+                rules={{
+                  validate: (s: string) => {
+                    return !s || (s.length >= 8 && s.length <= 63);
+                  },
+                }}
                 render={({ field: { onChange, value } }) => (
                   <TextField
                     error={!!errors.wifi?.password}

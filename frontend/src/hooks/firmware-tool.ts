@@ -202,13 +202,13 @@ export function useFirmwareTool() {
         return;
       }
 
-      if (wifi?.password && wifi?.ssid) {
+      if (wifi?.ssid) {
         setStatusMessage(`Setting WiFi credentials`);
         setStatusValue(null);
         await sleep(1000);
 
         try {
-          await setWifi(wifi.ssid, wifi.password);
+          await setWifi(wifi.ssid, wifi?.password ?? "");
         } catch (e) {
           console.error(e);
           if (e === "Invalid credentials") {
