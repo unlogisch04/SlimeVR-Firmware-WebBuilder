@@ -104,12 +104,11 @@ export function FirmwareTool() {
         </p>
         <p>
           {ghLink("ButterscotchV", "mag-enabled-stable")} - The latest stable
-          firmware release with 9 DoF ICM-20948 and BNO0xx (magnetometer
-          enabled)
+          firmware release with 9 DoF ICM20948 and BNO0xx (magnetometer enabled)
         </p>
         <p>
           {ghLink("ButterscotchV", "mag-enabled-main")} - Based off SlimeVR/main
-          with 9 DoF ICM-20948 and BNO0xx (magnetometer enabled)
+          with 9 DoF ICM20948 and BNO0xx (magnetometer enabled)
         </p>
         <p>
           {ghLink("ButterscotchV", "alt-port-stable")} - The latest stable
@@ -136,8 +135,12 @@ export function FirmwareTool() {
           for BMI270 and includes ESP32-C3 fixes
         </p>
         <p>
+          {ghLink("l0ud", "sfusion", "SlimeVR-Tracker-ESP-BMI270")} -
+          Experimental support for ICM42688P and LSM6DS3TRC
+        </p>
+        <p>
           {ghLink("furrycoding", "mpu6050_nodmp")} - Adds a new sensor that uses
-          MPU-6050 without the DMP (sensor fusion in software)
+          MPU6050 without the DMP (sensor fusion in software)
         </p>
         <p>
           {ghLink("wigwagwent", "BMI_senscal", "LSM6DSV16X")} - Adds BMI160

@@ -25,7 +25,7 @@
     "SlimeVR-Tracker-ESP": ["unify-fusion"]
   },
   "l0ud": {
-    "SlimeVR-Tracker-ESP-BMI270": ["main"]
+    "SlimeVR-Tracker-ESP-BMI270": ["main", "sfusion"]
   },
   "furrycoding": {
     "SlimeVR-Tracker-ESP": ["mpu6050_nodmp"]
