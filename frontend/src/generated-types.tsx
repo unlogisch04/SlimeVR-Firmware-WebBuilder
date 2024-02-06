@@ -52,7 +52,8 @@ export interface IMUConfigDTO {
     | "IMU_MPU6050_NODMP"
     | "IMU_LSM6DSV"
     | "IMU_LSM6DS3TRC"
-    | "IMU_ICM42688P";
+    | "IMU_ICM42688P"
+    | "IMU_ICM42688";
   rotation: number;
   imuINT?: string;
 }
@@ -138,7 +139,8 @@ export interface Imudto {
     | "IMU_MPU6050_NODMP"
     | "IMU_LSM6DSV"
     | "IMU_LSM6DS3TRC"
-    | "IMU_ICM42688P";
+    | "IMU_ICM42688P"
+    | "IMU_ICM42688";
   hasIntPin: boolean;
 }
 
