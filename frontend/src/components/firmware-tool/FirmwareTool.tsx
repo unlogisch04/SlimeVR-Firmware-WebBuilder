@@ -132,7 +132,7 @@ export function FirmwareTool() {
         </p>
         <p>
           {ghLink("l0ud", "main", "SlimeVR-Tracker-ESP-BMI270")} - Adds support
-          for BMI270 and includes ESP32-C3 fixes
+          for BMI270
         </p>
         <p>
           {ghLink("l0ud", "sfusion", "SlimeVR-Tracker-ESP-BMI270")} -
