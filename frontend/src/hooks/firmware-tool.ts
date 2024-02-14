@@ -192,7 +192,7 @@ export function useFirmwareTool() {
         console.error(e);
         setCurrentError({
           title: "Lost connection to serial",
-          message: "Something went wrong while flashing the firmware",
+          message: "Something went wrong while flashing the firmware.",
           action: () => {
             setCurrentError(null);
             flash();
@@ -217,7 +217,7 @@ export function useFirmwareTool() {
           if (e instanceof Error && e.cause === "Invalid credentials") {
             setCurrentError({
               title: "Could not connect to WiFi, invalid credentials",
-              message: "Check the configuration",
+              message: "Check the configuration.",
               action: () => {
                 setCurrentError(null);
                 setActiveStep(0);
@@ -281,16 +281,42 @@ export function useFirmwareTool() {
     flash();
   };
 
+  const containsImu = (buildSettings: any, imuType: string) => {
+    return buildSettings?.imus?.map((i: { type: any }) => i?.type)?.includes(imuType);
+  }
+
   const buildConfig = async (buildSettings: any) => {
     const { wifi, ...data }: any = buildSettings;
 
     setStatusMessage("Start building");
     setActiveStep(1);
 
+    const imuError = {
+      title: "Invalid configuration",
+      message: "Unknown configuration error.",
+      action: () => {
+        setCurrentError(null);
+        setActiveStep(0);
+      },
+      actionText: "Go back to configuration",
+    }
+    if (buildSettings.version !== "l0ud/main" && containsImu(buildSettings, "IMU_BMI270")) {
+      setCurrentError({...imuError, message: "IMU_BMI270 is only supported by l0ud/main."});
+      return;
+    }
+    if (buildSettings.version !== "l0ud/sfusion" && containsImu(buildSettings, "IMU_LSM6DS3TRC")) {
+      setCurrentError({...imuError, message: "IMU_LSM6DS3TRC is only supported by l0ud/sfusion."});
+      return;
+    }
+    if (buildSettings.version !== "wigwagwent/lsm6dsv-with-bug-fix" && containsImu(buildSettings, "IMU_LSM6DSV")) {
+      setCurrentError({...imuError, message: "IMU_LSM6DSV is only supported by wigwagwent/lsm6dsv-with-bug-fix."});
+      return;
+    }
+
     const connectError = {
       title: "Unable to connect to serial",
       message:
-        "Check that you have the right drivers. You can also hold the Boot button on your esp if you have one. Also check that you dont have any program like SlimeVR server or Cura Open",
+        "Check that you have the right drivers. You can also hold the Boot button on your esp if you have one. Also check that you dont have any program like SlimeVR server or Cura Open.",
       action: () => {
         setCurrentError(null);
         buildConfig(buildSettings);
@@ -310,7 +336,7 @@ export function useFirmwareTool() {
     try {
       const buildFailedError = {
         title: "Unable to build the firmware",
-        message: "Check the configuration",
+        message: "Check the configuration.",
         action: () => {
           setCurrentError(null);
           setActiveStep(0);
