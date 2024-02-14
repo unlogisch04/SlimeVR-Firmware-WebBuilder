@@ -62,8 +62,8 @@ export function useFirmwareTool() {
   const formValue = form.watch();
 
   function fillMissingValues(target: any, defaults: any) {
-    let result = Array.isArray(defaults) ? [...defaults] : { ...defaults };
-    for (let key in target) {
+    const result = Array.isArray(defaults) ? [...defaults] : { ...defaults };
+    for (const key in target) {
       if (typeof target[key] === "object" && typeof result[key] === "object") {
         result[key] = fillMissingValues(target[key], result[key]);
       } else {
@@ -96,11 +96,11 @@ export function useFirmwareTool() {
         });
       }
     } catch (e) {
-      setCurrentError({
+      setError({
         title: "Could not load config",
         message: "",
         action: () => {
-          setCurrentError(null);
+          setError(null);
           setActiveStep(0);
           window.history.replaceState(null, "", window.location.pathname);
         },
@@ -124,11 +124,22 @@ export function useFirmwareTool() {
   // const [wifi, setWifiSettings] = useState<{ ssid: string, password:string } | null>(null);
   const [activeStep, setActiveStep] = useState(0);
   const [statusMessage, setStatusMessage] = useState("");
-  const [error, setCurrentError] = useState<ErrorMessage | null>(null);
+  const [error, setError] = useState<ErrorMessage | null>(null);
   const downloadedFilesRef = useRef<DonwloadedFile[] | null>(null);
   const [statusValue, setStatusValue] = useState<number | null>(null);
 
   const { mutateAsync } = useFirmwareControllerBuildAll({});
+
+  // Workaround to use the esptool-js flash function
+  function arrayBufferToBinaryString(buffer: ArrayBuffer) {
+    let binary = "";
+    const bytes = new Uint8Array(buffer);
+    const length = bytes.byteLength;
+    for (let i = 0; i < length; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return binary;
+  }
 
   const flash = async () => {
     if (!downloadedFilesRef.current)
@@ -143,17 +154,6 @@ export function useFirmwareTool() {
       await serialConnect();
 
       if (!espRef.current) throw new Error("Invalid state. No stub ref.");
-
-      // Workaround to use the esptool-js flash function
-      function arrayBufferToBinaryString(buffer: ArrayBuffer) {
-        let binary = "";
-        const bytes = new Uint8Array(buffer);
-        const length = bytes.byteLength;
-        for (let i = 0; i < length; i++) {
-          binary += String.fromCharCode(bytes[i]);
-        }
-        return binary;
-      }
 
       const fileCount = downloadedFilesRef.current.length;
       const filePercents: number[] = [];
@@ -184,14 +184,14 @@ export function useFirmwareTool() {
             setStatusMessage(`Flashing firmware (${percentage.toFixed(1)}%)`);
           },
         };
-        await espRef.current.write_flash(flashOptions);
+        await espRef.current.writeFlash(flashOptions);
       } catch (e) {
         console.error(e);
-        setCurrentError({
+        setError({
           title: "Lost connection to serial",
           message: "Something went wrong while flashing the firmware.",
           action: () => {
-            setCurrentError(null);
+            setError(null);
             flash();
           },
           actionText: "Retry",
@@ -212,23 +212,23 @@ export function useFirmwareTool() {
         } catch (e) {
           console.error(e);
           if (e instanceof Error && e.cause === "Invalid credentials") {
-            setCurrentError({
+            setError({
               title: "Could not connect to WiFi, invalid credentials",
               message: "Check the configuration.",
               action: () => {
-                setCurrentError(null);
+                setError(null);
                 setActiveStep(0);
               },
               actionText: "Return to configuration",
               consoleOutput: String(e),
             });
           } else {
-            setCurrentError({
+            setError({
               title: "Lost connection to serial",
               message:
                 "Something went wrong while setting the WiFi credentials",
               action: () => {
-                setCurrentError(null);
+                setError(null);
                 flash();
               },
               actionText: "Retry",
@@ -242,12 +242,12 @@ export function useFirmwareTool() {
       await disconnect();
       setActiveStep(5);
     } catch (e) {
-      setCurrentError({
+      setError({
         title: "Unable to connect to serial",
         message:
           "Check that you have the right drivers. You can also hold the Boot button on your ESP if you have one.",
         action: () => {
-          setCurrentError(null);
+          setError(null);
           flash();
         },
         actionText: "Retry",
@@ -294,7 +294,7 @@ export function useFirmwareTool() {
       title: "Invalid configuration",
       message: "Unknown configuration error.",
       action: () => {
-        setCurrentError(null);
+        setError(null);
         setActiveStep(0);
       },
       actionText: "Go back to configuration",
@@ -303,7 +303,7 @@ export function useFirmwareTool() {
       buildSettings.version !== "l0ud/main" &&
       containsImu(buildSettings, "IMU_BMI270")
     ) {
-      setCurrentError({
+      setError({
         ...imuError,
         message: "IMU_BMI270 is only supported by l0ud/main.",
       });
@@ -313,7 +313,7 @@ export function useFirmwareTool() {
       buildSettings.version !== "l0ud/sfusion" &&
       containsImu(buildSettings, "IMU_LSM6DS3TRC")
     ) {
-      setCurrentError({
+      setError({
         ...imuError,
         message: "IMU_LSM6DS3TRC is only supported by l0ud/sfusion.",
       });
@@ -323,7 +323,7 @@ export function useFirmwareTool() {
       buildSettings.version !== "wigwagwent/lsm6dsv-with-bug-fix" &&
       containsImu(buildSettings, "IMU_LSM6DSV")
     ) {
-      setCurrentError({
+      setError({
         ...imuError,
         message:
           "IMU_LSM6DSV is only supported by wigwagwent/lsm6dsv-with-bug-fix.",
@@ -336,7 +336,7 @@ export function useFirmwareTool() {
       message:
         "Check that you have the right drivers. You can also hold the Boot button on your esp if you have one. Also check that you dont have any program like SlimeVR server or Cura Open.",
       action: () => {
-        setCurrentError(null);
+        setError(null);
         buildConfig(buildSettings);
       },
       actionText: "Retry",
@@ -345,18 +345,18 @@ export function useFirmwareTool() {
     try {
       await serialConnect();
     } catch (e) {
-      setCurrentError({ ...connectError, consoleOutput: String(e) });
+      setError({ ...connectError, consoleOutput: String(e) });
       return;
     }
 
-    const res = await mutateAsync({body: data});
+    const res = await mutateAsync({ body: data });
 
     try {
       const buildFailedError = {
         title: "Unable to build the firmware",
         message: "Check the configuration.",
         action: () => {
-          setCurrentError(null);
+          setError(null);
           setActiveStep(0);
         },
         actionText: "Go back to configuration",
@@ -383,16 +383,16 @@ export function useFirmwareTool() {
           if (buildStatus === "DONE") {
             downloadBuild(id, firmwareFiles!);
           } else if (buildStatus === "FAILED") {
-            setCurrentError(buildFailedError);
+            setError(buildFailedError);
           }
         };
       } else if (res.status === "DONE") {
         downloadBuild(res.id, res.firmwareFiles!);
       } else if (res.status === "FAILED") {
-        setCurrentError(buildFailedError);
+        setError(buildFailedError);
       }
     } catch (e) {
-      setCurrentError({ ...connectError, consoleOutput: String(e) });
+      setError({ ...connectError, consoleOutput: String(e) });
       throw e;
     }
   };
@@ -407,7 +407,7 @@ export function useFirmwareTool() {
     flash,
     toConfig: () => {
       setActiveStep(0);
-      setCurrentError(null);
+      setError(null);
     },
   };
 }

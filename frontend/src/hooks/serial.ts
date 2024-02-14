@@ -32,8 +32,9 @@ export function useSerial() {
         transport: new Transport(await navigator.serial.requestPort()),
         baudrate: 115200,
         romBaudrate: 115200,
+        enableTracing: false,
       });
-      await espRef.current.main_fn();
+      await espRef.current.main();
     } catch (e) {
       await disconnect();
       throw e;
@@ -45,7 +46,7 @@ export function useSerial() {
 
     try {
       await sleep(100);
-      await espRef.current.hard_reset();
+      await espRef.current.hardReset();
 
       await espRef.current.transport.setDTR(false);
       await espRef.current.transport.setRTS(false);
@@ -61,7 +62,7 @@ export function useSerial() {
   const setWifi = async (ssid: string, password: string) => {
     if (!espRef.current) throw new Error("Connection not open");
 
-    let serialOutput: string[] = [];
+    const serialOutput: string[] = [];
     await new Promise(async (resolve, reject) => {
       if (!espRef.current) return;
 
@@ -126,7 +127,7 @@ export function useSerial() {
       });
 
       console.log("Resetting ESP...");
-      await espRef.current.hard_reset();
+      await espRef.current.hardReset();
 
       console.log("Waiting for ESP to boot...");
       await sleep(500);
@@ -161,7 +162,7 @@ export function useSerial() {
   return {
     serialConnect,
     disconnect,
-    eraseFlash: () => espRef.current?.erase_flash(),
+    eraseFlash: () => espRef.current?.eraseFlash(),
     isConnected: () => espRef.current,
     setWifi,
     serialSupported,
