@@ -11,9 +11,9 @@ import {
   Typography,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { useFirmwareControllerGetBatteriesTypes } from "../../generated-types";
 import { Controller } from "react-hook-form";
 import { HelperComponent } from "../HelperComponent";
+import { useFirmwareControllerGetBatteriesTypes } from "../../firmwareApi/firmwareComponents";
 
 export function BatteryConfig({
   control,
@@ -22,7 +22,7 @@ export function BatteryConfig({
   control: any;
   errors: any;
 }) {
-  const { data: batteries, loading: batteriesLoading } =
+  const { data: batteries, isLoading: batteriesLoading } =
     useFirmwareControllerGetBatteriesTypes({});
 
   return (

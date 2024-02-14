@@ -13,8 +13,8 @@ import {
 } from "@mui/material";
 import { useMemo } from "react";
 import { Control, Controller } from "react-hook-form";
-import { Imudto } from "../../generated-types";
 import { HelperComponent } from "../HelperComponent";
+import { Imudto } from "../../firmwareApi/firmwareSchemas";
 
 export function ImuConfig({
   forced,

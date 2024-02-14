@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ErrorMessage } from "../components/firmware-tool/ErrorPane";
-import {
-  FirmwareFile,
-  useFirmwareControllerBuildAll,
-  useFirmwareControllerGetDefaultConfig,
-} from "../generated-types";
 import { useSerial } from "./serial";
 import { decode, encode } from "universal-base64url";
 import { FlashOptions } from "esptool-js";
+import { FirmwareFile } from "../firmwareApi/firmwareSchemas";
+import {
+  fetchFirmwareControllerGetDefaultConfig,
+  useFirmwareControllerBuildAll,
+} from "../firmwareApi/firmwareComponents";
 
 const defaultFormValues = {
   version: null,
@@ -61,11 +61,6 @@ export function useFirmwareTool() {
 
   const formValue = form.watch();
 
-  const { refetch } = useFirmwareControllerGetDefaultConfig({
-    board: "",
-    lazy: true,
-  });
-
   function fillMissingValues(target: any, defaults: any) {
     let result = Array.isArray(defaults) ? [...defaults] : { ...defaults };
     for (let key in target) {
@@ -90,7 +85,9 @@ export function useFirmwareTool() {
         form.reset(config, { keepDirty: false, keepTouched: false });
 
         // Update the form when the defaults are fetched
-        refetch({ pathParams: { board: config.board.type } }).then((data) => {
+        fetchFirmwareControllerGetDefaultConfig({
+          pathParams: { board: config.board.type },
+        }).then((data) => {
           if (!data) return;
           form.reset(fillMissingValues(config, data), {
             keepDirty: false,
@@ -131,7 +128,7 @@ export function useFirmwareTool() {
   const downloadedFilesRef = useRef<DonwloadedFile[] | null>(null);
   const [statusValue, setStatusValue] = useState<number | null>(null);
 
-  const { mutate } = useFirmwareControllerBuildAll({});
+  const { mutateAsync } = useFirmwareControllerBuildAll({});
 
   const flash = async () => {
     if (!downloadedFilesRef.current)
@@ -282,8 +279,10 @@ export function useFirmwareTool() {
   };
 
   const containsImu = (buildSettings: any, imuType: string) => {
-    return buildSettings?.imus?.map((i: { type: any }) => i?.type)?.includes(imuType);
-  }
+    return buildSettings?.imus
+      ?.map((i: { type: any }) => i?.type)
+      ?.includes(imuType);
+  };
 
   const buildConfig = async (buildSettings: any) => {
     const { wifi, ...data }: any = buildSettings;
@@ -299,17 +298,36 @@ export function useFirmwareTool() {
         setActiveStep(0);
       },
       actionText: "Go back to configuration",
-    }
-    if (buildSettings.version !== "l0ud/main" && containsImu(buildSettings, "IMU_BMI270")) {
-      setCurrentError({...imuError, message: "IMU_BMI270 is only supported by l0ud/main."});
+    };
+    if (
+      buildSettings.version !== "l0ud/main" &&
+      containsImu(buildSettings, "IMU_BMI270")
+    ) {
+      setCurrentError({
+        ...imuError,
+        message: "IMU_BMI270 is only supported by l0ud/main.",
+      });
       return;
     }
-    if (buildSettings.version !== "l0ud/sfusion" && containsImu(buildSettings, "IMU_LSM6DS3TRC")) {
-      setCurrentError({...imuError, message: "IMU_LSM6DS3TRC is only supported by l0ud/sfusion."});
+    if (
+      buildSettings.version !== "l0ud/sfusion" &&
+      containsImu(buildSettings, "IMU_LSM6DS3TRC")
+    ) {
+      setCurrentError({
+        ...imuError,
+        message: "IMU_LSM6DS3TRC is only supported by l0ud/sfusion.",
+      });
       return;
     }
-    if (buildSettings.version !== "wigwagwent/lsm6dsv-with-bug-fix" && containsImu(buildSettings, "IMU_LSM6DSV")) {
-      setCurrentError({...imuError, message: "IMU_LSM6DSV is only supported by wigwagwent/lsm6dsv-with-bug-fix."});
+    if (
+      buildSettings.version !== "wigwagwent/lsm6dsv-with-bug-fix" &&
+      containsImu(buildSettings, "IMU_LSM6DSV")
+    ) {
+      setCurrentError({
+        ...imuError,
+        message:
+          "IMU_LSM6DSV is only supported by wigwagwent/lsm6dsv-with-bug-fix.",
+      });
       return;
     }
 
@@ -331,7 +349,7 @@ export function useFirmwareTool() {
       return;
     }
 
-    const res = await mutate(data);
+    const res = await mutateAsync({body: data});
 
     try {
       const buildFailedError = {

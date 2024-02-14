@@ -13,20 +13,19 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import {
-  BuildResponse,
-  useFirmwareControllerGetBoardsTypes,
-  useFirmwareControllerGetDefaultConfig,
-  useFirmwareControllerGetIMUSTypes,
-  useFirmwareControllerGetVersions,
-} from "../../generated-types";
 import { Controller } from "react-hook-form";
 import { useSerial } from "../../hooks/serial";
 import { ImuConfig } from "./ImuConfig";
 import { BatteryConfig } from "./BatteryConfig";
 import { WifiConfig } from "./WifiConfig";
+import {
+  fetchFirmwareControllerGetDefaultConfig,
+  useFirmwareControllerGetBoardsTypes,
+  useFirmwareControllerGetIMUSTypes,
+  useFirmwareControllerGetVersions,
+} from "../../firmwareApi/firmwareComponents";
+import { BuildResponse } from "../../firmwareApi/firmwareSchemas";
 
 export function ConfigurationForm({
   form,
@@ -43,25 +42,22 @@ export function ConfigurationForm({
   const enableLed = watch("board.enableLed");
 
   const { errors } = formState;
-  const { data: releases, loading: releasesLoading } =
+  const { data: releases, isLoading: releasesLoading } =
     useFirmwareControllerGetVersions({});
 
-  const { data: boards, loading: boardsLoading } =
+  const { data: boards, isLoading: boardsLoading } =
     useFirmwareControllerGetBoardsTypes({});
 
-  const { data: imus, loading: imusLoading } =
+  const { data: imus, isLoading: imusLoading } =
     useFirmwareControllerGetIMUSTypes({});
-
-  const { refetch } = useFirmwareControllerGetDefaultConfig({
-    board: "",
-    lazy: true,
-  });
 
   const onBoardChange = (event: any) => {
     const boardType = event.target.value;
 
     if (boardType) {
-      refetch({ pathParams: { board: boardType } }).then((data) => {
+      fetchFirmwareControllerGetDefaultConfig({
+        pathParams: { board: boardType },
+      }).then((data) => {
         if (!data) return;
         const build = data as any;
 

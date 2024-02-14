@@ -11,7 +11,9 @@ import {
 import { useMemo, useState } from "react";
 import { Copyright } from "./components/Copyright";
 import { FirmwareTool } from "./components/firmware-tool/FirmwareTool";
-import { RestfulProvider } from "restful-react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 function Page() {
   const localTheme = localStorage.getItem("user-theme");
@@ -76,9 +78,9 @@ function Page() {
 
 function App() {
   return (
-    <RestfulProvider base={import.meta.env.VITE_API_BASE || ""}>
-      <Page></Page>
-    </RestfulProvider>
+    <QueryClientProvider client={queryClient}>
+      <Page />
+    </QueryClientProvider>
   );
 }
 
