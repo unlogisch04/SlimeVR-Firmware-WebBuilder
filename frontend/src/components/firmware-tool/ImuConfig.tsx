@@ -85,9 +85,7 @@ export function ImuConfig({
                       value={imusLoading ? "loading" : value || "none"}
                       disabled={!ackyuallyEnabled}
                       onChange={onChange}
-                      error={
-                        !!errors?.imus[imuIndex]?.type
-                      }
+                      error={!!errors?.imus?.[imuIndex]?.type}
                     >
                       {imusLoading && (
                         <MenuItem value="loading" disabled>
@@ -119,8 +117,7 @@ export function ImuConfig({
                   <>
                     <TextField
                       error={
-                        ackyuallyEnabled &&
-                        !!errors?.imus[imuIndex]?.rotation
+                        ackyuallyEnabled && !!errors?.imus?.[imuIndex]?.rotation
                       }
                       type="number"
                       disabled={!ackyuallyEnabled}
@@ -148,7 +145,7 @@ export function ImuConfig({
                     <TextField
                       error={
                         currentImu?.hasIntPin &&
-                        !!errors?.imus[imuIndex]?.imuINT
+                        !!errors?.imus?.[imuIndex]?.imuINT
                       }
                       disabled={!ackyuallyEnabled}
                       onChange={onChange}
