@@ -258,7 +258,7 @@ export function useFirmwareTool() {
     }
   };
 
-  const downloadBuild = async (id: string, firmwareFiles: FirmwareFile[]) => {
+  const downloadBuild = async (_id: string, firmwareFiles: FirmwareFile[]) => {
     setActiveStep(2);
 
     setStatusMessage("Downloading firmware");
