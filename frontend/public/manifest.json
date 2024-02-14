@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Firmware Tool",
+  "name": "SlimeVR Firmware Tool",
   "icons": [
     {
       "src": "favicon.ico",
