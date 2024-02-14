@@ -25,7 +25,7 @@ export function FinishStep({
             textAlign="center"
             noWrap
           >
-            Firmware Uploaded. Your tracker is set up!
+            Firmware uploaded. Your tracker is set up!
           </Typography>
           <Grid container spacing={2} justifyContent="center">
             <Grid item xs={12} sm={4}>

@@ -143,7 +143,7 @@ export function useFirmwareTool() {
 
   const flash = async () => {
     if (!downloadedFilesRef.current)
-      throw new Error("Download Files not defined");
+      throw new Error("Download files not defined");
 
     setActiveStep(3);
     setStatusValue(0);

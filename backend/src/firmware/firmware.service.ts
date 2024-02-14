@@ -334,7 +334,7 @@ export class FirmwareService implements OnApplicationBootstrap {
       this.buildStatusSubject.next({
         buildStatus: BuildStatus.BUILDING,
         id: firmware.id,
-        message: "Building Firmware (this might take a minute)",
+        message: "Building firmware (this might take a minute)",
       });
 
       await new Promise((resolve, reject) => {
@@ -356,7 +356,7 @@ export class FirmwareService implements OnApplicationBootstrap {
           this.buildStatusSubject.next({
             buildStatus: BuildStatus.BUILDING,
             id: firmware.id,
-            message: "Building Firmware (this might take a minute)",
+            message: "Building firmware (this might take a minute)",
           });
         });
 
