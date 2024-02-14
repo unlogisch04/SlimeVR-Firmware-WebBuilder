@@ -25,7 +25,7 @@ import {
   useFirmwareControllerGetIMUSTypes,
   useFirmwareControllerGetVersions,
 } from "../../firmwareApi/firmwareComponents";
-import { BuildResponse } from "../../firmwareApi/firmwareSchemas";
+import { BuildResponse, Imudto } from "../../firmwareApi/firmwareSchemas";
 
 export function ConfigurationForm({
   form,
@@ -110,8 +110,7 @@ export function ConfigurationForm({
                         Please select the firmware version
                       </MenuItem>
                       {!releasesLoading &&
-                        releases &&
-                        releases!.map((item) => (
+                        releases?.map((item) => (
                           <MenuItem key={item.name} value={item.name}>
                             {item.name}
                           </MenuItem>
@@ -151,8 +150,7 @@ export function ConfigurationForm({
                       Please select the board
                     </MenuItem>
                     {!boardsLoading &&
-                      boards &&
-                      boards!.map((board) => (
+                      boards?.map((board) => (
                         <MenuItem key={board.boardType} value={board.boardType}>
                           {board.boardType}
                         </MenuItem>
@@ -275,7 +273,7 @@ export function ConfigurationForm({
                   errors={errors}
                   name={"Primary IMU"}
                   forced
-                  imus={imus}
+                  imus={imus as Imudto[]}
                   imusLoading={imusLoading}
                 ></ImuConfig>
               </Grid>
@@ -287,7 +285,7 @@ export function ConfigurationForm({
                   errors={errors}
                   name={"Secondary IMU"}
                   forced={false}
-                  imus={imus}
+                  imus={imus as Imudto[]}
                   imusLoading={imusLoading}
                 ></ImuConfig>
               </Grid>

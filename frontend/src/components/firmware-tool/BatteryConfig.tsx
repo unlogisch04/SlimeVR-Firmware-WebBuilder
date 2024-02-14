@@ -59,8 +59,7 @@ export function BatteryConfig({
                         Please select the battery type
                       </MenuItem>
                       {!batteriesLoading &&
-                        batteries &&
-                        batteries!.map((item) => (
+                        batteries?.map((item) => (
                           <MenuItem key={item} value={item}>
                             {item}
                           </MenuItem>

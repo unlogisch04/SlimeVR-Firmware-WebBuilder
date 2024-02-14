@@ -86,9 +86,7 @@ export function ImuConfig({
                       disabled={!ackyuallyEnabled}
                       onChange={onChange}
                       error={
-                        errors.imus &&
-                        errors.imus[imuIndex] &&
-                        !!errors.imus[imuIndex].type
+                        !!errors?.imus[imuIndex]?.type
                       }
                     >
                       {imusLoading && (
@@ -100,8 +98,7 @@ export function ImuConfig({
                         Please select the IMU type
                       </MenuItem>
                       {!imusLoading &&
-                        sortedImus &&
-                        sortedImus!.map((item) => (
+                        sortedImus?.map((item) => (
                           <MenuItem key={item.type} value={item.type}>
                             {item.type}
                           </MenuItem>
@@ -123,9 +120,7 @@ export function ImuConfig({
                     <TextField
                       error={
                         ackyuallyEnabled &&
-                        errors.imus &&
-                        errors.imus[imuIndex] &&
-                        !!errors.imus[imuIndex].rotation
+                        !!errors?.imus[imuIndex]?.rotation
                       }
                       type="number"
                       disabled={!ackyuallyEnabled}
@@ -153,9 +148,7 @@ export function ImuConfig({
                     <TextField
                       error={
                         currentImu?.hasIntPin &&
-                        errors.imus &&
-                        errors.imus[imuIndex] &&
-                        !!errors.imus[imuIndex].imuINT
+                        !!errors?.imus[imuIndex]?.imuINT
                       }
                       disabled={!ackyuallyEnabled}
                       onChange={onChange}
