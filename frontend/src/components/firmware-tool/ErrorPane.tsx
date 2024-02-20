@@ -1,14 +1,16 @@
-import { ExpandMore } from "@mui/icons-material";
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Button,
   Card,
   CardContent,
-  Collapse,
+  Divider,
   Grid,
   Typography,
 } from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Box } from "@mui/system";
-import { useState } from "react";
 
 export type ErrorMessage = {
   title: string;
@@ -19,8 +21,6 @@ export type ErrorMessage = {
 };
 
 export function ErrorPane({ error }: { error: ErrorMessage }) {
-  const [expanded, setExpanded] = useState(false);
-
   return (
     <Card variant="outlined">
       <CardContent>
@@ -52,22 +52,12 @@ export function ErrorPane({ error }: { error: ErrorMessage }) {
             </Grid>
           )}
           {error.consoleOutput && (
-            <Card variant="outlined" sx={{ mt: 2 }}>
-              <Button
-                fullWidth
-                variant="outlined"
-                onClick={() => setExpanded((v) => !v)}
-              >
-                {expanded ? "Hide output" : "Show output"}
-                <ExpandMore
-                  sx={{
-                    ml: 0.5,
-                    transform: expanded ? "rotate(180deg)" : "rotate(0deg)",
-                    transition: "transform 0.2s",
-                  }}
-                />
-              </Button>
-              <Collapse in={expanded}>
+            <Accordion sx={{ mt: 2 }}>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                Console Output
+              </AccordionSummary>
+              <AccordionDetails>
+                <Divider sx={{ mb: 0.5 }} />
                 <Typography
                   variant="body1"
                   color="inherit"
@@ -78,8 +68,8 @@ export function ErrorPane({ error }: { error: ErrorMessage }) {
                 >
                   {error.consoleOutput}
                 </Typography>
-              </Collapse>
-            </Card>
+              </AccordionDetails>
+            </Accordion>
           )}
         </Box>
       </CardContent>
