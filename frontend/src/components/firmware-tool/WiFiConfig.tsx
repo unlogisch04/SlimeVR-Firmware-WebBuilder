@@ -11,7 +11,7 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Controller } from "react-hook-form";
 
-export function WifiConfig({ control, errors }: { control: any; errors: any }) {
+export function WiFiConfig({ control, errors }: { control: any; errors: any }) {
   return (
     <Accordion variant="outlined">
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>

@@ -9,7 +9,7 @@ import {
   Stepper,
   Typography,
 } from "@mui/material";
-import { ConfigurationForm } from "./ConfigrationForm";
+import { ConfigurationForm } from "./ConfigurationForm";
 import { ErrorPane } from "./ErrorPane";
 import { FinishStep } from "./FinishStep";
 import { ProgressStep } from "./ProgressStep";

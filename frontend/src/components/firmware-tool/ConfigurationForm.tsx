@@ -18,7 +18,7 @@ import { Controller } from "react-hook-form";
 import { useSerial } from "../../hooks/serial";
 import { ImuConfig } from "./ImuConfig";
 import { BatteryConfig } from "./BatteryConfig";
-import { WifiConfig } from "./WifiConfig";
+import { WiFiConfig } from "./WiFiConfig";
 import {
   fetchFirmwareControllerGetDefaultConfig,
   useFirmwareControllerGetBoardsTypes,
@@ -300,7 +300,7 @@ export function ConfigurationForm({
           <BatteryConfig control={control} errors={errors}></BatteryConfig>
         </Grid>
         <Grid item xs={12} sm={12}>
-          <WifiConfig errors={errors} control={control}></WifiConfig>
+          <WiFiConfig errors={errors} control={control}></WiFiConfig>
         </Grid>
         <Grid item xs={12} sm={12}>
           <Button
