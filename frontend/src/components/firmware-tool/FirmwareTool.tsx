@@ -15,6 +15,7 @@ import { FinishStep } from "./FinishStep";
 import { ProgressStep } from "./ProgressStep";
 import { useSerial } from "../../hooks/serial";
 import { useFirmwareTool } from "../../hooks/firmware-tool";
+import { useState } from "react";
 
 const steps = [
   "Configuration",
@@ -59,6 +60,8 @@ export function FirmwareTool() {
   const doAnother = () => {
     flash();
   };
+
+  const [saveZip, setSaveZip] = useState(false);
 
   return (
     <Container component="main" maxWidth="md" sx={{ my: 3 }}>
@@ -178,7 +181,12 @@ export function FirmwareTool() {
                 {!error && (
                   <>
                     {activeStep === 0 && (
-                      <ConfigurationForm form={form} nextStep={buildConfig} />
+                      <ConfigurationForm
+                        form={form}
+                        nextStep={buildConfig}
+                        saveZip={saveZip}
+                        setSaveZip={setSaveZip}
+                      />
                     )}
                     {activeStep > 0 && activeStep < 5 && (
                       <ProgressStep
@@ -188,7 +196,11 @@ export function FirmwareTool() {
                       ></ProgressStep>
                     )}
                     {activeStep === 5 && (
-                      <FinishStep doAnother={doAnother} toConfig={toConfig} />
+                      <FinishStep
+                        doAnother={doAnother}
+                        toConfig={toConfig}
+                        saveZip={saveZip}
+                      />
                     )}
                   </>
                 )}

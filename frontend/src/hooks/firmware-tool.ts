@@ -9,6 +9,7 @@ import {
   fetchFirmwareControllerGetDefaultConfig,
   useFirmwareControllerBuildAll,
 } from "../firmwareApi/firmwareComponents";
+import { downloadZip } from "client-zip";
 
 const defaultFormValues = {
   version: null,
@@ -258,7 +259,11 @@ export function useFirmwareTool() {
     }
   };
 
-  const downloadBuild = async (_id: string, firmwareFiles: FirmwareFile[]) => {
+  const downloadBuild = async (
+    _id: string,
+    firmwareFiles: FirmwareFile[],
+    saveZip: boolean,
+  ) => {
     setActiveStep(2);
 
     setStatusMessage("Downloading firmware");
@@ -275,7 +280,36 @@ export function useFirmwareTool() {
       infos: file,
       binary: firmwaresBytes[index],
     }));
-    flash();
+
+    if (saveZip) {
+      const firmwareBlob = await downloadZip([
+        {
+          name: "file-offsets.json",
+          input: JSON.stringify(
+            firmwareFiles.map((file, index) => ({
+              file: `firmware-part-${index}.bin`,
+              offset: file.offset,
+            })),
+          ),
+        },
+        ...firmwaresBytes.map((bytes, index) => ({
+          name: `firmware-part-${index}.bin`,
+          input: bytes,
+        })),
+      ]).blob();
+
+      // Make and click a temporary link to download the Blob
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(firmwareBlob);
+      link.download = "firmware.zip";
+      link.click();
+      URL.revokeObjectURL(link.href);
+      link.remove();
+
+      setActiveStep(5);
+    } else {
+      flash();
+    }
   };
 
   const containsImu = (buildSettings: any, imuType: string) => {
@@ -284,7 +318,7 @@ export function useFirmwareTool() {
       ?.includes(imuType);
   };
 
-  const buildConfig = async (buildSettings: any) => {
+  const buildConfig = async (buildSettings: any, saveZip: boolean) => {
     const { wifi, ...data }: any = buildSettings;
 
     setStatusMessage("Start building");
@@ -334,19 +368,21 @@ export function useFirmwareTool() {
     const connectError = {
       title: "Unable to connect to serial",
       message:
-        "Check that you have the right drivers. You can also hold the Boot button on your esp if you have one. Also check that you dont have any program like SlimeVR server or Cura Open.",
+        "Check that you have the right drivers. You can also hold the boot button on your esp if you have one. Also check that you dont have any program like SlimeVR server or Cura Open.",
       action: () => {
         setError(null);
-        buildConfig(buildSettings);
+        buildConfig(buildSettings, saveZip);
       },
       actionText: "Retry",
     };
 
-    try {
-      await serialConnect();
-    } catch (e) {
-      setError({ ...connectError, consoleOutput: String(e) });
-      return;
+    if (!saveZip) {
+      try {
+        await serialConnect();
+      } catch (e) {
+        setError({ ...connectError, consoleOutput: String(e) });
+        return;
+      }
     }
 
     const res = await mutateAsync({ body: data });
@@ -381,13 +417,13 @@ export function useFirmwareTool() {
 
           setStatusMessage(message);
           if (buildStatus === "DONE") {
-            downloadBuild(id, firmwareFiles!);
+            downloadBuild(id, firmwareFiles!, saveZip);
           } else if (buildStatus === "FAILED") {
             setError(buildFailedError);
           }
         };
       } else if (res.status === "DONE") {
-        downloadBuild(res.id, res.firmwareFiles!);
+        downloadBuild(res.id, res.firmwareFiles!, saveZip);
       } else if (res.status === "FAILED") {
         setError(buildFailedError);
       }

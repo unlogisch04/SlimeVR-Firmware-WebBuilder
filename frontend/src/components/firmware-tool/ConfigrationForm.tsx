@@ -30,9 +30,13 @@ import { BuildResponse, Imudto } from "../../firmwareApi/firmwareSchemas";
 export function ConfigurationForm({
   form,
   nextStep,
+  saveZip,
+  setSaveZip,
 }: {
   form: any;
-  nextStep: (id: BuildResponse) => void;
+  nextStep: (id: BuildResponse, saveZip: boolean) => void;
+  saveZip: boolean;
+  setSaveZip: (value: boolean) => void;
 }) {
   const { serialSupported } = useSerial();
   const { handleSubmit, formState, control, watch, reset } = form;
@@ -78,7 +82,7 @@ export function ConfigurationForm({
     data.imus = data.imus
       .filter(({ enabled }: { enabled: boolean }) => !!enabled)
       .map(({ enabled, ...imu }: any) => ({ ...imu }));
-    nextStep(data);
+    nextStep(data, saveZip);
   };
 
   return (
@@ -299,8 +303,25 @@ export function ConfigurationForm({
           <WifiConfig errors={errors} control={control}></WifiConfig>
         </Grid>
         <Grid item xs={12} sm={12}>
-          <Button variant="contained" type="submit" disabled={!serialSupported}>
-            Continue
+          <Button
+            variant="contained"
+            type="submit"
+            disabled={!serialSupported}
+            sx={{ mr: 2 }}
+            onClick={() => {
+              setSaveZip(false);
+            }}
+          >
+            Flash to device
+          </Button>
+          <Button
+            variant="contained"
+            type="submit"
+            onClick={() => {
+              setSaveZip(true);
+            }}
+          >
+            Download as ZIP
           </Button>
         </Grid>
       </Grid>
