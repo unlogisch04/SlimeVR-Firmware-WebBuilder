@@ -74,7 +74,16 @@ export class ConfigService {
   }
 
   public getGitHubAuth() {
-    return encode(this.getValue("GITHUB_AUTH", true));
+    var sauth = this.getValue("GITHUB_AUTH", true);
+    if (( sauth.lastIndexOf("github_pat", 0) === 0) ||
+        ( sauth.lastIndexOf("ghp_", 0) === 0))
+    {
+      return `Bearer ${sauth}`;
+    }
+    else
+    {
+      return `Basic: ${encode(sauth)}`;
+    }
   }
 
   public getHostUrl() {
