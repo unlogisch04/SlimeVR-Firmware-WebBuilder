@@ -335,11 +335,12 @@ export function useFirmwareTool() {
     };
     if (
       buildSettings.version !== "l0ud/main" &&
+      buildSettings.version !== "l0ud/sfusion" &&
       containsImu(buildSettings, "IMU_BMI270")
     ) {
       setError({
         ...imuError,
-        message: "IMU_BMI270 is only supported by l0ud/main.",
+        message: "IMU_BMI270 is only supported by l0ud/sfusion and l0ud/main.",
       });
       return;
     }
