@@ -139,7 +139,7 @@ export function FirmwareTool() {
         </p>
         <p>
           {ghLink("l0ud", "sfusion", "SlimeVR-Tracker-ESP-BMI270")} -
-          Experimental support for BMI270 (newer codebase), ICM42688P and
+          Experimental support for BMI270 (newer codebase), ICM42688P, and
           LSM6DS3TRC
         </p>
         <p>
