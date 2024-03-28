@@ -356,12 +356,13 @@ export function useFirmwareTool() {
     }
     if (
       buildSettings.version !== "wigwagwent/lsm6dsv-with-bug-fix" &&
+      buildSettings.version !== "l0ud/sfusion" &&
       containsImu(buildSettings, "IMU_LSM6DSV")
     ) {
       setError({
         ...imuError,
         message:
-          "IMU_LSM6DSV is only supported by wigwagwent/lsm6dsv-with-bug-fix.",
+          "IMU_LSM6DSV is only supported by wigwagwent/lsm6dsv-with-bug-fix and l0ud/sfusion.",
       });
       return;
     }
