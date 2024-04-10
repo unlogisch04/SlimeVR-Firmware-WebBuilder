@@ -97,7 +97,7 @@ const configService = new ConfigService(process.env).ensureValues([
   "POSTGRES_PORT",
   "POSTGRES_USER",
   "POSTGRES_PASSWORD",
-  "POSTGRES_DATABASE",
+  "POSTGRES_DB",
   "S3_ACCESS_KEY",
   "S3_SECRET_KEY",
   "S3_ENDPOINT",
