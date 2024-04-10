@@ -21,9 +21,6 @@
       "bno-dcd-save"
     ]
   },
-  "nekomona": {
-    "SlimeVR-Tracker-ESP": ["unify-fusion"]
-  },
   "l0ud": {
     "SlimeVR-Tracker-ESP-BMI270": ["main", "sfusion"]
   },
