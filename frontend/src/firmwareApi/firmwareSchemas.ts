@@ -24,7 +24,8 @@ export type FirmwareBoardDTO = {
     | "BOARD_ESP01"
     | "BOARD_LOLIN_C3_MINI"
     | "BOARD_BEETLE32C3"
-    | "BOARD_ES32C3DEVKITM1";
+    | "BOARD_ES32C3DEVKITM1"
+    | "BOARD_CHEESECAKE";
   pins?: BoardPins;
   /**
    * @default true
@@ -125,7 +126,8 @@ export type BoardTypeBoard = {
     | "BOARD_ESP01"
     | "BOARD_LOLIN_C3_MINI"
     | "BOARD_BEETLE32C3"
-    | "BOARD_ES32C3DEVKITM1";
+    | "BOARD_ES32C3DEVKITM1"
+    | "BOARD_CHEESECAKE";
 };
 
 export type ReleaseDTO = {
