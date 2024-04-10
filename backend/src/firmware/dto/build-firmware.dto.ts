@@ -36,7 +36,7 @@ export class BuildFirmwareDTO {
     if (!dto.imus) {
       const imu = new IMUConfigDTO();
       imu.type = boardDefaults["DEFAULT_IMU"] || IMUType.IMU_BMI160;
-      imu.rotation = boardDefaults["DEFAULT_IMU"] ?? 270;
+      imu.rotation = boardDefaults["DEFAULT_IMU_ROTATION"] ?? 270;
       dto.imus = [imu, imu];
     }
 
