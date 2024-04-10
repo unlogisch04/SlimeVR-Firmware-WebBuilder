@@ -51,6 +51,15 @@ const defaultFormValues = {
   },
 };
 
+const lf = new Intl.ListFormat("en");
+const branchRestrictions: any = {
+  IMU_BMI270: ["l0ud/main", "l0ud/sfusion"],
+  IMU_LSM6DS3TRC: ["l0ud/sfusion"],
+  IMU_LSM6DSV: ["wigwagwent/lsm6dsv-with-bug-fix", "l0ud/sfusion"],
+  IMU_MPU6500_NODMP: ["furrycoding/mpu6050_nodmp"],
+  IMU_MPU6050_NODMP: ["furrycoding/mpu6050_nodmp"],
+};
+
 type DonwloadedFile = { infos: FirmwareFile; binary: ArrayBuffer };
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -312,59 +321,28 @@ export function useFirmwareTool() {
     }
   };
 
-  const containsImu = (buildSettings: any, imuType: string) => {
-    return buildSettings?.imus
-      ?.map((i: { type: any }) => i?.type)
-      ?.includes(imuType);
-  };
-
   const buildConfig = async (buildSettings: any, saveZip: boolean) => {
     const { wifi, ...data }: any = buildSettings;
 
     setStatusMessage("Start building");
     setActiveStep(1);
 
-    const imuError = {
-      title: "Invalid configuration",
-      message: "Unknown configuration error.",
-      action: () => {
-        setError(null);
-        setActiveStep(0);
-      },
-      actionText: "Go back to configuration",
-    };
-    if (
-      buildSettings.version !== "l0ud/main" &&
-      buildSettings.version !== "l0ud/sfusion" &&
-      containsImu(buildSettings, "IMU_BMI270")
-    ) {
-      setError({
-        ...imuError,
-        message: "IMU_BMI270 is only supported by l0ud/sfusion and l0ud/main.",
-      });
-      return;
-    }
-    if (
-      buildSettings.version !== "l0ud/sfusion" &&
-      containsImu(buildSettings, "IMU_LSM6DS3TRC")
-    ) {
-      setError({
-        ...imuError,
-        message: "IMU_LSM6DS3TRC is only supported by l0ud/sfusion.",
-      });
-      return;
-    }
-    if (
-      buildSettings.version !== "wigwagwent/lsm6dsv-with-bug-fix" &&
-      buildSettings.version !== "l0ud/sfusion" &&
-      containsImu(buildSettings, "IMU_LSM6DSV")
-    ) {
-      setError({
-        ...imuError,
-        message:
-          "IMU_LSM6DSV is only supported by wigwagwent/lsm6dsv-with-bug-fix and l0ud/sfusion.",
-      });
-      return;
+    for (const imu of buildSettings.imus?.map(
+      (imu: { type: string }) => imu.type,
+    ) ?? []) {
+      const branches: string[] | undefined = branchRestrictions[imu];
+      if (branches && !branches.includes(buildSettings.version)) {
+        setError({
+          title: "Invalid configuration",
+          message: `${imu} is only supported by ${lf.format(branches)}.`,
+          action: () => {
+            setError(null);
+            setActiveStep(0);
+          },
+          actionText: "Go back to configuration",
+        });
+        return;
+      }
     }
 
     const connectError = {
