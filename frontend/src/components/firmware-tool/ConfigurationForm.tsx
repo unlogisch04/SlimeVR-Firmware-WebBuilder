@@ -67,12 +67,12 @@ export function ConfigurationForm({
         pathParams: { board: boardType },
       }).then((data) => {
         if (!data) return;
-        const build = data as any;
+        const build = fillMissingValues(data as any, defaultFormValues);
 
         build.version = version;
         build.wifi = wifi;
 
-        reset(fillMissingValues(build, defaultFormValues));
+        reset(build);
       });
     }
   };
