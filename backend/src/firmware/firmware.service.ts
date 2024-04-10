@@ -463,6 +463,12 @@ export class FirmwareService implements OnApplicationBootstrap {
 
       dto = BuildFirmwareDTO.completeDefaults(dto);
 
+      // Fake a generic cheesecake board for defaults,
+      // then use Wemos D1 Mini for the firmware
+      if (dto.board.type == BoardType.BOARD_CHEESECAKE) {
+        dto.board.type = BoardType.BOARD_WEMOSD1MINI;
+      }
+
       let firmware = await Firmware.findOne({
         where: { buildConfig: dto, releaseID: release.id },
       });

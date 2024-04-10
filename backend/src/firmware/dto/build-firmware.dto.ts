@@ -3,7 +3,7 @@ import { Type } from "class-transformer";
 import { IsOptional, ValidateNested } from "class-validator";
 import { BatteryDTO, BatteryType } from "./battery.dto";
 import { BoardPins, FirmwareBoardDTO } from "./firmware-board.dto";
-import { IMUConfigDTO } from "./imu.dto";
+import { IMUConfigDTO, IMUType } from "./imu.dto";
 import { BOARD_DEFAULTS } from "../firmware.constants";
 
 export class BuildFirmwareDTO {
@@ -32,6 +32,13 @@ export class BuildFirmwareDTO {
 
   static completeDefaults(dto: BuildFirmwareDTO): BuildFirmwareDTO {
     const boardDefaults = BOARD_DEFAULTS[dto.board.type];
+
+    if (!dto.imus) {
+      const imu = new IMUConfigDTO();
+      imu.type = boardDefaults["DEFAULT_IMU"] || IMUType.IMU_BMI160;
+      imu.rotation = boardDefaults["DEFAULT_IMU"] ?? 270;
+      dto.imus = [imu, imu];
+    }
 
     const defaultInts = [
       boardDefaults["PIN_IMU_INT"],

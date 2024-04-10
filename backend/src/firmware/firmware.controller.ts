@@ -24,7 +24,7 @@ import { BoardTypeBoard } from "./dto/board-type-board.dto";
 import { BuildFirmwareDTO } from "./dto/build-firmware.dto";
 import { BuildResponse } from "./dto/build-response.dto";
 import { BoardType, FirmwareBoardDTO } from "./dto/firmware-board.dto";
-import { IMUConfigDTO, IMUDTO, IMUS, IMUType } from "./dto/imu.dto";
+import { IMUDTO, IMUS } from "./dto/imu.dto";
 import { Firmware } from "./entity/firmware.entity";
 import { VersionNotFoundError } from "./errors/version-not-found.error";
 import { FirmwareService } from "./firmware.service";
@@ -104,15 +104,6 @@ export class FirmwareController {
     const dto = new BuildFirmwareDTO();
     dto.board = new FirmwareBoardDTO();
     dto.board.type = board;
-
-    const imu = new IMUConfigDTO();
-    imu.type =
-      board == BoardType.BOARD_SLIMEVR || board == BoardType.BOARD_SLIMEVR_DEV
-        ? IMUType.IMU_BNO085
-        : IMUType.IMU_BMI160;
-    imu.rotation = 270;
-
-    dto.imus = [imu, imu];
 
     return BuildFirmwareDTO.completeDefaults(dto);
   }
