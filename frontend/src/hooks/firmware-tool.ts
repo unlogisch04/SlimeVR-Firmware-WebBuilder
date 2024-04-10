@@ -11,7 +11,7 @@ import {
 } from "../firmwareApi/firmwareComponents";
 import { downloadZip } from "client-zip";
 
-const defaultFormValues = {
+export const defaultFormValues = {
   version: null,
   board: {
     type: null,
@@ -51,6 +51,18 @@ const defaultFormValues = {
   },
 };
 
+export function fillMissingValues(target: any, defaults: any) {
+  const result = Array.isArray(defaults) ? [...defaults] : { ...defaults };
+  for (const key in target) {
+    if (typeof target[key] === "object" && typeof result[key] === "object") {
+      result[key] = fillMissingValues(target[key], result[key]);
+    } else {
+      result[key] = target[key];
+    }
+  }
+  return result;
+}
+
 const lf = new Intl.ListFormat("en");
 const branchRestrictions: any = {
   IMU_BMI270: ["l0ud/main", "l0ud/sfusion"],
@@ -60,7 +72,7 @@ const branchRestrictions: any = {
   IMU_MPU6050_NODMP: ["furrycoding/mpu6050_nodmp"],
 };
 
-type DonwloadedFile = { infos: FirmwareFile; binary: ArrayBuffer };
+type DownloadedFile = { infos: FirmwareFile; binary: ArrayBuffer };
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -70,18 +82,6 @@ export function useFirmwareTool() {
   const { serialConnect, espRef, disconnect, setWifi } = useSerial();
 
   const formValue = form.watch();
-
-  function fillMissingValues(target: any, defaults: any) {
-    const result = Array.isArray(defaults) ? [...defaults] : { ...defaults };
-    for (const key in target) {
-      if (typeof target[key] === "object" && typeof result[key] === "object") {
-        result[key] = fillMissingValues(target[key], result[key]);
-      } else {
-        result[key] = target[key];
-      }
-    }
-    return result;
-  }
 
   useEffect(() => {
     const params = new URL(window.location.href).searchParams;
@@ -99,10 +99,16 @@ export function useFirmwareTool() {
           pathParams: { board: config.board.type },
         }).then((data) => {
           if (!data) return;
-          form.reset(fillMissingValues(config, data), {
-            keepDirty: false,
-            keepTouched: false,
-          });
+          form.reset(
+            fillMissingValues(
+              config,
+              fillMissingValues(data, defaultFormValues),
+            ),
+            {
+              keepDirty: false,
+              keepTouched: false,
+            },
+          );
         });
       }
     } catch (e) {
@@ -135,7 +141,7 @@ export function useFirmwareTool() {
   const [activeStep, setActiveStep] = useState(0);
   const [statusMessage, setStatusMessage] = useState("");
   const [error, setError] = useState<ErrorMessage | null>(null);
-  const downloadedFilesRef = useRef<DonwloadedFile[] | null>(null);
+  const downloadedFilesRef = useRef<DownloadedFile[] | null>(null);
   const [statusValue, setStatusValue] = useState<number | null>(null);
 
   const { mutateAsync } = useFirmwareControllerBuildAll({});

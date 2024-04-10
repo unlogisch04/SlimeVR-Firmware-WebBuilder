@@ -26,6 +26,10 @@ import {
   useFirmwareControllerGetVersions,
 } from "../../firmwareApi/firmwareComponents";
 import { BuildResponse, Imudto } from "../../firmwareApi/firmwareSchemas";
+import {
+  defaultFormValues,
+  fillMissingValues,
+} from "../../hooks/firmware-tool";
 
 export function ConfigurationForm({
   form,
@@ -68,7 +72,7 @@ export function ConfigurationForm({
         build.version = version;
         build.wifi = wifi;
 
-        reset(build);
+        reset(fillMissingValues(build, defaultFormValues));
       });
     }
   };
