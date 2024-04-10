@@ -1,16 +1,24 @@
 version: '3'
 services:
   slimevr-database:
-    image: "postgres"
+    image: postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: slimevr
+      PGUSER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: 123456
       POSTGRES_DB: slimevr
     volumes:
       - database-volume:/var/lib/postgresql/data
     networks:
       - slimevr-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}"]
+      interval: 1m
+      timeout: 5s
+      start_period: 2m
+      start_interval: 1s
+      retries: 5
   slimevr-api:
     build:
       context: .
@@ -21,8 +29,10 @@ services:
     ports:
       - 127.0.0.1:3000:3000
     depends_on:
-      - slimevr-database
-      - slimevr-api-s3
+      slimevr-database:
+        condition: service_healthy
+      slimevr-api-s3:
+        condition: service_healthy
     volumes:
       - ./src:/app/src
       - ./test:/app/test
@@ -38,7 +48,7 @@ services:
       POSTGRES_PORT: ${POSTGRES_PORT}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DATABASE: ${POSTGRES_DATABASE}
+      POSTGRES_DB: ${POSTGRES_DB}
       S3_ENDPOINT: ${S3_ENDPOINT}
       S3_BUILDS_BUCKET: ${S3_BUILDS_BUCKET}
       GITHUB_AUTH: ${GITHUB_AUTH}
@@ -56,10 +66,18 @@ services:
     restart: unless-stopped
     networks:
       - slimevr-network
+    healthcheck:
+      test: ["CMD", "mc", "ping", "local", "-c", "1"]
+      interval: 1m
+      timeout: 5s
+      start_period: 2m
+      start_interval: 1s
+      retries: 5
   slimevr-api-s3-init:
     image: minio/mc:latest
     depends_on:
-      - slimevr-api-s3
+      slimevr-api-s3:
+        condition: service_healthy
     networks:
       - slimevr-network
     secrets:
@@ -67,11 +85,10 @@ services:
       - secret_key
     entrypoint: >
       /bin/sh -xc "
-      sleep 5;
       /usr/bin/mc alias set slimevr http://slimevr-api-s3:9099 `cat /run/secrets/access_key` `cat /run/secrets/secret_key`;
       /usr/bin/mc admin update slimevr;
       /usr/bin/mc mb --ignore-existing slimevr/slimevr-firmware-builds;
-      /usr/bin/mc anonymous set public slimevr/slimevr-firmware-builds;
+      /usr/bin/mc anonymous set download slimevr/slimevr-firmware-builds;
       exit 0;
       "
 

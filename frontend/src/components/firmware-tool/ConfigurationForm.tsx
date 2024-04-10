@@ -67,7 +67,7 @@ export function ConfigurationForm({
         pathParams: { board: boardType },
       }).then((data) => {
         if (!data) return;
-        const build = fillMissingValues(data as any, defaultFormValues);
+        const build = fillMissingValues(data, defaultFormValues);
 
         build.version = version;
         build.wifi = wifi;
