@@ -131,9 +131,6 @@ export function FirmwareTool() {
           )
         </p>
         <p>
-          {ghLink("nekomona", "unify-fusion")} - Unifying sensor fusion code
-        </p>
-        <p>
           {ghLink("l0ud", "main", "SlimeVR-Tracker-ESP-BMI270")} - Adds support
           for BMI270
         </p>
