@@ -330,7 +330,7 @@ export function useFirmwareTool() {
   const buildConfig = async (buildSettings: any, saveZip: boolean) => {
     const { wifi, ...data }: any = buildSettings;
 
-    setStatusMessage("Start building");
+    setStatusMessage("Validating configuration");
     setActiveStep(1);
 
     for (const imu of buildSettings.imus?.map(
@@ -363,6 +363,7 @@ export function useFirmwareTool() {
     };
 
     if (!saveZip) {
+      setStatusMessage("Connecting to ESP");
       try {
         await serialConnect();
       } catch (e) {
@@ -371,6 +372,7 @@ export function useFirmwareTool() {
       }
     }
 
+    setStatusMessage("Start building");
     const res = await mutateAsync({ body: data });
 
     try {
