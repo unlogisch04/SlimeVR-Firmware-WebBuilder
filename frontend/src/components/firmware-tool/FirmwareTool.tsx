@@ -151,6 +151,10 @@ export function FirmwareTool() {
           {ghLink("wigwagwent", "lsm6dsv-with-bug-fix", "LSM6DSV16X")} - Adds
           support for LSM6DSV
         </p>
+        <p>
+          {ghLink("kounocom", "sfusion-tuned-mbe")} - Meia's 
+          sfusion with MBE (Motion bias estimation) and some tuned VQF Parameters
+        </p>
       </Alert>
       <Alert variant="filled" severity="warning" sx={{ my: 2 }}>
         IMPORTANT: {ghLink("SlimeVR", "v0.3.3")} is now being redirected to{" "}

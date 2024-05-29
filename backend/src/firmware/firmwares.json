@@ -29,5 +29,8 @@
   },
   "wigwagwent": {
     "LSM6DSV16X": ["BMI_senscal", "lsm6dsv-with-bug-fix"]
+  },
+  "kounocom": {
+    "SlimeVR-Tracker-ESP": ["sfusion-tuned-mbe"]
   }
 }

@@ -469,6 +469,12 @@ export class FirmwareService implements OnApplicationBootstrap {
         dto.board.type = BoardType.BOARD_WEMOSD1MINI;
       }
 
+      // Fake a generic Tiny Slime for defaults,
+      // then use LOLIN C3 MINI for the firmware
+      if (dto.board.type == BoardType.BOARD_TINYSLIME) {
+        dto.board.type = BoardType.BOARD_LOLIN_C3_MINI;
+      }
+
       let firmware = await Firmware.findOne({
         where: { buildConfig: dto, releaseID: release.id },
       });
