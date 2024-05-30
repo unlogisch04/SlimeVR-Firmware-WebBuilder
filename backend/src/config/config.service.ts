@@ -75,8 +75,8 @@ export class ConfigService {
 
   public getGitHubAuth() {
     var sauth = this.getValue("GITHUB_AUTH", true);
-    if ( sauth.startsWith("github_pat", 0) ||
-         sauth.startsWith("ghp_", 0))
+    if ( sauth.startsWith("github_pat") ||
+         sauth.startsWith("ghp_"))
     {
       return `Bearer ${sauth}`;
     }
