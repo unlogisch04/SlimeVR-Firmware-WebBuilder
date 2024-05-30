@@ -82,7 +82,7 @@ export class ConfigService {
     }
     else
     {
-      return `Basic: ${encode(sauth)}`;
+      return `Basic ${encode(sauth)}`;
     }
   }
 
