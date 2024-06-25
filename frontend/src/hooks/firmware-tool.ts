@@ -65,9 +65,9 @@ export function fillMissingValues(target: any, defaults: any) {
 
 const lf = new Intl.ListFormat("en");
 const branchRestrictions: any = {
-  IMU_BMI270: ["l0ud/main", "l0ud/sfusion", "kounocom/sfusion-tuned-mbe"],
-  IMU_LSM6DS3TRC: ["l0ud/sfusion", "kounocom/sfusion-tuned-mbe"],
-  IMU_LSM6DSV: ["wigwagwent/lsm6dsv-with-bug-fix", "l0ud/sfusion", "kounocom/sfusion-tuned-mbe"],
+  IMU_BMI270: ["l0ud/main", "l0ud/sfusion", "kounocom/sfusion-tuned-mbe", "SlimeVR/main"],
+  IMU_LSM6DS3TRC: ["l0ud/sfusion", "kounocom/sfusion-tuned-mbe", "SlimeVR/main"],
+  IMU_LSM6DSV: ["wigwagwent/lsm6dsv-with-bug-fix", "l0ud/sfusion", "kounocom/sfusion-tuned-mbe", "SlimeVR/main"],
   IMU_MPU6500_NODMP: ["furrycoding/mpu6050_nodmp"],
   IMU_MPU6050_NODMP: ["furrycoding/mpu6050_nodmp"],
 };

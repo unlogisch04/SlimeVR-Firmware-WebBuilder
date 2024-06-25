@@ -136,8 +136,7 @@ export function FirmwareTool() {
         </p>
         <p>
           {ghLink("l0ud", "sfusion", "SlimeVR-Tracker-ESP-BMI270")} -
-          Experimental support for BMI270 (newer codebase), ICM42688P,
-          LSM6DS3TRC, and LSM6DSV
+          [DEPRECATED] - Use SlimeVR/main instead
         </p>
         <p>
           {ghLink("furrycoding", "mpu6050_nodmp")} - Adds a new sensor that uses
