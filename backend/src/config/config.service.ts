@@ -74,14 +74,10 @@ export class ConfigService {
   }
 
   public getGitHubAuth() {
-    var sauth = this.getValue("GITHUB_AUTH", true);
-    if ( sauth.startsWith("github_pat") ||
-         sauth.startsWith("ghp_"))
-    {
+    const sauth = this.getValue("GITHUB_AUTH", true);
+    if (sauth.startsWith("github_pat") || sauth.startsWith("ghp_")) {
       return `Bearer ${sauth}`;
-    }
-    else
-    {
+    } else {
       return `Basic ${encode(sauth)}`;
     }
   }

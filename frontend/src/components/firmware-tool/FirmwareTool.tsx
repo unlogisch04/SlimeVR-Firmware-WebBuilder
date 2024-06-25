@@ -151,8 +151,8 @@ export function FirmwareTool() {
           support for LSM6DSV
         </p>
         <p>
-          {ghLink("kounocom", "sfusion-tuned-mbe")} - Meia's 
-          sfusion with MBE (Motion bias estimation) and some tuned VQF Parameters
+          {ghLink("kounocom", "sfusion-tuned-mbe")} - Meia's sfusion with MBE
+          (Motion bias estimation) and some tuned VQF Parameters
         </p>
       </Alert>
       <Alert variant="filled" severity="warning" sx={{ my: 2 }}>
