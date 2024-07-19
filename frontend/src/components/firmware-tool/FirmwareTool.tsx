@@ -82,6 +82,10 @@ export function FirmwareTool() {
         SlimeVR/vX.X.X - SlimeVR stable release(s)
         <p>{ghLink("SlimeVR", "main")} - SlimeVR development branch</p>
         <p>
+          {ghLink("SlimeVR", "feat/magnetometer-toggle")} - BNO08X magnetometer
+          toggle support
+        </p>
+        <p>
           {ghLink("deiteris", "qmc-mag-new")} - For use with the MPU6050/MPU6500
           + QMC5883L external magnetometer configuration
         </p>

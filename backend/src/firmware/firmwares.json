@@ -1,6 +1,6 @@
 {
   "SlimeVR": {
-    "SlimeVR-Tracker-ESP": ["main"]
+    "SlimeVR-Tracker-ESP": ["main", "feat/magnetometer-toggle"]
   },
   "deiteris": {
     "SlimeVR-Tracker-ESP": ["qmc-mag-new", "hmc-mag"]

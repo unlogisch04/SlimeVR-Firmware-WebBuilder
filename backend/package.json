@@ -14,7 +14,7 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint {src,apps,libs,test}/**/*.{ts,tsx}",
-    "lint:fix": "eslint --fix \"{src,apps,libs,test}/**/*.{js,jsx,ts,tsx,json}\"",
+    "lint:fix": "eslint --fix \"{src,apps,libs,test}/**/*.{js,jsx,ts,tsx,json}\" && npm run format",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
