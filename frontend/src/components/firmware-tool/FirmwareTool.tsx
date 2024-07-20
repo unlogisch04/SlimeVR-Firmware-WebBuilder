@@ -86,26 +86,6 @@ export function FirmwareTool() {
           toggle support
         </p>
         <p>
-          {ghLink("deiteris", "qmc-mag-new")} - For use with the MPU6050/MPU6500
-          + QMC5883L external magnetometer configuration
-        </p>
-        <p>
-          {ghLink("deiteris", "hmc-mag")} - For use with the MPU6050/MPU6500 +
-          HMC5883L external magnetometer configuration
-        </p>
-        <p>
-          {ghLink(
-            "TheBug233",
-            "qmc-axis-aligned-en",
-            "SlimeVR-Tracker-ESP-For-Kitkat",
-          )}{" "}
-          - Forked from "deiteris/qmc-mag-new", but XYZ axis aligned
-        </p>
-        <p>
-          {ghLink("Lupinixx", "mpu6050-fifo")} - Attempts to use a FIFO + VQF
-          filter for MPU6050/MPU6500
-        </p>
-        <p>
           {ghLink("ButterscotchV", "v0.3.3-bno-patched")} - Release
           SlimeVR/v0.3.3 with BNO patched
         </p>
@@ -126,33 +106,20 @@ export function FirmwareTool() {
           with "trackerPort" set to 6970 instead of 6969
         </p>
         <p>
-          {ghLink("ButterscotchV", "bno-dcd-save")} - Adds a save calibration
-          packet for use with the corresponding server and GUI (
-          {link(
-            "discord.com/channels/817184208525983775/1192242174536982528/1196639832890409090",
-            "Discord",
-          )}
-          )
-        </p>
-        <p>
-          {ghLink("l0ud", "main", "SlimeVR-Tracker-ESP-BMI270")} - Adds support
-          for BMI270
+          {ghLink("l0ud", "main", "SlimeVR-Tracker-ESP-BMI270")} - [DEPRECATED]
+          - Use SlimeVR/main instead (Adds support for BMI270)
         </p>
         <p>
           {ghLink("l0ud", "sfusion", "SlimeVR-Tracker-ESP-BMI270")} -
           [DEPRECATED] - Use SlimeVR/main instead
         </p>
         <p>
-          {ghLink("furrycoding", "mpu6050_nodmp")} - Adds a new sensor that uses
-          MPU6050 without the DMP (sensor fusion in software)
-        </p>
-        <p>
           {ghLink("wigwagwent", "BMI_senscal", "LSM6DSV16X")} - Adds BMI160
           sensitivity calibration to the regular calibration routine
         </p>
         <p>
-          {ghLink("wigwagwent", "lsm6dsv-with-bug-fix", "LSM6DSV16X")} - Adds
-          support for LSM6DSV
+          {ghLink("wigwagwent", "lsm6dsv-with-bug-fix", "LSM6DSV16X")} -
+          [DEPRECATED] - Use SlimeVR/main instead (Adds support for LSM6DSV)
         </p>
         <p>
           {ghLink("kounocom", "sfusion-tuned-mbe")} - Meia's sfusion with MBE

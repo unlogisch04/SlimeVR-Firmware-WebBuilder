@@ -82,8 +82,6 @@ const branchRestrictions: any = {
     "kounocom/sfusion-tuned-mbe",
     "SlimeVR/main",
   ],
-  IMU_MPU6500_NODMP: ["furrycoding/mpu6050_nodmp"],
-  IMU_MPU6050_NODMP: ["furrycoding/mpu6050_nodmp"],
   IMU_LSM6DSO: ["l0ud/sfusion", "kounocom/sfusion-tuned-mbe", "SlimeVR/main"],
   IMU_LSM6DSR: ["l0ud/sfusion", "kounocom/sfusion-tuned-mbe", "SlimeVR/main"],
   IMU_MPU6050_SF: [
