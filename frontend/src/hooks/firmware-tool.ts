@@ -110,6 +110,13 @@ export function useFirmwareTool() {
         const str = decode(params.get("config") as string);
 
         const config = JSON.parse(str);
+
+        // Migrate old "version" field to "release"
+        if (config.version) {
+          config.release = config.version;
+          config.version = undefined;
+        }
+
         // Set the initial form from the config in-case fetching fails
         form.reset(config, { keepDirty: false, keepTouched: false });
 
