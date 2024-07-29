@@ -74,7 +74,7 @@ export class GithubService {
           ...data.filter(
             ({ name }) =>
               !["SlimeVR/v0.2.0", "SlimeVR/v0.2.1", "SlimeVR/v0.2.2"].includes(
-                name,
+                `${owner}/${name}`,
               ),
           ),
         ];
