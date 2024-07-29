@@ -83,19 +83,27 @@ export function FirmwareTool() {
         guaranteed.
       </Alert>
       <Alert variant="outlined" severity="info" sx={{ my: 2 }}>
-        SlimeVR/vX.X.X - SlimeVR stable release(s)
-        {releasesLoading
-          ? "Loading branches..."
-          : releases
-              ?.filter((r) => r.isBranch)
-              ?.map((r) => (
-                <p key={`${r.owner}/${r.repo}/${r.version}`}>
-                  <Link target="_blank" rel="noopener" href={r.url}>
-                    {`${r.owner}/${r.version}`}
-                  </Link>{" "}
-                  - {r.description}
-                </p>
-              ))}
+        <p>
+          {link(
+            "github.com/SlimeVR/SlimeVR-Tracker-ESP/releases",
+            "SlimeVR/vX.X.X",
+          )}{" "}
+          - SlimeVR stable release(s)
+        </p>
+        {releasesLoading ? (
+          <p>Loading branches...</p>
+        ) : (
+          releases
+            ?.filter((r) => r.isBranch)
+            ?.map((r) => (
+              <p key={`${r.owner}/${r.repo}/${r.version}`}>
+                <Link target="_blank" rel="noopener" href={r.url}>
+                  {`${r.owner}/${r.version}`}
+                </Link>{" "}
+                - {r.description}
+              </p>
+            ))
+        )}
       </Alert>
       <Alert variant="filled" severity="warning" sx={{ my: 2 }}>
         IMPORTANT: {ghLink("SlimeVR", "v0.3.3")} is now being redirected to{" "}
