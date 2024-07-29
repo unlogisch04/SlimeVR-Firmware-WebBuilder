@@ -51,7 +51,7 @@ export class Firmware extends BaseEntity {
   static fromDTO(dto: BuildFirmwareDTO): Firmware {
     const firmware = new Firmware();
     firmware.buildStatus = BuildStatus.BUILDING;
-    firmware.buildConfig = dto;
+    firmware.buildConfig = BuildFirmwareDTO.stripRelease(dto);
 
     return firmware;
   }

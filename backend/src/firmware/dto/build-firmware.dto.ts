@@ -5,10 +5,13 @@ import { BatteryDTO, BatteryType } from "./battery.dto";
 import { BoardPins, FirmwareBoardDTO } from "./firmware-board.dto";
 import { IMUConfigDTO, IMUType } from "./imu.dto";
 import { BOARD_DEFAULTS } from "../firmware.constants";
+import { FirmwareReleaseDTO } from "./firmware-release.dto";
 
 export class BuildFirmwareDTO {
   @ApiProperty()
-  public version: string;
+  @ValidateNested()
+  @Type(() => FirmwareReleaseDTO)
+  public release: FirmwareReleaseDTO;
 
   @ApiProperty()
   @ValidateNested()
@@ -31,6 +34,8 @@ export class BuildFirmwareDTO {
   public swapAddresses?: boolean;
 
   static completeDefaults(dto: BuildFirmwareDTO): BuildFirmwareDTO {
+    FirmwareReleaseDTO.completeDefaults(dto.release);
+
     const boardDefaults = BOARD_DEFAULTS[dto.board.type];
 
     if (!dto.imus) {
@@ -96,5 +101,13 @@ export class BuildFirmwareDTO {
     }
 
     return dto;
+  }
+
+  static stripRelease(dto: BuildFirmwareDTO): BuildFirmwareDTO {
+    // Create a shallow copy with a stripped release so extra info is not included in cache keys
+    return {
+      ...dto,
+      release: FirmwareReleaseDTO.stripCopy(dto.release),
+    };
   }
 }

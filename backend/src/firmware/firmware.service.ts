@@ -13,11 +13,10 @@ import AdmZip from "adm-zip";
 import fetch from "node-fetch";
 import { BoardType } from "./dto/firmware-board.dto";
 import { exec, execSync } from "child_process";
-import { Not } from "typeorm";
+import { Equal, Not } from "typeorm";
 import { APP_CONFIG, ConfigService } from "src/config/config.service";
 import { debounceTime, filter, map, Subject } from "rxjs";
 import { BuildStatusMessage } from "./dto/build-status-message.dto";
-import { AVAILABLE_FIRMWARE_REPOS } from "./firmware.constants";
 import {
   DeleteObjectsCommand,
   ListObjectsV2Command,
@@ -26,6 +25,7 @@ import {
 } from "@aws-sdk/client-s3";
 import { InjectAws } from "aws-sdk-v3-nest";
 import { IMUConfigDTO, IMUS } from "./dto/imu.dto";
+import { FirmwareReleaseDTO } from "./dto/firmware-release.dto";
 
 @Injectable()
 export class FirmwareService implements OnApplicationBootstrap {
@@ -71,39 +71,33 @@ export class FirmwareService implements OnApplicationBootstrap {
   }
 
   public async cleanAllOldReleases() {
-    for (const [owner, repos] of Object.entries(AVAILABLE_FIRMWARE_REPOS)) {
-      for (const [repo, branches] of Object.entries(repos)) {
-        for (const branch of branches) {
-          this.cleanOldReleases(owner, repo, branch);
-        }
-      }
+    for (const release of await this.githubService.getAllFirmwareReleases()) {
+      this.cleanOldReleases(release);
     }
   }
 
-  public async cleanOldReleases(
-    owner = "SlimeVR",
-    repo = "SlimeVR-Tracker-ESP",
-    branch = "main",
-  ): Promise<void> {
-    const branchRelease = await this.githubService.getRelease(
-      owner,
-      repo,
-      branch,
-    );
+  public async cleanOldReleases(release: FirmwareReleaseDTO): Promise<void> {
+    if (!release.isBranch) return;
 
+    const branchRelease =
+      release.githubRelease ??
+      (await this.githubService.getBranchRelease(
+        release.owner,
+        release.repo,
+        release.version,
+      ));
     if (!branchRelease) return;
+
+    const strippedRelease = FirmwareReleaseDTO.stripCopy(release);
 
     const firmwares = await Firmware.find({
       where: {
         releaseID: Not(branchRelease.id),
+        buildConfig: { release: Equal(strippedRelease) },
       },
     });
 
-    const oldFirmwares = firmwares.filter(
-      ({ buildConfig: { version } }) => version === branchRelease.name,
-    );
-
-    oldFirmwares.forEach(async (firmware) => {
+    firmwares.forEach(async (firmware) => {
       await Firmware.delete({ id: firmware.id });
       await this.emptyS3Directory(
         this.appConfig.getBuildsBucket(),
@@ -433,35 +427,22 @@ export class FirmwareService implements OnApplicationBootstrap {
 
   public async buildFirmware(dto: BuildFirmwareDTO): Promise<BuildResponse> {
     try {
-      // Redirect v0.3.3 to the patched version
-      if (dto.version == "SlimeVR/v0.3.3") {
-        dto.version = "ButterscotchV/v0.3.3-bno-patched";
-      }
-
-      const [, owner, version] = RegExp(/(.*?)\/(.*)/).exec(dto.version) ?? [
-        undefined,
-        "SlimeVR",
-        dto.version,
-      ];
-      let repo = "SlimeVR-Tracker-ESP";
-
-      // TODO: Make the site say what repo to use, please
-      // If there's a matching owner
-      const ownerRepos = AVAILABLE_FIRMWARE_REPOS[owner];
-      if (ownerRepos !== undefined) {
-        for (const [repoToSearch, branches] of Object.entries(ownerRepos)) {
-          // And a matching branch
-          if (Array.isArray(branches) && branches.includes(version)) {
-            // This is the target repo *probably*
-            repo = repoToSearch;
-            break;
-          }
-        }
-      }
-
-      const release = await this.githubService.getRelease(owner, repo, version);
-
       dto = BuildFirmwareDTO.completeDefaults(dto);
+
+      // Redirect v0.3.3 to the patched version
+      if (dto.release.owner == "SlimeVR" && dto.release.version == "v0.3.3") {
+        dto.release.owner = "ButterscotchV";
+        dto.release.version = "v0.3.3-bno-patched";
+      }
+
+      const release =
+        dto.release.githubRelease ??
+        (await this.githubService.getRelease(
+          dto.release.owner,
+          dto.release.repo,
+          dto.release.version,
+          dto.release.isBranch,
+        ));
 
       // Fake a generic cheesecake board for defaults,
       // then use Wemos D1 Mini for the firmware
@@ -476,7 +457,10 @@ export class FirmwareService implements OnApplicationBootstrap {
       }
 
       let firmware = await Firmware.findOne({
-        where: { buildConfig: dto, releaseID: release.id },
+        where: {
+          buildConfig: BuildFirmwareDTO.stripRelease(dto),
+          releaseID: release.id,
+        },
       });
 
       if (!firmware) firmware = Firmware.fromDTO(dto);
@@ -498,7 +482,7 @@ export class FirmwareService implements OnApplicationBootstrap {
 
       firmware = await Firmware.save(firmware);
 
-      this.startBuildingTask(firmware, release as ReleaseDTO);
+      this.startBuildingTask(firmware, release);
 
       return new BuildResponse(firmware.id, firmware.buildStatus);
     } catch (e) {

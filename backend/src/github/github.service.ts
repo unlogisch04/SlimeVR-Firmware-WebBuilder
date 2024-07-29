@@ -5,6 +5,7 @@ import { AVAILABLE_FIRMWARE_REPOS } from "src/firmware/firmware.constants";
 import { ReleaseDTO } from "./dto/release.dto";
 import { GithubRepositoryDTO } from "./dto/repository.dto";
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
+import { FirmwareReleaseDTO } from "src/firmware/dto/firmware-release.dto";
 
 @Injectable()
 export class GithubService {
@@ -30,7 +31,7 @@ export class GithubService {
     );
   }
 
-  private async getBranchRelease(
+  async getBranchRelease(
     owner: string,
     repo: string,
     branch = "main",
@@ -49,7 +50,7 @@ export class GithubService {
 
         return {
           id: sha,
-          name: `${owner}/${branch}`,
+          name: branch,
           zipball_url: `https://github.com/${owner}/${repo}/archive/refs/heads/${branch}.zip`,
           prerelease: false,
           draft: false,
@@ -70,52 +71,69 @@ export class GithubService {
         );
 
         return [
-          ...data
-            .map(({ id, url, prerelease, draft, name, zipball_url }) => ({
-              id: `${id}`,
-              url,
-              prerelease,
-              draft,
-              name: `${owner}/${name}`,
-              zipball_url,
-            }))
-            .filter(
-              ({ name }) =>
-                ![
-                  "SlimeVR/v0.2.0",
-                  "SlimeVR/v0.2.1",
-                  "SlimeVR/v0.2.2",
-                ].includes(name),
-            ),
+          ...data.filter(
+            ({ name }) =>
+              !["SlimeVR/v0.2.0", "SlimeVR/v0.2.1", "SlimeVR/v0.2.2"].includes(
+                name,
+              ),
+          ),
         ];
       },
       5 * 60 * 1000,
     );
   }
 
-  async getAllReleases(): Promise<ReleaseDTO[]> {
-    const releases: Promise<ReleaseDTO | ReleaseDTO[]>[] = [];
+  async getAllFirmwareReleases(): Promise<FirmwareReleaseDTO[]> {
+    const releases: Promise<FirmwareReleaseDTO | FirmwareReleaseDTO[]>[] = [];
 
     for (const [owner, repos] of Object.entries(AVAILABLE_FIRMWARE_REPOS)) {
       for (const [repo, branches] of Object.entries(repos)) {
-        // Get all repo releases
-        releases.push(
-          this.getReleases(owner, repo).catch((e) => {
-            throw new Error(`Unable to fetch releases for "${owner}/${repo}"`, {
-              cause: e,
-            });
-          }),
-        );
+        // Get all repo releases for official repo
+        if (owner === "SlimeVR") {
+          releases.push(
+            this.getReleases(owner, repo)
+              .catch((e) => {
+                throw new Error(
+                  `Unable to fetch releases for "${owner}/${repo}"`,
+                  {
+                    cause: e,
+                  },
+                );
+              })
+              .then((releases) =>
+                releases.map((r) =>
+                  FirmwareReleaseDTO.completeDefaults({
+                    owner: owner,
+                    repo: repo,
+                    version: r.name,
+                    isBranch: false,
+                    githubRelease: r,
+                  }),
+                ),
+              ),
+          );
+        }
 
         // Get each branch as a release version
         for (const branch of branches) {
           releases.push(
-            this.getBranchRelease(owner, repo, branch).catch((e) => {
-              throw new Error(
-                `Unable to fetch branch release for "${owner}/${repo}/${branch}"`,
-                { cause: e },
-              );
-            }),
+            this.getBranchRelease(owner, repo, branch.branch)
+              .catch((e) => {
+                throw new Error(
+                  `Unable to fetch branch release for "${owner}/${repo}/${branch.branch}"`,
+                  { cause: e },
+                );
+              })
+              .then((r) =>
+                FirmwareReleaseDTO.completeDefaults({
+                  owner: owner,
+                  repo: repo,
+                  version: branch.branch,
+                  description: branch.description,
+                  isBranch: true,
+                  githubRelease: r,
+                }),
+              ),
           );
         }
       }
@@ -135,41 +153,14 @@ export class GithubService {
     owner: string,
     repo: string,
     version: string,
+    isBranch: boolean = false,
   ): Promise<ReleaseDTO> {
-    // TODO: Replace this with a part of the request indicating whether this is a branch or a release
-    // If there's a matching owner
-    const ownerRepos = AVAILABLE_FIRMWARE_REPOS[owner];
-    if (ownerRepos !== undefined) {
-      // And a matching repo
-      const repoBranches = ownerRepos[repo];
-      if (repoBranches !== undefined) {
-        // And a matching branch
-        if (repoBranches.includes(version)) {
-          // Then return the branch release instead of looking for a version
-          return this.getBranchRelease(owner, repo, version);
-        }
-      }
+    if (isBranch) {
+      return this.getBranchRelease(owner, repo, version);
+    } else {
+      return this.getReleases(owner, repo).then((releases) =>
+        releases.find((r) => r.name === version),
+      );
     }
-
-    return this.cacheManager.wrap(
-      `/repos/${owner}/${repo}/releases/tags/${version}`,
-      async () => {
-        const {
-          data: { id, url, prerelease, draft, name, zipball_url },
-        } = await this.fetchSerice.get<ReleaseDTO>(
-          `/repos/${owner}/${repo}/releases/tags/${version}`,
-          {},
-        );
-        return {
-          id: `${id}`,
-          url,
-          prerelease,
-          draft,
-          name: `${owner}/${name}`,
-          zipball_url,
-        };
-      },
-      5 * 60 * 1000,
-    );
   }
 }

@@ -17,7 +17,6 @@ import {
   ApiResponse,
   ApiTags,
 } from "@nestjs/swagger";
-import { ReleaseDTO } from "src/github/dto/release.dto";
 import { GithubService } from "src/github/github.service";
 import { BatteryType } from "./dto/battery.dto";
 import { BoardTypeBoard } from "./dto/board-type-board.dto";
@@ -28,6 +27,7 @@ import { IMUDTO, IMUS } from "./dto/imu.dto";
 import { Firmware } from "./entity/firmware.entity";
 import { VersionNotFoundError } from "./errors/version-not-found.error";
 import { FirmwareService } from "./firmware.service";
+import { FirmwareReleaseDTO } from "./dto/firmware-release.dto";
 
 @ApiTags("slimevr")
 @Controller("firmwares")
@@ -75,9 +75,9 @@ export class FirmwareController {
   @Get("/versions")
   @Header("Cache-Control", "private, max-age=300")
   @Header("CDN-Cache-Control", "public, max-age=7200")
-  @ApiOkResponse({ type: [ReleaseDTO] })
-  async getVersions(): Promise<ReleaseDTO[]> {
-    return this.githubService.getAllReleases();
+  @ApiOkResponse({ type: [FirmwareReleaseDTO] })
+  async getVersions(): Promise<FirmwareReleaseDTO[]> {
+    return this.githubService.getAllFirmwareReleases();
   }
 
   @Get("/imus")

@@ -25,6 +25,7 @@ export class BoardPins {
   public imuSCL: string;
 
   @ApiProperty({ required: false, default: "2" })
+  @IsOptional()
   public led?: string;
 }
 

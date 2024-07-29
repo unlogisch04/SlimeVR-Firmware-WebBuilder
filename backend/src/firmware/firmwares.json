@@ -1,23 +1,70 @@
 {
   "SlimeVR": {
-    "SlimeVR-Tracker-ESP": ["main", "feat/magnetometer-toggle"]
+    "SlimeVR-Tracker-ESP": [
+      {
+        "branch": "main",
+        "description": "SlimeVR development branch"
+      },
+      {
+        "branch": "feat/magnetometer-toggle",
+        "description": "BNO08X magnetometer toggle support"
+      }
+    ]
   },
   "ButterscotchV": {
     "SlimeVR-Tracker-ESP": [
-      "v0.3.3-bno-patched",
-      "mag-enabled-stable",
-      "mag-enabled-main",
-      "alt-port-stable",
-      "alt-port-main"
+      {
+        "branch": "v0.3.3-bno-patched",
+        "description": "Release SlimeVR/v0.3.3 with BNO patched"
+      },
+      {
+        "branch": "mag-enabled-stable",
+        "description": "The latest stable firmware release with 9 DoF ICM20948 and BNO0xx (magnetometer enabled)"
+      },
+      {
+        "branch": "mag-enabled-main",
+        "description": "Based off SlimeVR/main with 9 DoF ICM20948 and BNO0xx (magnetometer enabled)"
+      },
+      {
+        "branch": "alt-port-stable",
+        "description": "The latest stable firmware release with \"trackerPort\" set to 6970 instead of 6969"
+      },
+      {
+        "branch": "alt-port-main",
+        "description": "Based off SlimeVR/main with \"trackerPort\" set to 6970 instead of 6969"
+      }
     ]
   },
   "l0ud": {
-    "SlimeVR-Tracker-ESP-BMI270": ["main", "sfusion"]
+    "SlimeVR-Tracker-ESP-BMI270": [
+      {
+        "branch": "main",
+        "description": "[DEPRECATED] - Use SlimeVR/main instead (Adds support for BMI270)"
+      },
+      {
+        "branch": "sfusion",
+        "description": "[DEPRECATED] - Use SlimeVR/main instead"
+      }
+    ]
   },
   "wigwagwent": {
-    "LSM6DSV16X": ["BMI_senscal", "lsm6dsv-with-bug-fix"]
+    "LSM6DSV16X": [
+      {
+        "branch": "BMI_senscal",
+        "description": "Adds BMI160 sensitivity calibration to the regular calibration routine"
+      },
+      {
+        "branch": "lsm6dsv-with-bug-fix",
+        "description": "[DEPRECATED] - Use SlimeVR/main instead (Adds support for LSM6DSV)"
+      }
+    ]
   },
   "kounocom": {
-    "SlimeVR-Tracker-ESP": ["sfusion-tuned-mbe"]
+    "SlimeVR-Tracker-ESP": [
+      {
+        "branch": "sfusion-tuned-mbe",
+        "description": "Meia's sfusion with MBE (Motion bias estimation) and some tuned VQF Parameters"
+      }
+    ]
   }
 }
