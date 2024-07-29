@@ -102,6 +102,11 @@ export class FirmwareController {
   @ApiOkResponse({ type: BuildFirmwareDTO })
   getDefaultConfig(@Param("board") board: BoardType): BuildFirmwareDTO {
     const dto = new BuildFirmwareDTO();
+    dto.release = {
+      owner: "SlimeVR",
+      repo: "SlimeVR-Tracker-ESP",
+      version: "main",
+    };
     dto.board = new FirmwareBoardDTO();
     dto.board.type = board;
 
