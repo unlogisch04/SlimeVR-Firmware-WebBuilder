@@ -45,7 +45,7 @@ export function ConfigurationForm({
   const { serialSupported } = useSerial();
   const { handleSubmit, formState, control, watch, reset } = form;
 
-  const version = watch("version");
+  const release = watch("release");
   const wifi = watch("wifi");
   const enableLed = watch("board.enableLed");
 
@@ -69,7 +69,7 @@ export function ConfigurationForm({
         if (!data) return;
         const build = fillMissingValues(data, defaultFormValues);
 
-        build.version = version;
+        build.release = release;
         build.wifi = wifi;
 
         reset(build);
@@ -86,6 +86,20 @@ export function ConfigurationForm({
     data.imus = data.imus
       .filter(({ enabled }: { enabled: boolean }) => !!enabled)
       .map(({ enabled, ...imu }: any) => ({ ...imu }));
+
+    const selRelease = releases?.find(
+      (r) => `${r.owner}/${r.version}` === data.release,
+    );
+    if (!selRelease) {
+      throw new Error("Selected release could not be found.");
+    }
+    // Strip release data
+    data.release = {
+      owner: selRelease.owner,
+      repo: selRelease.repo,
+      version: selRelease.version,
+    };
+
     nextStep(data, saveZip);
   };
 
@@ -96,17 +110,17 @@ export function ConfigurationForm({
           <FormControl fullWidth>
             {
               <Controller
-                name={"version"}
+                name={"release"}
                 control={control}
                 rules={{ required: true }}
                 render={({ field: { onChange, value } }) => (
                   <>
-                    <InputLabel id="version-label">Firmware Version</InputLabel>
+                    <InputLabel id="release-label">Firmware Version</InputLabel>
                     <Select
-                      labelId="version-label"
+                      labelId="release-label"
                       label="Firmware Version"
                       value={releasesLoading ? "loading" : value || "none"}
-                      error={!!errors.version}
+                      error={!!errors.release}
                       onChange={onChange}
                     >
                       {releasesLoading && (
@@ -118,9 +132,12 @@ export function ConfigurationForm({
                         Please select the firmware version
                       </MenuItem>
                       {!releasesLoading &&
-                        releases?.map((item) => (
-                          <MenuItem key={item.name} value={item.name}>
-                            {item.name}
+                        releases?.map((item, index) => (
+                          <MenuItem
+                            key={index}
+                            value={`${item.owner}/${item.version}`}
+                          >
+                            {`${item.owner}/${item.version}`}
                           </MenuItem>
                         ))}
                     </Select>

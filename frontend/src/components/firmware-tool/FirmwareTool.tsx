@@ -16,6 +16,7 @@ import { ProgressStep } from "./ProgressStep";
 import { useSerial } from "../../hooks/serial";
 import { useFirmwareTool } from "../../hooks/firmware-tool";
 import { useState } from "react";
+import { useFirmwareControllerGetVersions } from "../../firmwareApi/firmwareComponents";
 
 const steps = [
   "Configuration",
@@ -63,6 +64,9 @@ export function FirmwareTool() {
 
   const [saveZip, setSaveZip] = useState(false);
 
+  const { data: releases, isLoading: releasesLoading } =
+    useFirmwareControllerGetVersions({});
+
   return (
     <Container component="main" maxWidth="md" sx={{ my: 3 }}>
       {!serialSupported && (
@@ -80,51 +84,18 @@ export function FirmwareTool() {
       </Alert>
       <Alert variant="outlined" severity="info" sx={{ my: 2 }}>
         SlimeVR/vX.X.X - SlimeVR stable release(s)
-        <p>{ghLink("SlimeVR", "main")} - SlimeVR development branch</p>
-        <p>
-          {ghLink("SlimeVR", "feat/magnetometer-toggle")} - BNO08X magnetometer
-          toggle support
-        </p>
-        <p>
-          {ghLink("ButterscotchV", "v0.3.3-bno-patched")} - Release
-          SlimeVR/v0.3.3 with BNO patched
-        </p>
-        <p>
-          {ghLink("ButterscotchV", "mag-enabled-stable")} - The latest stable
-          firmware release with 9 DoF ICM20948 and BNO0xx (magnetometer enabled)
-        </p>
-        <p>
-          {ghLink("ButterscotchV", "mag-enabled-main")} - Based off SlimeVR/main
-          with 9 DoF ICM20948 and BNO0xx (magnetometer enabled)
-        </p>
-        <p>
-          {ghLink("ButterscotchV", "alt-port-stable")} - The latest stable
-          firmware release with "trackerPort" set to 6970 instead of 6969
-        </p>
-        <p>
-          {ghLink("ButterscotchV", "alt-port-main")} - Based off SlimeVR/main
-          with "trackerPort" set to 6970 instead of 6969
-        </p>
-        <p>
-          {ghLink("l0ud", "main", "SlimeVR-Tracker-ESP-BMI270")} - [DEPRECATED]
-          - Use SlimeVR/main instead (Adds support for BMI270)
-        </p>
-        <p>
-          {ghLink("l0ud", "sfusion", "SlimeVR-Tracker-ESP-BMI270")} -
-          [DEPRECATED] - Use SlimeVR/main instead
-        </p>
-        <p>
-          {ghLink("wigwagwent", "BMI_senscal", "LSM6DSV16X")} - Adds BMI160
-          sensitivity calibration to the regular calibration routine
-        </p>
-        <p>
-          {ghLink("wigwagwent", "lsm6dsv-with-bug-fix", "LSM6DSV16X")} -
-          [DEPRECATED] - Use SlimeVR/main instead (Adds support for LSM6DSV)
-        </p>
-        <p>
-          {ghLink("kounocom", "sfusion-tuned-mbe")} - Meia's sfusion with MBE
-          (Motion bias estimation) and some tuned VQF Parameters
-        </p>
+        {releasesLoading
+          ? "Loading branches..."
+          : releases
+              ?.filter((r) => r.isBranch)
+              ?.map((r) => (
+                <p key={`${r.owner}/${r.repo}/${r.version}`}>
+                  <Link target="_blank" rel="noopener" href={r.url}>
+                    {`${r.owner}/${r.version}`}
+                  </Link>{" "}
+                  - {r.description}
+                </p>
+              ))}
       </Alert>
       <Alert variant="filled" severity="warning" sx={{ my: 2 }}>
         IMPORTANT: {ghLink("SlimeVR", "v0.3.3")} is now being redirected to{" "}

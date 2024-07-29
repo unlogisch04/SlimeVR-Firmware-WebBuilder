@@ -3,6 +3,25 @@
  *
  * @version 1.0
  */
+export type ReleaseDTO = {
+  id: string;
+  url: string;
+  name: string;
+  zipball_url: string;
+  prerelease: boolean;
+  draft: boolean;
+};
+
+export type FirmwareReleaseDTO = {
+  owner: string;
+  repo?: string;
+  version: string;
+  isBranch?: boolean;
+  description?: string;
+  url?: string;
+  githubRelease?: ReleaseDTO;
+};
+
 export type BoardPins = {
   imuSDA: string;
   imuSCL: string;
@@ -82,7 +101,7 @@ export type BatteryDTO = {
 };
 
 export type BuildFirmwareDTO = {
-  version: string;
+  release: FirmwareReleaseDTO;
   board: FirmwareBoardDTO;
   imus: IMUConfigDTO[];
   battery?: BatteryDTO;
@@ -131,15 +150,6 @@ export type BoardTypeBoard = {
     | "BOARD_ES32C3DEVKITM1"
     | "BOARD_CHEESECAKE"
     | "BOARD_TINYSLIME";
-};
-
-export type ReleaseDTO = {
-  id: string;
-  url: string;
-  name: string;
-  zipball_url: string;
-  prerelease: boolean;
-  draft: boolean;
 };
 
 export type Imudto = {

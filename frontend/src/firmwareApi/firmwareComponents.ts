@@ -232,7 +232,8 @@ export const useFirmwareControllerGetBoardsTypes = <
 export type FirmwareControllerGetVersionsError =
   Fetcher.ErrorWrapper<undefined>;
 
-export type FirmwareControllerGetVersionsResponse = Schemas.ReleaseDTO[];
+export type FirmwareControllerGetVersionsResponse =
+  Schemas.FirmwareReleaseDTO[];
 
 export type FirmwareControllerGetVersionsVariables =
   FirmwareContext["fetcherOptions"];

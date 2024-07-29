@@ -12,7 +12,7 @@ import {
 import { downloadZip } from "client-zip";
 
 export const defaultFormValues = {
-  version: null,
+  release: null,
   board: {
     type: null,
     pins: {
@@ -147,7 +147,7 @@ export function useFirmwareTool() {
   }, []);
 
   useEffect(() => {
-    if (formValue && formValue.board.type && formValue.version) {
+    if (formValue && formValue.board.type && formValue.release) {
       const { wifi, ...data } = formValue;
       const json = encode(JSON.stringify(data));
       window.history.replaceState(null, "", `?config=${json}`);
@@ -356,7 +356,12 @@ export function useFirmwareTool() {
       (imu: { type: string }) => imu.type,
     ) ?? []) {
       const branches: string[] | undefined = branchRestrictions[imu];
-      if (branches && !branches.includes(buildSettings.version)) {
+      if (
+        branches &&
+        !branches.includes(
+          `${buildSettings.release.owner}/${buildSettings.release.version}`,
+        )
+      ) {
         setError({
           title: "Invalid configuration",
           message: `${imu} is only supported by ${lf.format(branches)}.`,
