@@ -431,8 +431,10 @@ export class FirmwareService implements OnApplicationBootstrap {
 
       // Redirect v0.3.3 to the patched version
       if (dto.release.owner == "SlimeVR" && dto.release.version == "v0.3.3") {
-        dto.release.owner = "ButterscotchV";
-        dto.release.version = "v0.3.3-bno-patched";
+        dto.release = FirmwareReleaseDTO.completeDefaults({
+          owner: "ButterscotchV",
+          version: "v0.3.3-bno-patched",
+        });
       }
 
       const release =

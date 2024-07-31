@@ -404,7 +404,21 @@ export function useFirmwareTool() {
     }
 
     setStatusMessage("Start building");
-    const res = await mutateAsync({ body: data });
+    const res = await mutateAsync({ body: data }).catch((e) => {
+      // Seems this is usually required lol
+      e.toString = Error.prototype.toString;
+      setError({
+        title: "Unable to build the firmware",
+        message: "Unknown server error.",
+        action: () => {
+          setError(null);
+          buildConfig(buildSettings, saveZip);
+        },
+        actionText: "Retry",
+        consoleOutput: String(e),
+      });
+      throw e;
+    });
 
     try {
       const buildFailedError = {
