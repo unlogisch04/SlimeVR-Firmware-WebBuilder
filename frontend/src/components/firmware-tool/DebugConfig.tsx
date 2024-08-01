@@ -11,13 +11,7 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Controller } from "react-hook-form";
 
-export function DebugConfig({
-  control,
-  errors,
-}: {
-  control: any;
-  errors: any;
-}) {
+export function DebugConfig({ control }: { control: any; errors: any }) {
   return (
     <Accordion variant="outlined">
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
