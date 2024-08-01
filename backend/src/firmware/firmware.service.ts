@@ -272,7 +272,6 @@ export class FirmwareService implements OnApplicationBootstrap {
       "BMI160_TEMPCAL_DEBUG",
       debug.bmi160TempcalDebug,
     );
-    file = this.applyDefine(file, "BMI160_DEBUG", debug.bmi160Debug);
     file = this.applyDefine(file, "BMI160_USE_SENSCAL", debug.bmi160UseSenscal);
     return file;
   }

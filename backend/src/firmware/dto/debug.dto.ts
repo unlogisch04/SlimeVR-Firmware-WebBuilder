@@ -16,9 +16,6 @@ export class DebugDTO {
   @ApiProperty({ default: false })
   public bmi160TempcalDebug: boolean = false;
 
-  @ApiProperty({ default: false })
-  public bmi160Debug: boolean = false;
-
   @ApiProperty({ default: true })
   public bmi160UseSenscal: boolean = true;
 }
