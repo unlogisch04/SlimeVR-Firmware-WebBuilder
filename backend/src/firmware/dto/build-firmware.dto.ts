@@ -1,11 +1,12 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import { IsOptional, ValidateNested } from "class-validator";
-import { BatteryDTO, BatteryType } from "./battery.dto";
+import { BatteryDTO } from "./battery.dto";
 import { BoardPins, FirmwareBoardDTO } from "./firmware-board.dto";
 import { IMUConfigDTO, IMUType } from "./imu.dto";
 import { BOARD_DEFAULTS } from "../firmware.constants";
 import { FirmwareReleaseDTO } from "./firmware-release.dto";
+import { DebugDTO } from "./debug.dto";
 
 export class BuildFirmwareDTO {
   @ApiProperty()
@@ -29,9 +30,15 @@ export class BuildFirmwareDTO {
   @IsOptional()
   public battery?: BatteryDTO;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, default: false })
   @IsOptional()
-  public swapAddresses?: boolean;
+  public swapAddresses: boolean = false;
+
+  @ApiProperty({ required: false })
+  @ValidateNested()
+  @Type(() => DebugDTO)
+  @IsOptional()
+  public debug?: DebugDTO;
 
   static completeDefaults(dto: BuildFirmwareDTO): BuildFirmwareDTO {
     FirmwareReleaseDTO.completeDefaults(dto.release);
@@ -70,9 +77,6 @@ export class BuildFirmwareDTO {
     if (!dto.battery) {
       dto.battery = new BatteryDTO();
     }
-    if (!dto.battery.type) {
-      dto.battery.type = BatteryType.BAT_EXTERNAL;
-    }
     if (dto.battery.resistance === undefined) {
       dto.battery.resistance =
         boardDefaults["BATTERY_SHIELD_RESISTANCE"] ?? 180;
@@ -96,8 +100,8 @@ export class BuildFirmwareDTO {
       );
     }
 
-    if (dto.swapAddresses === undefined) {
-      dto.swapAddresses = false;
+    if (!dto.debug) {
+      dto.debug = new DebugDTO();
     }
 
     return dto;

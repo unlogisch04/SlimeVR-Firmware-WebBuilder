@@ -6,7 +6,7 @@ import { BuildResponse } from "./dto/build-response.dto";
 import { BuildStatus, Firmware } from "./entity/firmware.entity";
 import { VersionNotFoundExeption } from "./errors/version-not-found.error";
 import os from "os";
-import fs from "fs";
+import fs, { writeFileSync } from "fs";
 import { mkdtemp, readdir, readFile, rename, rm, writeFile } from "fs/promises";
 import path, { join } from "path";
 import AdmZip from "adm-zip";
@@ -26,6 +26,7 @@ import {
 import { InjectAws } from "aws-sdk-v3-nest";
 import { IMUConfigDTO, IMUS } from "./dto/imu.dto";
 import { FirmwareReleaseDTO } from "./dto/firmware-release.dto";
+import { DebugDTO } from "./dto/debug.dto";
 
 @Injectable()
 export class FirmwareService implements OnApplicationBootstrap {
@@ -183,7 +184,7 @@ export class FirmwareService implements OnApplicationBootstrap {
   /**
    * Returns the content of the define.h based on the board config and imus config
    */
-  public getDefines(boardConfig: BuildFirmwareDTO) {
+  private getDefines(boardConfig: BuildFirmwareDTO) {
     const rotationToFirmware = function (rotation: number): number {
       // Reduce the angle to its lowest equivalent form,
       // negate it to match the firmware rotation direction,
@@ -252,6 +253,34 @@ export class FirmwareService implements OnApplicationBootstrap {
             boardConfig.board.enableLed ? boardConfig.board.pins.led : 255
           }
         `;
+  }
+
+  private applyDefine(file: string, define: string, value: any): string {
+    return file.replaceAll(
+      new RegExp(`^\\W*#define\\W+${define}\\W+[^\\/\\n]+`, "gmi"),
+      `#define ${define} ${value} `,
+    );
+  }
+
+  private applyDebug(file: string, debug: DebugDTO): string {
+    file = this.applyDefine(file, "USE_6_AXIS", debug.use6Axis);
+    file = this.applyDefine(file, "OPTIMIZE_UPDATES", debug.optimizeUpdates);
+    file = this.applyDefine(file, "COMPLIANCE_MODE", debug.complianceMode);
+    file = this.applyDefine(file, "BMI160_USE_TEMPCAL", debug.bmi160UseTempcal);
+    file = this.applyDefine(
+      file,
+      "BMI160_TEMPCAL_DEBUG",
+      debug.bmi160TempcalDebug,
+    );
+    file = this.applyDefine(file, "BMI160_DEBUG", debug.bmi160Debug);
+    file = this.applyDefine(file, "BMI160_USE_SENSCAL", debug.bmi160UseSenscal);
+    return file;
+  }
+
+  private async modifyFile(file: string, action: (contents: string) => string) {
+    await readFile(file, { encoding: "utf-8" }).then((f) =>
+      writeFileSync(file, action(f)),
+    );
   }
 
   private async startBuildingTask(firmware: Firmware, release: ReleaseDTO) {
@@ -323,6 +352,15 @@ export class FirmwareService implements OnApplicationBootstrap {
       await rename(
         join(rootFoler, "platformio-tools.ini"),
         join(rootFoler, "platformio.ini"),
+      );
+
+      // Modify debug.h and defines_bmi160.h
+      await this.modifyFile(path.join(rootFoler, "src", "debug.h"), (f) =>
+        this.applyDebug(f, firmware.buildConfig.debug),
+      );
+      await this.modifyFile(
+        path.join(rootFoler, "src", "defines_bmi160.h"),
+        (f) => this.applyDebug(f, firmware.buildConfig.debug),
       );
 
       this.buildStatusSubject.next({

@@ -9,9 +9,9 @@ export enum BatteryType {
 }
 
 export class BatteryDTO {
-  @ApiProperty({ enum: BatteryType })
+  @ApiProperty({ enum: BatteryType, default: BatteryType.BAT_EXTERNAL })
   @IsEnum(BatteryType)
-  public type: BatteryType;
+  public type: BatteryType = BatteryType.BAT_EXTERNAL;
 
   @ApiProperty({ default: 180 })
   public resistance: number;
