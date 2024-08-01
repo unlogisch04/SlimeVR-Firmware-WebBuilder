@@ -19,11 +19,11 @@
       },
       {
         "branch": "mag-enabled-stable",
-        "description": "The latest stable firmware release with 9 DoF ICM20948 and BNO0xx (magnetometer enabled)"
+        "description": "[DEPRECATED] - Disable \"Use 6 Axis\" in debug settings to enable magnetometer"
       },
       {
         "branch": "mag-enabled-main",
-        "description": "Based off SlimeVR/main with 9 DoF ICM20948 and BNO0xx (magnetometer enabled)"
+        "description": "[DEPRECATED] - Disable \"Use 6 Axis\" in debug settings to enable magnetometer"
       },
       {
         "branch": "alt-port-stable",

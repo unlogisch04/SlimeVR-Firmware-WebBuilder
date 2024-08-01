@@ -30,6 +30,7 @@ import {
   defaultFormValues,
   fillMissingValues,
 } from "../../hooks/firmware-tool";
+import { DebugConfig } from "./DebugConfig";
 
 export function ConfigurationForm({
   form,
@@ -322,6 +323,9 @@ export function ConfigurationForm({
         </Grid>
         <Grid item xs={12} sm={12}>
           <WiFiConfig errors={errors} control={control}></WiFiConfig>
+        </Grid>
+        <Grid item xs={12} sm={12}>
+          <DebugConfig errors={errors} control={control}></DebugConfig>
         </Grid>
         <Grid item xs={12} sm={12}>
           <Button

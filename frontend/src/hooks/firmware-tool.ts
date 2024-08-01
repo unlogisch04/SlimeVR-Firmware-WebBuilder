@@ -45,6 +45,14 @@ export const defaultFormValues = {
     pin: null,
   },
   swapAddresses: false,
+  debug: {
+    use6Axis: true,
+    optimizeUpdates: true,
+    complianceMode: true,
+    bmi160UseTempcal: true,
+    bmi160TempcalDebug: false,
+    bmi160UseSenscal: true,
+  },
   wifi: {
     ssid: null,
     password: null,

@@ -30,7 +30,7 @@ export function WiFiConfig({ control, errors }: { control: any; errors: any }) {
               </p>
             </Alert>
           </Grid>
-          <Grid item xs={12} sm={12}>
+          <Grid item xs={12} sm={6}>
             <FormControl fullWidth>
               <Controller
                 name={"wifi.ssid"}
@@ -49,7 +49,7 @@ export function WiFiConfig({ control, errors }: { control: any; errors: any }) {
               />
             </FormControl>
           </Grid>
-          <Grid item xs={12} sm={12}>
+          <Grid item xs={12} sm={6}>
             <FormControl fullWidth>
               <Controller
                 name={"wifi.password"}
