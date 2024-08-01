@@ -6,7 +6,7 @@ import { BuildResponse } from "./dto/build-response.dto";
 import { BuildStatus, Firmware } from "./entity/firmware.entity";
 import { VersionNotFoundExeption } from "./errors/version-not-found.error";
 import os from "os";
-import fs, { writeFileSync } from "fs";
+import fs from "fs";
 import { mkdtemp, readdir, readFile, rename, rm, writeFile } from "fs/promises";
 import path, { join } from "path";
 import AdmZip from "adm-zip";
@@ -277,9 +277,8 @@ export class FirmwareService implements OnApplicationBootstrap {
   }
 
   private async modifyFile(file: string, action: (contents: string) => string) {
-    await readFile(file, { encoding: "utf-8" }).then((f) =>
-      writeFileSync(file, action(f)),
-    );
+    const f = await readFile(file, { encoding: "utf-8" });
+    return await writeFile(file, action(f));
   }
 
   private async startBuildingTask(firmware: Firmware, release: ReleaseDTO) {
@@ -342,25 +341,29 @@ export class FirmwareService implements OnApplicationBootstrap {
       const [root] = await readdir(releaseFolderPath);
       const rootFoler = path.join(releaseFolderPath, root);
 
-      // Overwrite the defines.h file with the one generated from the configuration
-      const newDef = this.getDefines(firmware.buildConfig);
-      console.log("[BUILD DEFINES]", newDef);
-      await writeFile(path.join(rootFoler, "src", "defines.h"), newDef);
-
       await rm(join(rootFoler, "platformio.ini"));
       await rename(
         join(rootFoler, "platformio-tools.ini"),
         join(rootFoler, "platformio.ini"),
       );
 
+      // Overwrite the defines.h file with the one generated from the configuration
+      const newDef = this.getDefines(firmware.buildConfig);
+      console.log("[BUILD DEFINES]", newDef);
+      await writeFile(path.join(rootFoler, "src", "defines.h"), newDef);
+
       // Modify debug.h and defines_bmi160.h
       await this.modifyFile(path.join(rootFoler, "src", "debug.h"), (f) =>
         this.applyDebug(f, firmware.buildConfig.debug),
-      );
+      ).catch((err) => {
+        console.error('Error while modifying "debug.h"', err);
+      });
       await this.modifyFile(
         path.join(rootFoler, "src", "defines_bmi160.h"),
         (f) => this.applyDebug(f, firmware.buildConfig.debug),
-      );
+      ).catch((err) => {
+        console.error('Error while modifying "defines_bmi160.h"', err);
+      });
 
       this.buildStatusSubject.next({
         buildStatus: BuildStatus.BUILDING,
