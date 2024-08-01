@@ -2,6 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsOptional } from "class-validator";
 import {
   AVAILABLE_FIRMWARE_REPOS,
+  Branch,
   getFirmwareBranch,
 } from "../firmware.constants";
 import { ReleaseDTO } from "src/github/dto/release.dto";
@@ -41,9 +42,11 @@ export class FirmwareReleaseDTO {
       // If there's a matching owner
       const ownerRepos = AVAILABLE_FIRMWARE_REPOS[dto.owner];
       if (ownerRepos !== undefined) {
-        for (const [repoToSearch, branches] of Object.entries(ownerRepos)) {
+        for (const [repoToSearch, branches] of Object.entries(ownerRepos) as [
+          [string, [Branch]],
+        ]) {
           // And a matching branch
-          if (Array.isArray(branches) && branches.includes(dto.version)) {
+          if (branches.some((b) => b.branch === dto.version)) {
             // This is the target repo *probably*
             dto.repo = repoToSearch;
             break;
