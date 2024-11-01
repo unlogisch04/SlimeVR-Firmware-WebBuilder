@@ -1,0 +1,5 @@
+backend/.env
+frontend/.env.production
+backend/docker/minio/access_key.txt
+backend/docker/minio/secret_key.txt
+frontend/build/
