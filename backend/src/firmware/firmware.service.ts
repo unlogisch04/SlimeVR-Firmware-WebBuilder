@@ -213,6 +213,21 @@ export class FirmwareService implements OnApplicationBootstrap {
       }, ${imuConfig.imuINT || 255})`;
     };
 
+    /**
+     * Define of one sensor entry, computes the address
+     * For 0.6.0+ firmware versions
+     */
+    const sensorDesc = (imuConfig: IMUConfigDTO, index: number) => {
+      const imu = IMUS.find(({ type }) => type === imuConfig.type);
+      if (!imu) return null;
+
+      return `SENSOR_DESC_ENTRY(${imuConfig.type}, ${
+        index <= 0 ? primaryImuAddress : secondaryImuAddress
+      }, ${rotationToFirmware(imuConfig.rotation)}, DIRECT_WIRE(PIN_IMU_SCL, PIN_IMU_SDA), ${
+        index <= 0 ? "false" : "true"
+      }, DIRECT_PIN(${imuConfig.imuINT || 255}), 0 )`;
+    };
+
     // This is to deal with old firmware versions where two imus were always declared,
     // I just use the values of the first one if I only have one
     const secondImu =
@@ -228,6 +243,8 @@ export class FirmwareService implements OnApplicationBootstrap {
           #define SECOND_IMU_ROTATION ${rotationToFirmware(secondImu.rotation)}
 
           #define MAX_IMU_COUNT ${boardConfig.imus.length}
+          #define MAX_SENSORS_COUNT ${boardConfig.imus.length}
+          #define TRACKER_TYPE 0
 
           #ifndef IMU_DESC_LIST
           #define IMU_DESC_LIST \\
@@ -252,6 +269,19 @@ export class FirmwareService implements OnApplicationBootstrap {
           #define LED_PIN ${
             boardConfig.board.enableLed ? boardConfig.board.pins.led : 255
           }
+
+          #define PRIMARY_IMU_OPTIONAL false
+          #define SECONDARY_IMU_OPTIONAL true
+
+          #ifndef SENSOR_DESC_LIST
+          #define SENSOR_DESC_LIST \\
+                ${boardConfig.imus
+                  .map(sensorDesc)
+                  .filter((imu) => !!imu)
+                  .join(" \\\n\t\t ")}
+          #endif
+
+
         `;
   }
 
