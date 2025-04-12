@@ -198,8 +198,8 @@ export class FirmwareService implements OnApplicationBootstrap {
     let primaryImuAddress = "PRIMARY_IMU_ADDRESS_ONE";
     let secondaryImuAddress = "SECONDARY_IMU_ADDRESS_TWO";
     if (boardConfig.swapAddresses) {
-      primaryImuAddress = "PRIMARY_IMU_ADDRESS_TWO";
-      secondaryImuAddress = "SECONDARY_IMU_ADDRESS_ONE";
+      primaryImuAddress = "SECONDARY_IMU_ADDRESS_TWO";
+      secondaryImuAddress = "PRIMARY_IMU_ADDRESS_ONE";
     }
 
     const imuDesc = (imuConfig: IMUConfigDTO, index: number) => {
@@ -233,7 +233,22 @@ export class FirmwareService implements OnApplicationBootstrap {
     const secondImu =
       boardConfig.imus.length === 1 ? boardConfig.imus[0] : boardConfig.imus[1];
 
+    // If it is on the SlimeVR repo and the version is not a branch (we assume it is a tag)
+    // then we will use the Version from the tag and set the #define FIRMWARE_VERSION else 
+    // we will not use that.
+    let fwVersion = ``;
+    if (boardConfig.release.owner === "SlimeVR" &&
+      !boardConfig.release.isBranch &&
+      boardConfig.release.version !== "main"
+    ) {      
+      fwVersion = boardConfig.release.version.startsWith('v')
+        ? `#define FIRMWARE_VERSION "${boardConfig.release.version.substring(1)}"`
+        : `#define FIRMWARE_VERSION "${boardConfig.release.version}"`;
+    }
+
     return `
+          ${fwVersion}
+
           #define IMU ${boardConfig.imus[0].type}
           #define SECOND_IMU ${secondImu.type}
           #define BOARD ${boardConfig.board.type}
