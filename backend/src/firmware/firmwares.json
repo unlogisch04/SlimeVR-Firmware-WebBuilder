@@ -4,10 +4,6 @@
       {
         "branch": "main",
         "description": "SlimeVR development branch"
-      },
-      {
-        "branch": "feat/magnetometer-toggle",
-        "description": "BNO08X magnetometer toggle support"
       }
     ]
   },
@@ -16,14 +12,6 @@
       {
         "branch": "v0.3.3-bno-patched",
         "description": "Release SlimeVR/v0.3.3 with BNO patched"
-      },
-      {
-        "branch": "mag-enabled-stable",
-        "description": "[DEPRECATED] - Disable \"Use 6 Axis\" in debug settings to enable magnetometer"
-      },
-      {
-        "branch": "mag-enabled-main",
-        "description": "[DEPRECATED] - Disable \"Use 6 Axis\" in debug settings to enable magnetometer"
       },
       {
         "branch": "alt-port-stable",
@@ -39,11 +27,7 @@
     "SlimeVR-Tracker-ESP-BMI270": [
       {
         "branch": "main",
-        "description": "[DEPRECATED] - Use SlimeVR/main instead (Adds support for BMI270)"
-      },
-      {
-        "branch": "sfusion",
-        "description": "[DEPRECATED] - Use SlimeVR/main instead"
+        "description": "[DEPRECATED] - Support for BMI270 without sfusion"
       }
     ]
   },
@@ -52,18 +36,18 @@
       {
         "branch": "BMI_senscal",
         "description": "Adds BMI160 sensitivity calibration to the regular calibration routine"
-      },
-      {
-        "branch": "lsm6dsv-with-bug-fix",
-        "description": "[DEPRECATED] - Use SlimeVR/main instead (Adds support for LSM6DSV)"
       }
     ]
   },
-  "kounocom": {
+  "unlogisch04": {
     "SlimeVR-Tracker-ESP": [
       {
-        "branch": "sfusion-tuned-mbe",
-        "description": "Meia's sfusion with MBE (Motion bias estimation) and some tuned VQF Parameters"
+        "branch": "sfusion_icm_ext_clk",
+        "description": "unlogisch early sfusion for icm42688-P with external clock"
+      },
+      {
+        "branch": "v040_bmi_magenabled_qmc",
+        "description": "unlogisch v0.4.0 firmware for bmi160 with qmc magnetometer enabled"
       }
     ]
   }

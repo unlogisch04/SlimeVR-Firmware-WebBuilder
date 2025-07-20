@@ -62,7 +62,7 @@ function Page() {
         <Toolbar>
           <Typography variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
             <Link href="/" underline="none" color="inherit">
-              SlimeVR Firmware Tool (Butterscotch Version)
+              SlimeVR Firmware Tool (Butterscotch Version) hosted by unlogisch
             </Link>
           </Typography>
           <Button variant="outlined" onClick={toggleTheme}>

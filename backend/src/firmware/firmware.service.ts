@@ -225,7 +225,7 @@ export class FirmwareService implements OnApplicationBootstrap {
         index <= 0 ? primaryImuAddress : secondaryImuAddress
       }, ${rotationToFirmware(imuConfig.rotation)}, DIRECT_WIRE(PIN_IMU_SCL, PIN_IMU_SDA), ${
         index <= 0 ? "false" : "true"
-      }, DIRECT_PIN(${imuConfig.imuINT || 255}), 0 )`;
+      }, DIRECT_PIN(${imuConfig.imuINT || 255}))`;
     };
 
     // This is to deal with old firmware versions where two imus were always declared,

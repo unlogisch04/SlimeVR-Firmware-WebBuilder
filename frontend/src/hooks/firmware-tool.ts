@@ -72,31 +72,33 @@ export function fillMissingValues(target: any, defaults: any) {
 }
 
 const lf = new Intl.ListFormat("en");
+const newBranches = [
+  "kounocom/dynamic-sfusion", 
+  "SlimeVR/main", 
+  "SlimeVR/v0.5.0", 
+  "SlimeVR/v0.5.2", 
+  "SlimeVR/v0.5.4", 
+  "SlimeVR/v0.6.2"
+];
 const branchRestrictions: any = {
-  IMU_BMI270: [
-    "l0ud/main",
-    "l0ud/sfusion",
-    "kounocom/sfusion-tuned-mbe",
-    "SlimeVR/main",
-  ],
-  IMU_LSM6DS3TRC: [
-    "l0ud/sfusion",
-    "kounocom/sfusion-tuned-mbe",
-    "SlimeVR/main",
-  ],
-  IMU_LSM6DSV: [
-    "wigwagwent/lsm6dsv-with-bug-fix",
-    "l0ud/sfusion",
-    "kounocom/sfusion-tuned-mbe",
-    "SlimeVR/main",
-  ],
-  IMU_LSM6DSO: ["l0ud/sfusion", "kounocom/sfusion-tuned-mbe", "SlimeVR/main"],
-  IMU_LSM6DSR: ["l0ud/sfusion", "kounocom/sfusion-tuned-mbe", "SlimeVR/main"],
-  IMU_MPU6050_SF: [
-    "l0ud/sfusion",
-    "kounocom/sfusion-tuned-mbe",
-    "SlimeVR/main",
-  ],
+  IMU_LSM6DS3: newBranches,
+  IMU_ICM45686: newBranches,
+  IMU_ICM45605: newBranches,
+};
+const oldBranches = [
+  "SlimeVR/v0.4.0",
+  "SlimeVR/v0.3.3",
+  "SlimeVR/v0.3.2",
+  "ButterscotchV/v0.3.3-bno-patched",
+  "wigwagwent/BMI_senscal",
+];
+const unsupportedBranches: any = {
+  IMU_BMI270: oldBranches,
+  IMU_LSM6DS3TRC: oldBranches,
+  IMU_LSM6DSV: oldBranches,
+  IMU_LSM6DSO: oldBranches,
+  IMU_LSM6DSR: oldBranches,
+  IMU_MPU6050_SF: oldBranches,
 };
 
 type DownloadedFile = { infos: FirmwareFile; binary: ArrayBuffer };
@@ -367,19 +369,31 @@ export function useFirmwareTool() {
     setStatusMessage("Validating configuration");
     setActiveStep(1);
 
+    const release = `${buildSettings.release.owner}/${buildSettings.release.version}`;
     for (const imu of buildSettings.imus?.map(
       (imu: { type: string }) => imu.type,
     ) ?? []) {
-      const branches: string[] | undefined = branchRestrictions[imu];
-      if (
-        branches &&
-        !branches.includes(
-          `${buildSettings.release.owner}/${buildSettings.release.version}`,
-        )
-      ) {
+      const imuBranchRestrictions: string[] | undefined =
+        branchRestrictions[imu];
+      if (imuBranchRestrictions && !imuBranchRestrictions.includes(release)) {
         setError({
           title: "Invalid configuration",
-          message: `${imu} is only supported by ${lf.format(branches)}.`,
+          message: `${imu} is only supported by ${lf.format(imuBranchRestrictions)}.`,
+          action: () => {
+            setError(null);
+            setActiveStep(0);
+          },
+          actionText: "Go back to configuration",
+        });
+        return;
+      }
+
+      const imuUnsupportedBranches: string[] | undefined =
+        unsupportedBranches[imu];
+      if (imuUnsupportedBranches && imuUnsupportedBranches.includes(release)) {
+        setError({
+          title: "Invalid configuration",
+          message: `${imu} is not supported by ${lf.format(imuUnsupportedBranches)}.`,
           action: () => {
             setError(null);
             setActiveStep(0);

@@ -72,10 +72,18 @@ export class GithubService {
 
         return [
           ...data.filter(
-            ({ name }) =>
-              !["SlimeVR/v0.2.0", "SlimeVR/v0.2.1", "SlimeVR/v0.2.2"].includes(
+            ({ name, draft, prerelease }) =>
+              ![
+                "SlimeVR/v0.2.0", 
+                "SlimeVR/v0.2.1", 
+                "SlimeVR/v0.2.2",
+                "SlimeVR/v0.2.3",
+                "SlimeVR/v0.3.0",
+                "SlimeVR/v0.3.1",
+                "SlimeVR/v0.6.0",
+              ].includes(
                 `${owner}/${name}`,
-              ),
+              ) && !draft,
           ),
         ];
       },
