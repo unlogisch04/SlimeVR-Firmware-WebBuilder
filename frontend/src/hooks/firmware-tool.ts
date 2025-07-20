@@ -52,6 +52,7 @@ export const defaultFormValues = {
     bmi160UseTempcal: true,
     bmi160TempcalDebug: false,
     bmi160UseSenscal: true,
+    imuUseExternalClock: true,
   },
   wifi: {
     ssid: null,

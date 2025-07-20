@@ -18,4 +18,8 @@ export class DebugDTO {
 
   @ApiProperty({ default: true })
   public bmi160UseSenscal: boolean = true;
+
+  @ApiProperty({ default: true })
+  public imuUseExternalClock: boolean = true;
+
 }

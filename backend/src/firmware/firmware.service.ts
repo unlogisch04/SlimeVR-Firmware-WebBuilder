@@ -318,6 +318,7 @@ export class FirmwareService implements OnApplicationBootstrap {
       debug.bmi160TempcalDebug,
     );
     file = this.applyDefine(file, "BMI160_USE_SENSCAL", debug.bmi160UseSenscal);
+    file = this.applyDefine(file, "IMU_USE_EXTERNAL_CLOCK", debug.imuUseExternalClock);
     return file;
   }
 

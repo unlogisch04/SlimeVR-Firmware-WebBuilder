@@ -105,6 +105,20 @@ export function DebugConfig({ control }: { control: any; errors: any }) {
               />
             </FormControl>
           </Grid>
+          <Grid item xs={12} sm={6}>
+           <FormControl fullWidth>
+             <Controller
+               name={"debug.imuUseExternalClock"}
+               control={control}
+               render={({ field: { onChange, value } }) => (
+                 <FormControlLabel
+                   control={<Checkbox onChange={onChange} checked={value} />}
+                   label="IMU uses external clock (ICM-45686 only)"
+                 />
+               )}
+             />
+           </FormControl>
+          </Grid>
         </Grid>
       </AccordionDetails>
     </Accordion>
