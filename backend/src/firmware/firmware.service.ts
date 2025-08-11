@@ -245,9 +245,12 @@ export class FirmwareService implements OnApplicationBootstrap {
         ? `#define FIRMWARE_VERSION "${boardConfig.release.version.substring(1)}"`
         : `#define FIRMWARE_VERSION "${boardConfig.release.version}"`;
     }
+    let debugflags = ``; 
+    debugflags += `#define IMU_USE_EXTERNAL_CLOCK ${boardConfig.debug.imuUseExternalClock}\n`;
 
     return `
           ${fwVersion}
+          ${debugflags}
 
           #define IMU ${boardConfig.imus[0].type}
           #define SECOND_IMU ${secondImu.type}
@@ -399,11 +402,19 @@ export class FirmwareService implements OnApplicationBootstrap {
       await writeFile(path.join(rootFoler, "src", "defines.h"), newDef);
 
       // Modify debug.h and defines_bmi160.h
-      await this.modifyFile(path.join(rootFoler, "src", "debug.h"), (f) =>
-        this.applyDebug(f, firmware.buildConfig.debug),
-      ).catch((err) => {
+      try {
+        const debugPath = path.join(rootFoler, "src", "debug.h")
+        await this.modifyFile(
+          debugPath, 
+          (f) => this.applyDebug(f, firmware.buildConfig.debug),
+        );
+        
+        const newContent = await readFile(debugPath, { encoding: "utf-8" });
+        console.log("[BUILD DEBUG]", newContent);
+
+      } catch(err) {
         console.error('Error while modifying "debug.h"', err);
-      });
+      }
       await this.modifyFile(
         path.join(rootFoler, "src", "defines_bmi160.h"),
         (f) => this.applyDebug(f, firmware.buildConfig.debug),
