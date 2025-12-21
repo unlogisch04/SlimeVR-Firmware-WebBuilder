@@ -6,6 +6,7 @@ import { ReleaseDTO } from "./dto/release.dto";
 import { GithubRepositoryDTO } from "./dto/repository.dto";
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import { FirmwareReleaseDTO } from "src/firmware/dto/firmware-release.dto";
+import * as semver from "semver";
 
 @Injectable()
 export class GithubService {
@@ -81,9 +82,10 @@ export class GithubService {
                 "SlimeVR/v0.3.0",
                 "SlimeVR/v0.3.1",
                 "SlimeVR/v0.6.0",
+                "SlimeVR/v0.6.1",
               ].includes(
                 `${owner}/${name}`,
-              ) && !draft,
+              ) && !draft && (owner !== "SlimeVR" || semver.lt(name.replace(/^v/, ""), "0.7.0")),
           ),
         ];
       },
