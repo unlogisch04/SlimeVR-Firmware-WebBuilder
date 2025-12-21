@@ -46,7 +46,9 @@ export function useSerial() {
 
     try {
       await sleep(100);
-      await espRef.current.hardReset();
+//      await espRef.current.hardReset();
+//      await espRef.current.constructResetSequence("default_reset");
+      await espRef.current.softReset(false);
 
       await espRef.current.transport.setDTR(false);
       await espRef.current.transport.setRTS(false);
@@ -77,12 +79,19 @@ export function useSerial() {
         while (!timedOut) {
           while (!lineBuffer.includes("\n")) {
             try {
-              const readBytes = await espRef.current.transport.rawRead(8000);
+              //const readBytes = await espRef.current.transport.rawRead(8000);
+              const readBytesGenerator = await espRef.current.transport.rawRead();
               timeouts = 0;
-              if (readBytes === undefined) continue;
-              lineBuffer += textDecoder.decode(readBytes);
+              if (readBytesGenerator === undefined) continue;
+              
+              for await (const readBytes of readBytesGenerator) {
+                lineBuffer += textDecoder.decode(readBytes);
+                // Cut output that's obscenely long
+                if (lineBuffer.length > 8000) break;
+                if (lineBuffer.includes("\n")) break;
+              }
               // Cut output that's obscenely long
-              if (lineBuffer.length > 4096) break;
+              if (lineBuffer.length > 8000) break;
             } catch (e) {
               // Ignore timeout
               if (e instanceof Error && e.message === "Timeout") {
@@ -127,7 +136,16 @@ export function useSerial() {
       });
 
       console.log("Resetting ESP...");
-      await espRef.current.hardReset();
+//      await espRef.current.hardReset();
+      await espRef.current.softReset(false);
+//      await espRef.current.transport.setDTR(false);
+//      await espRef.current.transport.setRTS(true);
+//      await sleep(100);
+//      await espRef.current.transport.setDTR(true);
+//      await espRef.current.transport.setRTS(false);
+//      await sleep(100);
+//      await espRef.current.transport.setDTR(false);
+//      await espRef.current.transport.setRTS(false);
 
       console.log("Waiting for ESP to boot...");
       await sleep(500);
