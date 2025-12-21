@@ -21,6 +21,7 @@ export enum IMUType {
   IMU_LSM6DS3 = "IMU_LSM6DS3",
   IMU_ICM45686 = "IMU_ICM45686",
   IMU_ICM45605 = "IMU_ICM45605",
+  IMU_AUTO = "IMU_AUTO",
 }
 
 export const IMUS: IMUDTO[] = [
@@ -99,6 +100,10 @@ export const IMUS: IMUDTO[] = [
   {
     type: IMUType.IMU_ICM45605,
     hasIntPin: false,
+  },
+  {
+    type: IMUType.IMU_AUTO,
+    hasIntPin: true,
   },
 ];
 

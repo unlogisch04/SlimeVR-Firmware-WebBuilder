@@ -79,7 +79,8 @@ const newBranches = [
   "SlimeVR/v0.5.0", 
   "SlimeVR/v0.5.2", 
   "SlimeVR/v0.5.4", 
-  "SlimeVR/v0.6.2"
+  "SlimeVR/v0.6.2",
+  "unlogisch04/w_main",
 ];
 const branchRestrictions: any = {
   IMU_LSM6DS3: newBranches,
