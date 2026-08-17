@@ -1,6 +1,10 @@
 {
   "SlimeVR": {
     "SlimeVR-Tracker-ESP": [
+      {
+        "branch": "main",
+        "description": "SlimeVR development branch"
+      }
     ]
   },
   "ButterscotchV": {
@@ -38,8 +42,8 @@
   "unlogisch04": {
     "SlimeVR-Tracker-ESP": [
       {
-        "branch": "w_main",
-        "description": "SlimeVR/main firmware that compiles on the webflasher"
+        "branch": "dev",
+        "description": "unlogisch dev test firmware"
       },
       {
         "branch": "sfusion_icm_ext_clk",
@@ -48,7 +52,12 @@
       {
         "branch": "v040_bmi_magenabled_qmc",
         "description": "unlogisch v0.4.0 firmware for bmi160 with qmc magnetometer enabled"
+      },
+      {
+        "branch": "wchg_networkname",
+        "description": "unlogisch v0.7.2 firmware with wifi network name changed"
       }
+
     ]
   }
 }
