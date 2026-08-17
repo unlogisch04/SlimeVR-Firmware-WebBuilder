@@ -330,6 +330,13 @@ export class FirmwareService implements OnApplicationBootstrap {
     return await writeFile(file, action(f));
   }
 
+  private disableCustomSlimeBoard(file: string): string {
+    return file.replace(
+      /^(\s*)custom_slime_board =/gm,
+      "$1;custom_slime_board =",
+    );
+  }
+
   private async startBuildingTask(firmware: Firmware, release: ReleaseDTO) {
     let tmpDir: string;
 
@@ -389,12 +396,17 @@ export class FirmwareService implements OnApplicationBootstrap {
 
       const [root] = await readdir(releaseFolderPath);
       const rootFoler = path.join(releaseFolderPath, root);
+      const platformioToolsPath = join(rootFoler, "platformio-tools.ini");
+      const platformioPath = join(rootFoler, "platformio.ini");
 
-      await rm(join(rootFoler, "platformio.ini"));
-      await rename(
-        join(rootFoler, "platformio-tools.ini"),
-        join(rootFoler, "platformio.ini"),
-      );
+      if (fs.existsSync(platformioToolsPath)) {
+        await rm(platformioPath);
+        await rename(platformioToolsPath, platformioPath);
+      } else {
+        await this.modifyFile(platformioPath, (f) =>
+          this.disableCustomSlimeBoard(f),
+        );
+      }
 
       // Overwrite the defines.h file with the one generated from the configuration
       const newDef = this.getDefines(firmware.buildConfig);

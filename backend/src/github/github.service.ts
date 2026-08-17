@@ -85,7 +85,7 @@ export class GithubService {
                 "SlimeVR/v0.6.1",
               ].includes(
                 `${owner}/${name}`,
-              ) && !draft && (owner !== "SlimeVR" || semver.lt(name.replace(/^v/, ""), "0.7.0")),
+              ) && !draft && (owner !== "SlimeVR" || semver.lt(name.replace(/^v/, ""), "2.0.0")),
           ),
         ];
       },
