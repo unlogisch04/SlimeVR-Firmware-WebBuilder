@@ -46,5 +46,9 @@
     "typescript": "^5.3.3",
     "vite": "^7.2.7",
     "vite-tsconfig-paths": "^4.3.1"
+  },
+  "allowScripts": {
+    "@swc/core@1.15.3": true,
+    "esbuild@0.28.2": true
   }
 }
