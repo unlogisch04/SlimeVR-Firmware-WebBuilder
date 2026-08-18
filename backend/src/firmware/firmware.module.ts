@@ -5,10 +5,12 @@ import { FirmwareController } from "./firmware.controller";
 import { FirmwareService } from "./firmware.service";
 import { AwsSdkModule } from "aws-sdk-v3-nest";
 import { S3Client } from "@aws-sdk/client-s3";
+import { FirmwareSourceCacheModule } from "src/commons/cache/firmware-source-cache.module";
 
 @Module({
   imports: [
     GithubModule,
+    FirmwareSourceCacheModule,
     AwsSdkModule.registerAsync({
       isGlobal: true,
       clientType: S3Client,

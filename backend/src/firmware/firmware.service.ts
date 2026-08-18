@@ -27,6 +27,7 @@ import { InjectAws } from "aws-sdk-v3-nest";
 import { IMUConfigDTO, IMUS } from "./dto/imu.dto";
 import { FirmwareReleaseDTO } from "./dto/firmware-release.dto";
 import { DebugDTO } from "./dto/debug.dto";
+import { FirmwareSourceCacheService } from "src/commons/cache/firmware-source-cache.service";
 
 @Injectable()
 export class FirmwareService implements OnApplicationBootstrap {
@@ -35,6 +36,7 @@ export class FirmwareService implements OnApplicationBootstrap {
   constructor(
     @InjectAws(S3Client) private readonly s3: S3Client,
     private githubService: GithubService,
+    private firmwareSourceCache: FirmwareSourceCacheService,
     @Inject(APP_CONFIG) private appConfig: ConfigService,
   ) {}
 
@@ -355,14 +357,38 @@ export class FirmwareService implements OnApplicationBootstrap {
       )}.zip`;
       const releaseFilePath = path.join(tmpDir, releaseFileName);
 
-      const downloadFile = async (url: string, path: string) => {
-        const res = await fetch(url);
-        const fileStream = fs.createWriteStream(path);
-        await new Promise((resolve, reject) => {
-          res.body.pipe(fileStream);
-          res.body.on("error", reject);
-          fileStream.on("finish", () => resolve(undefined));
-        });
+      // Cached separately so a firmware source archive can still be served (and thus built)
+      // if Github is unreachable when a build is requested.
+      const downloadFile = async (url: string, destPath: string) => {
+        try {
+          const res = await fetch(url);
+          if (!res.ok) {
+            if (res.status === 404) {
+              await this.firmwareSourceCache.evict(url);
+            }
+            throw new Error(`Github responded with status ${res.status}`);
+          }
+
+          const fileStream = fs.createWriteStream(destPath);
+          await new Promise((resolve, reject) => {
+            res.body.pipe(fileStream);
+            res.body.on("error", reject);
+            fileStream.on("finish", () => resolve(undefined));
+          });
+
+          await this.firmwareSourceCache
+            .save(url, destPath)
+            .catch((err) =>
+              console.warn(`Unable to persist cached copy of "${url}": ${err}`),
+            );
+        } catch (err) {
+          if (!this.firmwareSourceCache.has(url)) throw err;
+
+          console.warn(
+            `Failed to download "${url}" (${err}), using previously cached firmware source archive instead`,
+          );
+          await this.firmwareSourceCache.restore(url, destPath);
+        }
       };
 
       this.buildStatusSubject.next({
