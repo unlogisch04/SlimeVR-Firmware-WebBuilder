@@ -1,6 +1,7 @@
 import { S3ClientConfig } from "@aws-sdk/client-s3";
 import * as dotenv from "dotenv";
 import { readFile } from "fs/promises";
+import path from "path";
 import { encode } from "universal-base64url";
 
 dotenv.config();
@@ -84,6 +85,14 @@ export class ConfigService {
 
   public getHostUrl() {
     return this.getValue("HOST_URL", true);
+  }
+
+  /**
+   * Directory used to persist caches (Github API responses, firmware source archives)
+   * across restarts, so they can be served if Github is unreachable.
+   */
+  public getCacheDir(): string {
+    return this.getValue("CACHE_DIR", false) || path.join(process.cwd(), "cache");
   }
 }
 

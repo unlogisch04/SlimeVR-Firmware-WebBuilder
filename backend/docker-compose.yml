@@ -36,6 +36,7 @@ services:
     volumes:
       - ./src:/app/src
       - ./test:/app/test
+      - cache-volume:/app/cache
     networks:
       - slimevr-network
     secrets:
@@ -53,6 +54,7 @@ services:
       S3_BUILDS_BUCKET: ${S3_BUILDS_BUCKET}
       GITHUB_AUTH: ${GITHUB_AUTH}
       HOST_URL: ${HOST_URL}
+      CACHE_DIR: /app/cache
   slimevr-api-s3:
     image: minio/minio:latest
     ports:
@@ -95,6 +97,8 @@ services:
 volumes:
   database-volume:
   storage-minio:
+    external: false
+  cache-volume:
     external: false
 
 secrets:
