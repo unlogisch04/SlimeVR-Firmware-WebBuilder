@@ -1,10 +1,10 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { Cache } from "cache-manager";
-import { FetchService } from "src/commons/http/fetch.service";
+import { Injectable } from "@nestjs/common";
+import { FetchHttpError, FetchService } from "src/commons/http/fetch.service";
 import { AVAILABLE_FIRMWARE_REPOS } from "src/firmware/firmware.constants";
 import { ReleaseDTO } from "./dto/release.dto";
 import { GithubRepositoryDTO } from "./dto/repository.dto";
-import { CACHE_MANAGER } from "@nestjs/cache-manager";
+import { PersistentCacheService } from "src/commons/cache/persistent-cache.service";
+import { FirmwareSourceCacheService } from "src/commons/cache/firmware-source-cache.service";
 import { FirmwareReleaseDTO } from "src/firmware/dto/firmware-release.dto";
 import * as semver from "semver";
 
@@ -12,14 +12,20 @@ import * as semver from "semver";
 export class GithubService {
   constructor(
     private fetchSerice: FetchService,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private persistentCache: PersistentCacheService,
+    private firmwareSourceCache: FirmwareSourceCacheService,
   ) {}
+
+  /** A 404 from the Github API is a definitive "this doesn't exist (any more)", unlike network/5xx errors. */
+  private isNotFound(err: unknown): boolean {
+    return err instanceof FetchHttpError && err.status === 404;
+  }
 
   async getRepository(
     owner: string,
     repo: string,
   ): Promise<GithubRepositoryDTO> {
-    return this.cacheManager.wrap(
+    return this.persistentCache.wrap(
       `/repos/${owner}/${repo}`,
       async () => {
         const { data } = await this.fetchSerice.get<GithubRepositoryDTO>(
@@ -29,6 +35,7 @@ export class GithubService {
         return data;
       },
       5 * 60 * 1000,
+      { isDefinitive: (err) => this.isNotFound(err) },
     );
   }
 
@@ -37,33 +44,42 @@ export class GithubService {
     repo: string,
     branch = "main",
   ): Promise<ReleaseDTO> {
-    return this.cacheManager.wrap(
-      `/repos/${owner}/${repo}/branches/${branch}`,
-      async () => {
-        const {
-          data: {
-            commit: { sha },
-          },
-        } = await this.fetchSerice.get<{ commit: { sha: string } }>(
-          `/repos/${owner}/${repo}/branches/${branch}`,
-          {},
-        );
+    const zipballUrl = `https://github.com/${owner}/${repo}/archive/refs/heads/${branch}.zip`;
 
-        return {
-          id: sha,
-          name: branch,
-          zipball_url: `https://github.com/${owner}/${repo}/archive/refs/heads/${branch}.zip`,
-          prerelease: false,
-          draft: false,
-          url: `https://github.com/${owner}/${repo}/archive/refs/heads/${branch}.zip`,
-        };
-      },
-      5 * 60 * 1000,
-    );
+    try {
+      return await this.persistentCache.wrap(
+        `/repos/${owner}/${repo}/branches/${branch}`,
+        async () => {
+          const {
+            data: {
+              commit: { sha },
+            },
+          } = await this.fetchSerice.get<{ commit: { sha: string } }>(
+            `/repos/${owner}/${repo}/branches/${branch}`,
+            {},
+          );
+
+          return {
+            id: sha,
+            name: branch,
+            zipball_url: zipballUrl,
+            prerelease: false,
+            draft: false,
+            url: zipballUrl,
+          };
+        },
+        5 * 60 * 1000,
+        { isDefinitive: (err) => this.isNotFound(err) },
+      );
+    } catch (err) {
+      // Github confirmed the branch is gone, the cached source archive is no longer valid
+      if (this.isNotFound(err)) await this.firmwareSourceCache.evict(zipballUrl);
+      throw err;
+    }
   }
 
   async getReleases(owner: string, repo: string): Promise<ReleaseDTO[]> {
-    return this.cacheManager.wrap(
+    return this.persistentCache.wrap(
       `/repos/${owner}/${repo}/releases`,
       async () => {
         const { data } = await this.fetchSerice.get<ReleaseDTO[]>(
@@ -90,6 +106,7 @@ export class GithubService {
         ];
       },
       5 * 60 * 1000,
+      { isDefinitive: (err) => this.isNotFound(err) },
     );
   }
 

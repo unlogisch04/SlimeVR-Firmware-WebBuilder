@@ -2,11 +2,13 @@ import { Module } from "@nestjs/common";
 import { FetchModule } from "src/commons/http/fetch.module";
 import { GithubService } from "./github.service";
 import { configProvider, configService } from "src/config/config.service";
-import { CacheModule } from "@nestjs/cache-manager";
+import { PersistentCacheModule } from "src/commons/cache/persistent-cache.module";
+import { FirmwareSourceCacheModule } from "src/commons/cache/firmware-source-cache.module";
 
 @Module({
   imports: [
-    CacheModule.register(),
+    PersistentCacheModule,
+    FirmwareSourceCacheModule,
     FetchModule.config({
       baseUrl: "https://api.github.com",
       headers: { Authorization: `${configService.getGitHubAuth()}` },
