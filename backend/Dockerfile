@@ -22,5 +22,6 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
+RUN sed -i 's/\r$//' /app/docker/nest/run.sh
 
 CMD ["bash", "/app/docker/nest/run.sh"]
