@@ -56,27 +56,33 @@ services:
       HOST_URL: ${HOST_URL}
       CACHE_DIR: /app/cache
   slimevr-api-s3:
-    image: minio/minio:latest
+    image: rustfs/rustfs:latest
     ports:
       - 127.0.0.1:9099:9099
     volumes:
-      - storage-minio:/data
+      - storage-rustfs:/data
     secrets:
       - access_key
       - secret_key
-    command: server --address ":9099" --console-address ":9000" /data/disk{1...4}
+    environment:
+      RUSTFS_VOLUMES: /data
+      RUSTFS_ADDRESS: 0.0.0.0:9099
+      RUSTFS_CONSOLE_ADDRESS: 0.0.0.0:9000
+      RUSTFS_CORS_ALLOWED_ORIGINS: ${HOST_URL}
+      RUSTFS_ACCESS_KEY_FILE: /run/secrets/access_key
+      RUSTFS_SECRET_KEY_FILE: /run/secrets/secret_key
     restart: unless-stopped
     networks:
       - slimevr-network
     healthcheck:
-      test: ["CMD", "mc", "ping", "local", "-c", "1"]
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:9099/health"]
       interval: 1m
       timeout: 5s
       start_period: 2m
       start_interval: 1s
       retries: 5
   slimevr-api-s3-init:
-    image: minio/mc:latest
+    image: amazon/aws-cli:latest
     depends_on:
       slimevr-api-s3:
         condition: service_healthy
@@ -85,18 +91,20 @@ services:
     secrets:
       - access_key
       - secret_key
-    entrypoint: >
-      /bin/sh -xc "
-      /usr/bin/mc alias set slimevr http://slimevr-api-s3:9099 `cat /run/secrets/access_key` `cat /run/secrets/secret_key`;
-      /usr/bin/mc admin update slimevr;
-      /usr/bin/mc mb --ignore-existing slimevr/slimevr-firmware-builds;
-      /usr/bin/mc anonymous set download slimevr/slimevr-firmware-builds;
-      exit 0;
-      "
+    entrypoint: ["/bin/sh", "-ec"]
+    command:
+      - |
+        export AWS_ACCESS_KEY_ID="$$(cat /run/secrets/access_key)"
+        export AWS_SECRET_ACCESS_KEY="$$(cat /run/secrets/secret_key)"
+        export AWS_DEFAULT_REGION=us-east-1
+        s3="aws --endpoint-url http://slimevr-api-s3:9099"
+        bucket=slimevr-firmware-builds
+        $$s3 s3api head-bucket --bucket "$$bucket" 2>/dev/null || $$s3 s3api create-bucket --bucket "$$bucket"
+        $$s3 s3api put-bucket-policy --bucket "$$bucket" --policy '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"AWS":["*"]},"Action":["s3:GetObject"],"Resource":["arn:aws:s3:::slimevr-firmware-builds/*"]}]}'
 
 volumes:
   database-volume:
-  storage-minio:
+  storage-rustfs:
     external: false
   cache-volume:
     external: false
