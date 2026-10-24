@@ -80,6 +80,12 @@ const newBranches = [
   "SlimeVR/v0.5.2", 
   "SlimeVR/v0.5.4", 
   "SlimeVR/v0.6.2",
+  "SlimeVR/v0.6.2",
+  "SlimeVR/v0.7.0",
+  "SlimeVR/v0.7.1",
+  "SlimeVR/v0.7.2",
+  "SlimeVR/v0.7.3",
+  "SlimeVR/v0.7.4",
   "unlogisch04/main",
   "unlogisch04/dev",
 ];
