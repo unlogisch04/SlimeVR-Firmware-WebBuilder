@@ -3,11 +3,11 @@ export S3_SECRET_KEY=`cat /run/secrets/secret_key`
 
 if [ "$APP_ENV" == "prod" ]; then
     echo "PRODUCTION ENVIRONMENT"
-    npm run start
+    pnpm run start
 elif [ "$APP_ENV" == "stagging" ]; then
     echo "DEV ENVIRONMENT"
-    npm run start:dev
+    pnpm run start:dev
 else
     echo "DEBUG ENVIRONMENT"
-    npm run start:debug
+    pnpm run start:debug
 fi

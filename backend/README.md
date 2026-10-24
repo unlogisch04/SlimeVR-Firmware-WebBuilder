@@ -7,7 +7,7 @@ Slimevr firmware build api allows to build a tracker firmware with any configura
 ## Installation
 
 ```bash
-$ npm install
+$ pnpm install
 ```
 
 ## Running the app
