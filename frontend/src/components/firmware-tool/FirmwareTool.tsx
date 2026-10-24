@@ -95,12 +95,12 @@ export function FirmwareTool() {
       {mode === "flasher" && (
         <>
           <Alert variant="filled" severity="warning" sx={{ my: 2 }}>
-            This tool is phasing out. New firmware releases from v0.7.0 will
-            currently not be supported.
-            <br />
             This is an experimental version of the SlimeVR Firmware Tool run by
-            unlogisch, so uptime, functionality, and performance is not
+            unlogisch, so uptime, functionality, and performance are not
             guaranteed.
+            <br />
+            Not all configurations may be valid or working. If you find any
+            problems, you can ping unlogisch in the SlimeVR Discord.
           </Alert>
           <Alert variant="outlined" severity="info" sx={{ my: 2 }}>
             <p>
