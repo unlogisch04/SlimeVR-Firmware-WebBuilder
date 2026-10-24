@@ -16,6 +16,9 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { useState } from "react";
 import { Controller } from "react-hook-form";
 
+const SPACE_WARNING =
+  "Has leading or trailing spaces - make sure this is intended";
+
 export function WiFiConfig({ control, errors }: { control: any; errors: any }) {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -63,10 +66,17 @@ export function WiFiConfig({ control, errors }: { control: any; errors: any }) {
                 }}
                 render={({ field: { onChange, value } }) => (
                   <TextField
-                    error={!!errors.wifi?.ssid}
+                    error={
+                      !!errors.wifi?.ssid || (!!value && value !== value.trim())
+                    }
                     onChange={onChange}
                     value={value || ""}
                     label={"WiFi SSID"}
+                    helperText={
+                      value && value !== value.trim()
+                        ? SPACE_WARNING
+                        : undefined
+                    }
                   />
                 )}
               />
@@ -89,10 +99,18 @@ export function WiFiConfig({ control, errors }: { control: any; errors: any }) {
                 }}
                 render={({ field: { onChange, value } }) => (
                   <TextField
-                    error={!!errors.wifi?.password}
+                    error={
+                      !!errors.wifi?.password ||
+                      (!!value && value !== value.trim())
+                    }
                     onChange={onChange}
                     value={value || ""}
                     label={"WiFi Password"}
+                    helperText={
+                      value && value !== value.trim()
+                        ? SPACE_WARNING
+                        : undefined
+                    }
                     type={showPassword ? "text" : "password"}
                     autoComplete="new-password"
                     slotProps={{

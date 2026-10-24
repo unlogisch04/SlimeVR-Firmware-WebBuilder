@@ -258,7 +258,9 @@ export function useFirmwareTool() {
         await sleep(1000);
 
         try {
-          await setWifi(wifi.ssid, wifi?.password ?? "");
+          await setWifi(wifi.ssid, wifi?.password ?? "", (notice) =>
+            setStatusMessage(notice ?? "Setting WiFi credentials"),
+          );
         } catch (e) {
           console.error(e);
           if (e instanceof Error && e.cause === "Invalid credentials") {

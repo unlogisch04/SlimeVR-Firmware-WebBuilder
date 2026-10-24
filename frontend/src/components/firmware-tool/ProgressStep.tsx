@@ -21,7 +21,6 @@ export function ProgressStep({
           <Typography
             variant="h5"
             color="inherit"
-            noWrap
             sx={{
               mb: 2,
               textAlign: "center",
