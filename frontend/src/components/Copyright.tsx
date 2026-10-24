@@ -19,6 +19,10 @@ export function Copyright() {
       <Link color="inherit" href="https://github.com/Futurabeast/">
         Futurabeast
       </Link>
+      {". Changed by "}
+      <Link color="inherit" href="https://github.com/unlogisch04/">
+        unlogisch04
+      </Link>
     </Typography>
   );
 }
