@@ -28,13 +28,24 @@ export function BatteryConfig({
   return (
     <Accordion variant="outlined">
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+        <Typography
+          gutterBottom
+          sx={{
+            color: "text.secondary",
+            fontSize: 14,
+          }}
+        >
           Battery Sense (Optional)
         </Typography>
       </AccordionSummary>
       <AccordionDetails>
         <Grid container spacing={3}>
-          <Grid item xs={12} sm={12}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 12,
+            }}
+          >
             <FormControl fullWidth>
               <Controller
                 name={"battery.type"}
@@ -74,7 +85,12 @@ export function BatteryConfig({
               />
             </FormControl>
           </Grid>
-          <Grid item xs={12} sm={12}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 12,
+            }}
+          >
             <FormControl fullWidth>
               <Controller
                 name={"battery.resistance"}
@@ -91,7 +107,12 @@ export function BatteryConfig({
               />
             </FormControl>
           </Grid>
-          <Grid item xs={12} sm={12}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 12,
+            }}
+          >
             <FormControl fullWidth>
               <Controller
                 name={"battery.r1"}
@@ -108,7 +129,12 @@ export function BatteryConfig({
               />
             </FormControl>
           </Grid>
-          <Grid item xs={12} sm={12}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 12,
+            }}
+          >
             <FormControl fullWidth>
               <Controller
                 name={"battery.r2"}
@@ -125,7 +151,12 @@ export function BatteryConfig({
               />
             </FormControl>
           </Grid>
-          <Grid item xs={12} sm={12}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 12,
+            }}
+          >
             <FormControl fullWidth>
               <Controller
                 name={"battery.pin"}

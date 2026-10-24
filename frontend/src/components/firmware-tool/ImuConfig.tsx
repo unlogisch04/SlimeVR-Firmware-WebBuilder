@@ -51,7 +51,13 @@ export function ImuConfig({
   return (
     <Card variant="outlined" sx={{ height: "100%" }}>
       <CardContent>
-        <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+        <Typography
+          gutterBottom
+          sx={{
+            color: "text.secondary",
+            fontSize: 14,
+          }}
+        >
           <Controller
             name={`${controlPrefix}.enabled`}
             control={control}
@@ -70,7 +76,12 @@ export function ImuConfig({
           />
         </Typography>
         <Grid container spacing={3}>
-          <Grid item xs={12} sm={12}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 12,
+            }}
+          >
             <FormControl fullWidth>
               <Controller
                 name={`${controlPrefix}.type`}
@@ -107,7 +118,12 @@ export function ImuConfig({
               />
             </FormControl>
           </Grid>
-          <Grid item xs={12} sm={12}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 12,
+            }}
+          >
             <FormControl fullWidth>
               <Controller
                 name={`${controlPrefix}.rotation`}
@@ -135,7 +151,12 @@ export function ImuConfig({
             </FormControl>
           </Grid>
           {currentImu && currentImu?.hasIntPin && (
-            <Grid item xs={12} sm={12}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 12,
+              }}
+            >
               <FormControl fullWidth>
                 <Controller
                   name={`${controlPrefix}.imuINT`}

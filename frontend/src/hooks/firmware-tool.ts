@@ -74,11 +74,11 @@ export function fillMissingValues(target: any, defaults: any) {
 
 const lf = new Intl.ListFormat("en");
 const newBranches = [
-  "kounocom/dynamic-sfusion", 
-  "SlimeVR/main", 
-  "SlimeVR/v0.5.0", 
-  "SlimeVR/v0.5.2", 
-  "SlimeVR/v0.5.4", 
+  "kounocom/dynamic-sfusion",
+  "SlimeVR/main",
+  "SlimeVR/v0.5.0",
+  "SlimeVR/v0.5.2",
+  "SlimeVR/v0.5.4",
   "SlimeVR/v0.6.2",
   "SlimeVR/v0.6.2",
   "SlimeVR/v0.7.0",
@@ -191,17 +191,6 @@ export function useFirmwareTool() {
 
   const { mutateAsync } = useFirmwareControllerBuildAll({});
 
-  // Workaround to use the esptool-js flash function
-  function arrayBufferToBinaryString(buffer: ArrayBuffer) {
-    let binary = "";
-    const bytes = new Uint8Array(buffer);
-    const length = bytes.byteLength;
-    for (let i = 0; i < length; i++) {
-      binary += String.fromCharCode(bytes[i]);
-    }
-    return binary;
-  }
-
   const flash = async () => {
     if (!downloadedFilesRef.current)
       throw new Error("Download files not defined");
@@ -224,7 +213,7 @@ export function useFirmwareTool() {
         const flashOptions: FlashOptions = {
           fileArray: downloadedFilesRef.current.map((file) => {
             return {
-              data: arrayBufferToBinaryString(file.binary),
+              data: new Uint8Array(file.binary),
               address: file.infos.offset,
             };
           }),

@@ -46,8 +46,8 @@ export function useSerial() {
 
     try {
       await sleep(100);
-//      await espRef.current.hardReset();
-//      await espRef.current.constructResetSequence("default_reset");
+      //      await espRef.current.hardReset();
+      //      await espRef.current.constructResetSequence("default_reset");
       await espRef.current.softReset(false);
 
       await espRef.current.transport.setDTR(false);
@@ -69,103 +69,120 @@ export function useSerial() {
       if (!espRef.current) return;
 
       let timedOut = false;
-      const readerPromise = new Promise(async (resolve, reject) => {
-        if (!espRef.current) return;
+      // Started only after the reset so bootloader replies aren't parsed as console output
+      const startReader = () =>
+        new Promise((resolve, reject) => {
+          if (!espRef.current) return;
 
-        console.log("Opening serial console...");
-        const textDecoder = new TextDecoder();
-        let lineBuffer = "";
-        let timeouts = 0;
-        while (!timedOut) {
-          while (!lineBuffer.includes("\n")) {
-            try {
-              //const readBytes = await espRef.current.transport.rawRead(8000);
-              const readBytesGenerator = await espRef.current.transport.rawRead();
-              timeouts = 0;
-              if (readBytesGenerator === undefined) continue;
-              
-              for await (const readBytes of readBytesGenerator) {
-                lineBuffer += textDecoder.decode(readBytes);
-                // Cut output that's obscenely long
-                if (lineBuffer.length > 8000) break;
-                if (lineBuffer.includes("\n")) break;
-              }
-              // Cut output that's obscenely long
-              if (lineBuffer.length > 8000) break;
-            } catch (e) {
-              // Ignore timeout
-              if (e instanceof Error && e.message === "Timeout") {
-                if (++timeouts >= 16) {
-                  console.error("Timed out too many times:", e);
-                  reject(
-                    new SerialError("Timed out too many times", serialOutput),
-                  );
-                  return;
-                }
-              } else {
-                console.error(e);
-                reject(new SerialError("Serial error", serialOutput));
-                return;
-              }
+          console.log("Opening serial console...");
+          const textDecoder = new TextDecoder();
+          let lineBuffer = "";
+          let finished = false;
+
+          const handleLine = (line: string) => {
+            console.log("Serial Console:", line);
+            serialOutput.push(line);
+
+            if (line.includes("CMD SET WIFI OK")) {
+              console.log("WiFi serial command was successful.");
             }
-          }
+            if (line.includes("Connected successfully to SSID")) {
+              finished = true;
+              resolve(true);
+            }
+            if (line.includes("Can't connect from any credentials")) {
+              finished = true;
+              reject(new SerialError("Invalid credentials", serialOutput));
+            }
+          };
 
-          // Cut on the newline
-          const [, line, remainder] = RegExp(/(.*?)\n(.*)/).exec(
-            lineBuffer,
-          ) ?? [undefined, lineBuffer, ""];
-          lineBuffer = remainder;
+          // Transport's own read loop holds the stream lock and collects
+          // incoming bytes in its buffer, so poll that instead of rawRead.
+          const transport = espRef.current.transport;
+          const timer = setInterval(() => {
+            if (finished || timedOut) {
+              clearInterval(timer);
+              return;
+            }
 
-          console.log("Serial Console:", line);
-          serialOutput.push(line);
+            const data = transport.peek();
+            if (!data.length) return;
+            transport.flushInput();
 
-          if (line.includes("CMD SET WIFI OK")) {
-            console.log("WiFi serial command was successful.");
-          }
-          if (line.includes("Connected successfully to SSID")) {
-            resolve(true);
-            return;
-          }
-          if (line.includes("Can't connect from any credentials")) {
-            reject(new SerialError("Invalid credentials", serialOutput));
-            return;
-          }
-        }
-        // Timeout if exited
-        reject(new SerialError("Timeout", serialOutput));
-      });
+            lineBuffer += textDecoder.decode(data, { stream: true });
 
+            let newline: number;
+            while (!finished && (newline = lineBuffer.indexOf("\n")) !== -1) {
+              const line = lineBuffer.slice(0, newline);
+              lineBuffer = lineBuffer.slice(newline + 1);
+              handleLine(line);
+            }
+
+            // Cut output that's obscenely long
+            if (!finished && lineBuffer.length > 8000) {
+              const line = lineBuffer;
+              lineBuffer = "";
+              handleLine(line);
+            }
+          }, 50);
+        });
+
+      const esp = espRef.current;
       console.log("Resetting ESP...");
-//      await espRef.current.hardReset();
-      await espRef.current.softReset(false);
-//      await espRef.current.transport.setDTR(false);
-//      await espRef.current.transport.setRTS(true);
-//      await sleep(100);
-//      await espRef.current.transport.setDTR(true);
-//      await espRef.current.transport.setRTS(false);
-//      await sleep(100);
-//      await espRef.current.transport.setDTR(false);
-//      await espRef.current.transport.setRTS(false);
+      try {
+        await esp.softReset(false);
+      } catch (e) {
+        console.warn("Soft reset failed:", e);
+      }
+      // Pulse EN via RTS for boards wired for auto-reset
+      try {
+        await esp.transport.setDTR(false);
+        await esp.transport.setRTS(true);
+        await sleep(100);
+        await esp.transport.setRTS(false);
+      } catch (e) {
+        console.warn("Hardware reset failed:", e);
+      }
 
       console.log("Waiting for ESP to boot...");
-      await sleep(500);
+      await sleep(1500);
+      esp.transport.flushInput();
+      const readerPromise = startReader();
+
+      const sendCommand = async () => {
+        const writer = esp.transport.device.writable?.getWriter();
+        if (!writer) {
+          throw new SerialError("Device is not writable", serialOutput);
+        }
+        try {
+          await writer.write(
+            new TextEncoder().encode(`SET WIFI "${ssid}" "${password}"\n`),
+          );
+        } finally {
+          writer.releaseLock();
+        }
+      };
 
       console.log("Setting WiFi via serial command...");
-      const writer = espRef.current.transport.device.writable?.getWriter();
-      if (!writer) {
-        return reject(new SerialError("Device is not writable", serialOutput));
-      }
       try {
-        writer.write(
-          new TextEncoder().encode(`SET WIFI "${ssid}" "${password}"\n`),
-        );
-      } finally {
-        writer.releaseLock();
+        await sendCommand();
+      } catch (e) {
+        return reject(e);
       }
+      // The firmware may still be booting, so keep resending until it answers
+      const resend = setInterval(() => {
+        if (timedOut || serialOutput.some((l) => l.includes("CMD SET WIFI"))) {
+          clearInterval(resend);
+          return;
+        }
+        console.log("Resending WiFi serial command...");
+        sendCommand().catch(console.error);
+      }, 3000);
 
       console.log("Waiting for WiFi connection...");
       setTimeout(() => {
         timedOut = true;
+        clearInterval(resend);
         reject(new SerialError("Timeout", serialOutput));
       }, 30000);
       try {

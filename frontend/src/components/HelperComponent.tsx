@@ -9,11 +9,26 @@ export function HelperComponent({
   text: string;
 }) {
   return (
-    <Grid container mt={1} flexDirection="row" alignContent="center">
-      <Grid item mx={0.5}>
+    <Grid
+      container
+      sx={{
+        mt: 1,
+        flexDirection: "row",
+        alignContent: "center",
+      }}
+    >
+      <Grid
+        sx={{
+          mx: 0.5,
+        }}
+      >
         <InfoOutlined sx={{ verticalAlign: "middle" }} fontSize="small" />
       </Grid>
-      <Grid item justifySelf="center">
+      <Grid
+        sx={{
+          justifySelf: "center",
+        }}
+      >
         <Link
           sx={{ fontSize: 12 }}
           href={link}

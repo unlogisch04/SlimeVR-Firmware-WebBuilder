@@ -15,13 +15,24 @@ export function DebugConfig({ control }: { control: any; errors: any }) {
   return (
     <Accordion variant="outlined">
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+        <Typography
+          gutterBottom
+          sx={{
+            color: "text.secondary",
+            fontSize: 14,
+          }}
+        >
           Debug Settings (optional)
         </Typography>
       </AccordionSummary>
       <AccordionDetails>
         <Grid container spacing={3}>
-          <Grid item xs={12} sm={6}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
             <FormControl fullWidth>
               <Controller
                 name={"debug.use6Axis"}
@@ -35,7 +46,12 @@ export function DebugConfig({ control }: { control: any; errors: any }) {
               />
             </FormControl>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
             <FormControl fullWidth>
               <Controller
                 name={"debug.optimizeUpdates"}
@@ -49,7 +65,12 @@ export function DebugConfig({ control }: { control: any; errors: any }) {
               />
             </FormControl>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
             <FormControl fullWidth>
               <Controller
                 name={"debug.complianceMode"}
@@ -63,7 +84,12 @@ export function DebugConfig({ control }: { control: any; errors: any }) {
               />
             </FormControl>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
             <FormControl fullWidth>
               <Controller
                 name={"debug.bmi160UseTempcal"}
@@ -77,7 +103,12 @@ export function DebugConfig({ control }: { control: any; errors: any }) {
               />
             </FormControl>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
             <FormControl fullWidth>
               <Controller
                 name={"debug.bmi160TempcalDebug"}
@@ -91,7 +122,12 @@ export function DebugConfig({ control }: { control: any; errors: any }) {
               />
             </FormControl>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
             <FormControl fullWidth>
               <Controller
                 name={"debug.bmi160UseSenscal"}
@@ -105,19 +141,24 @@ export function DebugConfig({ control }: { control: any; errors: any }) {
               />
             </FormControl>
           </Grid>
-          <Grid item xs={12} sm={6}>
-           <FormControl fullWidth>
-             <Controller
-               name={"debug.imuUseExternalClock"}
-               control={control}
-               render={({ field: { onChange, value } }) => (
-                 <FormControlLabel
-                   control={<Checkbox onChange={onChange} checked={value} />}
-                   label="IMU uses external clock (ICM-45686 only)"
-                 />
-               )}
-             />
-           </FormControl>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
+            <FormControl fullWidth>
+              <Controller
+                name={"debug.imuUseExternalClock"}
+                control={control}
+                render={({ field: { onChange, value } }) => (
+                  <FormControlLabel
+                    control={<Checkbox onChange={onChange} checked={value} />}
+                    label="IMU uses external clock (ICM-45686 only)"
+                  />
+                )}
+              />
+            </FormControl>
           </Grid>
         </Grid>
       </AccordionDetails>

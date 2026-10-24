@@ -107,7 +107,12 @@ export function ConfigurationForm({
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Grid container spacing={3}>
-        <Grid item xs={12} sm={12}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 12,
+          }}
+        >
           <FormControl fullWidth>
             {
               <Controller
@@ -148,7 +153,12 @@ export function ConfigurationForm({
             }
           </FormControl>
         </Grid>
-        <Grid item xs={12} sm={12}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 12,
+          }}
+        >
           <FormControl fullWidth>
             <Controller
               name={"board.type"}
@@ -192,7 +202,12 @@ export function ConfigurationForm({
             </AccordionSummary>
             <AccordionDetails>
               <Grid container spacing={3}>
-                <Grid item xs={12} sm={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    sm: 6,
+                  }}
+                >
                   <FormControl fullWidth>
                     <Controller
                       name={"board.pins.imuSDA"}
@@ -207,7 +222,12 @@ export function ConfigurationForm({
                     />
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    sm: 6,
+                  }}
+                >
                   <FormControl fullWidth>
                     <Controller
                       name={"board.pins.imuSCL"}
@@ -222,7 +242,12 @@ export function ConfigurationForm({
                     />
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    sm: 6,
+                  }}
+                >
                   <FormControl fullWidth>
                     <Controller
                       name={"board.enableLed"}
@@ -238,7 +263,12 @@ export function ConfigurationForm({
                     />
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    sm: 6,
+                  }}
+                >
                   <FormControl fullWidth>
                     <Controller
                       name={"board.pins.led"}
@@ -254,7 +284,12 @@ export function ConfigurationForm({
                     />
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    sm: 6,
+                  }}
+                >
                   <FormControl fullWidth>
                     <Controller
                       name={"board.ledInverted"}
@@ -270,7 +305,12 @@ export function ConfigurationForm({
                     />
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    sm: 6,
+                  }}
+                >
                   <FormControl fullWidth>
                     <Controller
                       name={"swapAddresses"}
@@ -289,9 +329,22 @@ export function ConfigurationForm({
               </Grid>
             </AccordionDetails>
           </Accordion>
-          <Grid item xs={12} sm={12} mt={2}>
+          <Grid
+            sx={{
+              mt: 2,
+            }}
+            size={{
+              xs: 12,
+              sm: 12,
+            }}
+          >
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+              <Grid
+                size={{
+                  xs: 12,
+                  sm: 6,
+                }}
+              >
                 <ImuConfig
                   watch={watch}
                   control={control}
@@ -303,7 +356,12 @@ export function ConfigurationForm({
                   imusLoading={imusLoading}
                 ></ImuConfig>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid
+                size={{
+                  xs: 12,
+                  sm: 6,
+                }}
+              >
                 <ImuConfig
                   watch={watch}
                   control={control}
@@ -318,16 +376,36 @@ export function ConfigurationForm({
             </Grid>
           </Grid>
         </Grid>
-        <Grid item xs={12} sm={12}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 12,
+          }}
+        >
           <BatteryConfig control={control} errors={errors}></BatteryConfig>
         </Grid>
-        <Grid item xs={12} sm={12}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 12,
+          }}
+        >
           <WiFiConfig errors={errors} control={control}></WiFiConfig>
         </Grid>
-        <Grid item xs={12} sm={12}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 12,
+          }}
+        >
           <DebugConfig errors={errors} control={control}></DebugConfig>
         </Grid>
-        <Grid item xs={12} sm={12}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 12,
+          }}
+        >
           <Button
             variant="contained"
             type="submit"

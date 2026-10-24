@@ -76,10 +76,11 @@ export function FirmwareTool() {
         </Alert>
       )}
       <Alert variant="filled" severity="warning" sx={{ my: 2 }}>
-        This tool is phasing out. New firmware releases from v0.7.0 will currently not be supported.<br />
-        This is an experimental version of the SlimeVR
-        Firmware Tool run by unlogisch, so uptime, functionality, and
-        performance is not guaranteed.
+        This tool is phasing out. New firmware releases from v0.7.0 will
+        currently not be supported.
+        <br />
+        This is an experimental version of the SlimeVR Firmware Tool run by
+        unlogisch, so uptime, functionality, and performance is not guaranteed.
       </Alert>
       <Alert variant="outlined" severity="info" sx={{ my: 2 }}>
         <p>
@@ -142,7 +143,6 @@ export function FirmwareTool() {
                       <ProgressStep
                         value={statusValue}
                         message={statusMessage}
-                        showRickOption={activeStep === 3}
                       ></ProgressStep>
                     )}
                     {activeStep === 5 && (

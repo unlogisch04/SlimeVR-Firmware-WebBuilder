@@ -26,20 +26,40 @@ export function ErrorPane({ error }: { error: ErrorMessage }) {
       <CardContent>
         <Box sx={{ width: "100%" }}>
           <Typography
-            mb={2}
             variant="h4"
             color="inherit"
-            textAlign="center"
             noWrap
+            sx={{
+              mb: 2,
+              textAlign: "center",
+            }}
           >
             {error.title}
           </Typography>
-          <Typography mb={2} variant="body1" color="inherit" textAlign="center">
+          <Typography
+            variant="body1"
+            color="inherit"
+            sx={{
+              mb: 2,
+              textAlign: "center",
+            }}
+          >
             {error.message}
           </Typography>
           {error.action && error.actionText && (
-            <Grid container justifyContent="center" alignItems="center">
-              <Grid item xs={12} sm={4}>
+            <Grid
+              container
+              sx={{
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Grid
+                size={{
+                  xs: 12,
+                  sm: 4,
+                }}
+              >
                 <Button
                   color="primary"
                   fullWidth
@@ -61,10 +81,12 @@ export function ErrorPane({ error }: { error: ErrorMessage }) {
                 <Typography
                   variant="body1"
                   color="inherit"
-                  textAlign="left"
-                  fontFamily="monospace"
-                  padding={1}
-                  whiteSpace="pre-line"
+                  sx={{
+                    textAlign: "left",
+                    fontFamily: "monospace",
+                    padding: 1,
+                    whiteSpace: "pre-line",
+                  }}
                 >
                   {error.consoleOutput}
                 </Typography>

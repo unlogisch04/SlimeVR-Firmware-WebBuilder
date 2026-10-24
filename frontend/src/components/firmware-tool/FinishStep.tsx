@@ -21,23 +21,41 @@ export function FinishStep({
       <CardContent>
         <Box sx={{ width: "100%" }}>
           <Typography
-            mb={2}
             variant="h5"
             color="inherit"
-            textAlign="center"
             noWrap
+            sx={{
+              mb: 2,
+              textAlign: "center",
+            }}
           >
             {saveZip
               ? "Firmware downloaded!"
               : "Firmware uploaded. Your tracker is set up!"}
           </Typography>
-          <Grid container spacing={2} justifyContent="center">
-            <Grid item xs={12} sm={4}>
+          <Grid
+            container
+            spacing={2}
+            sx={{
+              justifyContent: "center",
+            }}
+          >
+            <Grid
+              size={{
+                xs: 12,
+                sm: 4,
+              }}
+            >
               <Button fullWidth variant="contained" onClick={doAnother}>
                 {saveZip ? "Flash to device" : "Flash another one"}
               </Button>
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 4,
+              }}
+            >
               <Button fullWidth onClick={toConfig}>
                 Go to config
               </Button>
